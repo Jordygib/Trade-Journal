@@ -232,13 +232,14 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 <path d="{{histDn}}" fill="{{loss}}" fill-opacity="0.55"></path>
 <path d="{{drawn}}" stroke="#F7A8C0" stroke-width="1.5" fill="none"></path>
 <path d="{{measureBox}}" fill="{{measureFill}}" fill-opacity="0.12" stroke="{{measureFill}}" stroke-width="1" stroke-dasharray="4 3"></path>
-<path d="{{cross}}" stroke="#BFCCC6" stroke-width="1" stroke-dasharray="3 3" fill="none"></path>
+<path d="{{cross}}" stroke="#E4ECE8" stroke-opacity="0.7" stroke-width="1" stroke-dasharray="4 3" fill="none"></path><path d="{{crossDot}}" fill="#0C1110" stroke="#E4ECE8" stroke-width="1.5"></path>
 </svg>
 <template data-scfor list="{{yl}}" as="y" hint-placeholder-count="5"><div style="position: absolute; right: 4px; top: {{y.top}}%; transform: translateY(-50%); font-size: 11px; color: #8DA098; pointer-events: none">{{y.text}}</div></template>
 <template data-scfor list="{{xl}}" as="x" hint-placeholder-count="6"><div style="position: absolute; left: {{x.left}}%; top: {{x.top}}%; transform: translateX(-50%); font-size: 11px; color: #8DA098; white-space: nowrap; pointer-events: none">{{x.text}}</div></template>
 <template data-scfor list="{{paneLabels}}" as="p" hint-placeholder-count="1"><div style="position: absolute; left: 8px; top: {{p.top}}%; font-size: 11px; color: {{p.color}}; pointer-events: none">{{p.text}}</div></template>
 <template data-scfor list="{{pins}}" as="p" hint-placeholder-count="2"><div style="position: absolute; left: {{p.left}}%; top: {{p.top}}%; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: none"><span style="padding: 2px 6px; border-radius: 3px; background: #C792EA; color: #0C1110; font-size: 10px; font-weight: 700; white-space: nowrap">{{p.text}}</span><span style="width: 1px; height: 8px; background: #C792EA"></span></div></template>
 <template data-scfor list="{{tags}}" as="g" hint-placeholder-count="1"><div style="position: absolute; right: 0; top: {{g.top}}%; transform: translateY(-50%); padding: 1px 6px; border-radius: 3px; background: {{g.bg}}; color: {{g.fg}}; font-size: 11px; font-weight: 600; pointer-events: none">{{g.text}}</div></template>
+<template data-scif value="{{hasX}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; left: {{xLeft}}%; top: {{xTop}}%; transform: translateX(-50%); padding: 1px 7px; border-radius: 3px; background: #E4ECE8; color: #0C1110; font-size: 11px; font-weight: 700; white-space: nowrap; pointer-events: none; z-index: 2">{{xText}}</div></template>
 <template data-scif value="{{hasMeasure}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; left: {{mLeft}}%; top: {{mTop}}%; transform: translate(-50%, -110%); padding: 4px 8px; border-radius: 3px; background: {{measureFill}}; color: #0C1110; font-size: 12px; font-weight: 700; white-space: nowrap; pointer-events: none">{{measureText}}</div></template>
 </div>
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 6px 14px 12px; font-size: 12px; color: #74877F"><span>{{hint}}</span><span>Sample data · a live version would use licensed market data</span></div>
@@ -467,12 +468,14 @@ class Component extends DCLogic {
     for (let p = Math.ceil(lo / stp) * stp; p <= hi; p += stp) { const y = Y(p); if (y < MT + 6 || y > MT + MH - 4) continue; grid += 'M0 ' + f1(y) + 'H' + PW; yl.push({ top: (y / H * 100).toFixed(2), text: p.toLocaleString('en-US', { maximumFractionDigits: stp < 1 ? 2 : 0 }) }); }
     let guides = '', histUp = '', histDn = '';
     const PY = (k, v, lo2, hi2) => paneTops[k] + (hi2 - v) / (hi2 - lo2) * PH;
+    const paneInfo = [];
     paneKeys.forEach((k) => {
       const top = paneTops[k]; grid += 'M0 ' + f1(top - 18) + 'H' + PW;
+      if (k === 'rsi' || k === 'stoch') paneInfo.push({ top: top, bot: top + PH, d: 1, inv: (y) => 100 - (y - top) / PH * 100 });
       if (k === 'rsi') { const f = (v) => PY('rsi', v, 0, 100); guides += 'M0 ' + f1(f(70)) + 'H' + PW + 'M0 ' + f1(f(30)) + 'H' + PW; D.p_rsi = line(S.rsi, f); }
       if (k === 'stoch') { const f = (v) => PY('stoch', v, 0, 100); guides += 'M0 ' + f1(f(80)) + 'H' + PW + 'M0 ' + f1(f(20)) + 'H' + PW; D.p_stK = line(S.stK, f); D.p_stD = line(S.stD, f); }
-      if (k === 'atr') { let a = Infinity, b = -Infinity; for (let i = s; i <= e; i++) if (S.atr[i] != null) { a = Math.min(a, S.atr[i]); b = Math.max(b, S.atr[i]); } if (a < b) { const f = (v) => PY('atr', v, a - (b - a) * 0.1, b + (b - a) * 0.1); D.p_atr = line(S.atr, f); } }
-      if (k === 'macd') { let mx = 1e-9; for (let i = s; i <= e; i++) [S.macd[i], S.signal[i], S.hist[i]].forEach((v) => { if (v != null) mx = Math.max(mx, Math.abs(v)); }); const f = (v) => top + PH / 2 - v / mx * (PH / 2 - 2); guides += 'M0 ' + f1(f(0)) + 'H' + PW;
+      if (k === 'atr') { let a = Infinity, b = -Infinity; for (let i = s; i <= e; i++) if (S.atr[i] != null) { a = Math.min(a, S.atr[i]); b = Math.max(b, S.atr[i]); } if (a < b) { const lo2 = a - (b - a) * 0.1, hi2 = b + (b - a) * 0.1; paneInfo.push({ top: top, bot: top + PH, d: 2, inv: (y) => hi2 - (y - top) / PH * (hi2 - lo2) }); const f = (v) => PY('atr', v, lo2, hi2); D.p_atr = line(S.atr, f); } }
+      if (k === 'macd') { let mx = 1e-9; for (let i = s; i <= e; i++) [S.macd[i], S.signal[i], S.hist[i]].forEach((v) => { if (v != null) mx = Math.max(mx, Math.abs(v)); }); const f = (v) => top + PH / 2 - v / mx * (PH / 2 - 2); paneInfo.push({ top: top, bot: top + PH, d: 2, inv: (y) => (top + PH / 2 - y) / (PH / 2 - 2) * mx }); guides += 'M0 ' + f1(f(0)) + 'H' + PW;
         for (let i = s; i <= e; i++) { const hv = S.hist[i]; if (hv == null) continue; const y1 = f(Math.max(hv, 0)), y2 = f(Math.min(hv, 0)); const d = rect(X(i) - bodyW / 2, y1, bodyW, Math.max(0.8, y2 - y1)); if (hv >= 0) histUp += d; else histDn += d; }
         D.p_macd = line(S.macd, f); D.p_signal = line(S.signal, f); }
     });
@@ -487,8 +490,16 @@ class Component extends DCLogic {
     if (st.pending && st.hover) drawn += seg(st.pending, { i: st.hover.i, p: st.hover.p });
     const lastB = bars[e];
     tags.push({ top: (Y(S.bars[e].c) / H * 100).toFixed(2), text: fmt(S.bars[e].c), bg: S.bars[e].c >= S.bars[e].o ? gain : loss, fg: '#0C1110' });
-    let cross = ''; const hv = st.hover; let hi_ = e;
-    if (hv) { hi_ = Math.max(s, Math.min(e, hv.i)); cross = 'M' + f1(X(hi_)) + ' ' + MT + 'V' + (H - 22); if (hv.y >= MT && hv.y <= MT + MH) { cross += 'M0 ' + f1(hv.y) + 'H' + PW; tags.push({ top: (hv.y / H * 100).toFixed(2), text: fmt(hi - (hv.y - MT) / MH * (hi - lo)), bg: '#2E3F3A', fg: '#FFFFFF' }); } }
+    let cross = '', crossDot = '', xTag = null; const hv = st.hover; let hi_ = e;
+    if (hv) {
+      hi_ = Math.max(s, Math.min(e, hv.i)); const cx = X(hi_);
+      cross = 'M' + f1(cx) + ' ' + MT + 'V' + (H - 22);
+      let onPane = false;
+      if (hv.y >= MT && hv.y <= MT + MH) { onPane = true; tags.push({ top: (hv.y / H * 100).toFixed(2), text: fmt(hi - (hv.y - MT) / MH * (hi - lo)), bg: '#E4ECE8', fg: '#0C1110' }); }
+      else { const pi = paneInfo.find((p) => hv.y >= p.top && hv.y <= p.bot); if (pi) { onPane = true; tags.push({ top: (hv.y / H * 100).toFixed(2), text: pi.inv(hv.y).toFixed(pi.d), bg: '#E4ECE8', fg: '#0C1110' }); } }
+      if (onPane) { cross += 'M0 ' + f1(hv.y) + 'H' + PW; crossDot = 'M' + f1(cx - 3.5) + ' ' + f1(hv.y) + 'a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0'; }
+      const hb = S.bars[hi_]; xTag = { left: Math.min(94, Math.max(4, cx / VW * 100)).toFixed(2), top: ((H - 20) / H * 100).toFixed(2), text: hb.dayLabel + (hb.time ? ' ' + hb.time : '') };
+    }
     let measureBox = '', hasMeasure = false, measureText = '', mLeft = 0, mTop = 0, measureFill = gain;
     const ms = st.measure;
     if (ms && ms.b) { const a = ms.a, b = ms.b; const x1 = X(Math.min(a.i, b.i)), x2 = X(Math.max(a.i, b.i)), y1 = Y(Math.max(a.p, b.p)), y2 = Y(Math.min(a.p, b.p)); measureBox = rect(x1, y1, Math.max(1, x2 - x1), Math.max(1, y2 - y1)); const pct = (b.p - a.p) / a.p * 100; measureFill = pct >= 0 ? gain : loss; hasMeasure = true; measureText = (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(2) + '% · ' + (b.p - a.p >= 0 ? '+' : '−') + Math.abs(b.p - a.p).toFixed(2) + ' · ' + (Math.abs(b.i - a.i) + 1) + ' bars'; mLeft = ((x1 + x2) / 2 / VW * 100).toFixed(2); mTop = (y1 / H * 100).toFixed(2); }
@@ -521,12 +532,12 @@ class Component extends DCLogic {
     return Object.assign(D, {
       gain, loss, accent, H, VW, tfs, types, tools, groups, indCount, q: st.q, ddOpen: st.ddOpen, ddBd: st.ddOpen ? accent : '#2E3F3A',
       grid, bands, bbFill, volUp, volDn, wickUp, wickDn, bodyUp, bodyDn, priceLine, areaFill, guides, histUp, histDn, drawn, cross, tags, yl, xl, legend, pins,
-      measureBox, hasMeasure, measureText, mLeft, mTop, measureFill,
+      crossDot, hasX: !!xTag, xLeft: xTag ? xTag.left : 0, xTop: xTag ? xTag.top : 0, xText: xTag ? xTag.text : '', measureBox, hasMeasure, measureText, mLeft, mTop, measureFill,
       paneLabels: paneLabels.map((p) => ({ text: p.text, color: p.color, top: (p.y / H * 100).toFixed(2) })),
       when: S.bars[hi_].dayLabel + (S.bars[hi_].time ? ' ' + S.bars[hi_].time : ''),
       O: fmt(b.o), Hh: fmt(b.h), L: fmt(b.l), C: fmt(b.c), chg: (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(2) + '%', barColor: b.c >= b.o ? gain : loss,
       rangeText: fmt(vs) + ' → ' + fmt(ve) + ' (' + (vp >= 0 ? '+' : '−') + Math.abs(vp).toFixed(2) + '%)', rangeColor: vp >= 0 ? gain : loss,
-      cursor: st.tool === 'cross' ? 'crosshair' : 'cell', hint: HINT[st.tool],
+      cursor: st.tool === 'cross' ? (st.hover ? 'none' : 'crosshair') : 'cell', hint: HINT[st.tool],
       fsLabel: st.fs ? 'Exit full screen' : 'Full screen', fsShort: st.fs ? 'Exit' : 'Full screen',
       aria: 'SPX ' + st.tf + ' chart with sample data, showing ' + m + ' bars',
       setRef: this.setRef, setSec: this.setSec,
