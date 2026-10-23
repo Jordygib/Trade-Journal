@@ -87,6 +87,9 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 @keyframes pgReveal{from{opacity:0;transform:translateY(32px) scale(.985)}}
 }
 @media (prefers-reduced-motion: reduce){main > *{animation:none !important}}
+.chart-sec:fullscreen{background:#0C1110 !important;border:none !important;border-radius:0 !important;overflow:auto;padding:0 8px !important}
+.chart-sec::backdrop{background:#0C1110}
+.ddi:hover{background:#16201D}
 @media (max-width: 760px){
 .hdr{display:grid !important;grid-template-columns:minmax(0,1fr) auto;padding:0 12px !important;column-gap:8px}
 .hdr-left{display:contents !important}
@@ -174,61 +177,71 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 <svg width="96" height="28" viewBox="0 0 96 28" aria-hidden="true"><path d="M0.0 21.6 L16.0 15.1 L32.0 26.0 L48.0 10.7 L64.0 2.0 L80.0 12.9 L96.0 6.4 L96 28 L0 28 Z" fill="#7AA2F7" fill-opacity="0.12"></path><path d="M0.0 21.6 L16.0 15.1 L32.0 26.0 L48.0 10.7 L64.0 2.0 L80.0 12.9 L96.0 6.4" fill="none" stroke="#7AA2F7" stroke-width="1.5" stroke-linejoin="round"></path></svg>
 </div>
 </div></section>
-<section aria-labelledby="chh" class="tap" style="background: rgba(18, 26, 24, 0.9); border: 1px solid #22302C; border-radius: 3px; padding: 16px; box-sizing: border-box; min-width: 0; padding: 0; overflow: hidden">
-<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-bottom: 1px solid #1C2724">
-<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
-<h2 id="chh" style="margin: 0; font-size: 15px; font-weight: 600; font-family: 'Barlow Semi Condensed', 'Barlow', sans-serif; letter-spacing: 0.01em">SPX chart</h2>
-<div role="group" aria-label="Timeframe" style="display: flex; gap: 0; padding: 0; background: transparent; border: none; border-bottom: 1px solid #22302C; border-radius: 0"><template data-scfor list="{{tfs}}" as="t" hint-placeholder-count="5"><button type="button" onClick="{{t.pick}}" aria-pressed="{{t.on}}" style="min-height: 30px; padding: 0 11px; border: none; border-radius: 3px; background: {{t.bg}}; color: {{t.fg}}; box-shadow: inset 0 -2px 0 {{t.ac}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer">{{t.label}}</button></template></div>
+<section aria-labelledby="chh" class="tap chart-sec" ref="{{setSec}}" style="background: rgba(18, 26, 24, 0.9); border: 1px solid #22302C; border-radius: 3px; box-sizing: border-box; min-width: 0; padding: 0; position: relative; z-index: 15">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #1C2724">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<h2 id="chh" style="margin: 0; font-size: 16px; font-weight: 700; font-family: 'Barlow Semi Condensed', sans-serif">SPX</h2>
+<div role="group" aria-label="Timeframe" style="display: flex; gap: 0; border-bottom: 1px solid #22302C"><template data-scfor list="{{tfs}}" as="t" hint-placeholder-count="5"><button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" style="min-height: 34px; padding: 0 10px; border: none; background: transparent; color: {{t.fg}}; box-shadow: inset 0 -2px 0 {{t.ac}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">{{t.label}}</button></template></div>
+<div role="group" aria-label="Chart type" style="display: flex; gap: 0; border-bottom: 1px solid #22302C"><template data-scfor list="{{types}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" title="{{t.title}}" style="min-height: 34px; padding: 0 10px; border: none; background: transparent; color: {{t.fg}}; box-shadow: inset 0 -2px 0 {{t.ac}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">{{t.label}}</button></template></div>
 </div>
-<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-<div role="group" aria-label="Chart tool" style="display: flex; gap: 0; padding: 0; background: transparent; border: none; border-bottom: 1px solid #22302C; border-radius: 0"><template data-scfor list="{{tools}}" as="t" hint-placeholder-count="2"><button type="button" onClick="{{t.pick}}" aria-pressed="{{t.on}}" style="min-height: 30px; padding: 0 11px; border: none; border-radius: 3px; background: {{t.bg}}; color: {{t.fg}}; box-shadow: inset 0 -2px 0 {{t.ac}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer">{{t.label}}</button></template></div>
-<button type="button" onClick="{{clearLines}}" style="min-height: 32px; min-width: 32px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; font-size: 12px">Clear lines</button>
-<div role="group" aria-label="Zoom" style="display: flex; gap: 4px">
-<button type="button" onClick="{{zoomOut}}" aria-label="Zoom out" style="min-height: 32px; min-width: 32px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">−</button>
-<button type="button" onClick="{{zoomIn}}" aria-label="Zoom in" style="min-height: 32px; min-width: 32px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">+</button>
-<button type="button" onClick="{{resetView}}" style="min-height: 32px; min-width: 32px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; font-size: 12px">Reset</button>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+<div role="group" aria-label="Drawing tool" style="display: flex; gap: 0; border-bottom: 1px solid #22302C"><template data-scfor list="{{tools}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" title="{{t.title}}" style="min-height: 34px; padding: 0 10px; border: none; background: transparent; color: {{t.fg}}; box-shadow: inset 0 -2px 0 {{t.ac}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">{{t.label}}</button></template></div>
+<button type="button" onClick="{{clearDraw}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">Clear</button>
+<div onKeyDown="{{ddKey}}" style="position: relative">
+<button type="button" onClick="{{ddToggle}}" aria-haspopup="true" aria-expanded="{{ddOpen}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; border-color: {{ddBd}}"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12.5l3.5-4 3 2.5 5.5-7"></path></svg>Indicators <span style="padding: 0 6px; border-radius: 2px; background: #D8B25A; color: #0C1110; font-size: 11px">{{indCount}}</span></button>
+<template data-scif value="{{ddOpen}}" hint-placeholder-val="{{ false }}">
+<button type="button" tabindex="-1" aria-label="Close indicators" onClick="{{ddClose}}" style="position: fixed; inset: 0; z-index: 40; border: none; background: transparent; cursor: default"></button>
+<div role="dialog" aria-label="Indicators" style="position: absolute; right: 0; top: calc(100% + 6px); z-index: 41; width: 320px; max-width: calc(100vw - 32px); padding: 10px; background: #121A18; border: 1px solid #2E3F3A; border-radius: 3px; box-shadow: 0 16px 36px rgba(0,0,0,0.55)">
+<label style="display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px; border: 1px solid #2E3F3A; border-radius: 3px; background: #0F1614; color: #8DA098"><span class="sr">Search indicators</span><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2.5a4.5 4.5 0 1 0 0 9a4.5 4.5 0 1 0 0-9M10.5 10.5l4 4"></path></svg><input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Search indicators" style="flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: #E4ECE8; font: inherit; font-size: 13px"></label>
+<div style="max-height: 340px; overflow-y: auto; margin-top: 6px">
+<template data-scfor list="{{groups}}" as="g" hint-placeholder-count="2"><div style="padding: 10px 6px 4px; font-size: 11px; font-weight: 700; color: #8DA098; letter-spacing: 0.04em">{{g.name}}</div><template data-scfor list="{{g.items}}" as="o" hint-placeholder-count="5"><label class="ddi" style="display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 6px; border-radius: 2px; cursor: pointer"><input type="checkbox" checked="{{o.on}}" onChange="{{o.toggle}}" style="width: 16px; height: 16px; margin: 0; accent-color: #D8B25A"><span style="width: 14px; height: 3px; border-radius: 2px; background: {{o.color}}"></span><span style="flex: 1; font-size: 13px; color: #E4ECE8">{{o.label}}</span><span style="font-size: 11px; color: #74877F">{{o.note}}</span></label></template></template>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #22302C"><button type="button" onClick="{{resetInd}}" style="min-height: 32px; padding: 0 8px; border: none; background: transparent; color: #A3B3AC; font: inherit; font-size: 12px; cursor: pointer">Reset to default</button><button type="button" onClick="{{ddClose}}" style="min-height: 32px; padding: 0 14px; border: none; border-radius: 3px; background: #D8B25A; color: #0C1110; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer">Done</button></div>
+</div>
+</template>
+</div>
+<div role="group" aria-label="Zoom" style="display: flex; gap: 4px"><button type="button" onClick="{{zoomOut}}" aria-label="Zoom out" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">−</button><button type="button" onClick="{{zoomIn}}" aria-label="Zoom in" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">+</button><button type="button" onClick="{{resetView}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">Reset</button></div>
+<button type="button" onClick="{{toggleFs}}" aria-label="{{fsLabel}}" title="{{fsLabel}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"></path></svg><span class="hide-sm">{{fsShort}}</span></button>
 </div>
 </div>
-</div>
-<div class="scroll-sm tap" style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid #1C2724">
-<span style="font-size: 12px; color: #8DA098; margin-right: 4px">Indicators</span>
-<template data-scfor list="{{inds}}" as="c" hint-placeholder-count="8"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.on}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 10px; border-radius: 3px; border: 1px solid {{c.bd}}; background: {{c.bg}}; color: {{c.fg}}; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer"><span style="width: 8px; height: 8px; border-radius: 2px; background: {{c.color}}"></span>{{c.label}}</button></template>
-</div>
-<div aria-live="off" style="display: flex; flex-direction: column; gap: 3px; padding: 10px 14px 0; font-size: 12px; color: #A3B3AC; min-height: 38px">
-<div style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline"><span style="font-weight: 700; color: #E4ECE8">SPX · {{tfLabel}}</span><span>{{when}}</span><span>O <span style="color: {{barColor}}; font-weight: 600">{{O}}</span></span><span>H <span style="color: {{barColor}}; font-weight: 600">{{Hh}}</span></span><span>L <span style="color: {{barColor}}; font-weight: 600">{{L}}</span></span><span>C <span style="color: {{barColor}}; font-weight: 600">{{C}}</span></span><span style="color: {{barColor}}; font-weight: 600">{{chg}}</span></div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding: 10px 14px 0; font-size: 12px; color: #A3B3AC; min-height: 38px">
+<div style="display: flex; flex-direction: column; gap: 3px">
+<div style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline"><span style="color: #ECEBFA; font-weight: 700; color: #E4ECE8">{{when}}</span><span>O <span style="color: {{barColor}}; font-weight: 600">{{O}}</span></span><span>H <span style="color: {{barColor}}; font-weight: 600">{{Hh}}</span></span><span>L <span style="color: {{barColor}}; font-weight: 600">{{L}}</span></span><span>C <span style="color: {{barColor}}; font-weight: 600">{{C}}</span></span><span style="color: {{barColor}}; font-weight: 600">{{chg}}</span></div>
 <div style="display: flex; flex-wrap: wrap; gap: 4px 12px"><template data-scfor list="{{legend}}" as="g" hint-placeholder-count="2"><span style="color: {{g.color}}">{{g.label}} <span style="font-weight: 600">{{g.value}}</span></span></template></div>
 </div>
-<div ref="{{setRef}}" onPointerDown="{{onDown}}" onPointerMove="{{onMove}}" onPointerUp="{{onUp}}" onPointerCancel="{{onLeave}}" onPointerLeave="{{onLeave}}" style="position: relative; touch-action: none; user-select: none; cursor: {{cursor}}; margin: 10px 8px 4px">
+<div style="text-align: right"><div style="font-size: 11px; color: #74877F">Visible range</div><div style="font-weight: 700; color: {{rangeColor}}">{{rangeText}}</div></div>
+</div>
+<div ref="{{setRef}}" tabindex="0" aria-label="Chart. Arrow keys pan, plus and minus zoom." onKeyDown="{{onKey}}" onDoubleClick="{{resetView}}" onPointerDown="{{onDown}}" onPointerMove="{{onMove}}" onPointerUp="{{onUp}}" onPointerCancel="{{onLeave}}" onPointerLeave="{{onLeave}}" style="position: relative; touch-action: none; user-select: none; cursor: {{cursor}}; margin: 8px 8px 4px; outline: none">
 <svg viewBox="0 0 {{VW}} {{H}}" width="100%" style="display: block" role="img" aria-label="{{aria}}">
 <path d="{{grid}}" stroke="#1A2522" stroke-width="1" fill="none"></path>
-<path d="{{bands}}" fill="#C792EA" fill-opacity="0.14"></path>
-<path d="{{bbFill}}" fill="#C792EA" fill-opacity="0.07"></path>
-<path d="{{bbU}}" stroke="#C792EA" stroke-width="1" fill="none"></path>
-<path d="{{bbL}}" stroke="#C792EA" stroke-width="1" fill="none"></path>
-<path d="{{volUp}}" fill="{{gain}}" fill-opacity="0.22"></path>
-<path d="{{volDn}}" fill="{{loss}}" fill-opacity="0.22"></path>
+<path d="{{bands}}" fill="#C792EA" fill-opacity="0.13"></path>
+<path d="{{bbFill}}" fill="#C792EA" fill-opacity="0.06"></path>
+<path d="{{d_bbU}}" stroke="#C792EA" stroke-width="1" stroke-dasharray="none" fill="none"></path><path d="{{d_bbL}}" stroke="#C792EA" stroke-width="1" stroke-dasharray="none" fill="none"></path><path d="{{d_kcU}}" stroke="#9ECE6A" stroke-width="1" stroke-dasharray="5 3" fill="none"></path><path d="{{d_kcL}}" stroke="#9ECE6A" stroke-width="1" stroke-dasharray="5 3" fill="none"></path><path d="{{d_dcU}}" stroke="#E8B38F" stroke-width="1" stroke-dasharray="none" fill="none"></path><path d="{{d_dcL}}" stroke="#E8B38F" stroke-width="1" stroke-dasharray="none" fill="none"></path><path d="{{d_prevH}}" stroke="#BFCCC6" stroke-width="1.2" stroke-dasharray="2 3" fill="none"></path><path d="{{d_prevL}}" stroke="#BFCCC6" stroke-width="1.2" stroke-dasharray="2 3" fill="none"></path><path d="{{d_orH}}" stroke="#F0C674" stroke-width="1.2" stroke-dasharray="6 3" fill="none"></path><path d="{{d_orL}}" stroke="#F0C674" stroke-width="1.2" stroke-dasharray="6 3" fill="none"></path><path d="{{d_pivP}}" stroke="#8FD6E8" stroke-width="1.2" stroke-dasharray="1 3" fill="none"></path><path d="{{d_pivR}}" stroke="#8FD6E8" stroke-width="1" stroke-dasharray="1 3" fill="none"></path><path d="{{d_pivS}}" stroke="#8FD6E8" stroke-width="1" stroke-dasharray="1 3" fill="none"></path>
+<path d="{{volUp}}" fill="{{gain}}" fill-opacity="0.2"></path>
+<path d="{{volDn}}" fill="{{loss}}" fill-opacity="0.2"></path>
+<path d="{{areaFill}}" fill="{{gain}}" fill-opacity="0.14"></path>
+<path d="{{priceLine}}" stroke="{{gain}}" stroke-width="2" fill="none"></path>
 <path d="{{wickUp}}" stroke="{{gain}}" stroke-width="1.2" fill="none"></path>
 <path d="{{wickDn}}" stroke="{{loss}}" stroke-width="1.2" fill="none"></path>
 <path d="{{bodyUp}}" fill="{{gain}}"></path>
 <path d="{{bodyDn}}" fill="{{loss}}"></path>
-<path d="{{sma}}" stroke="#E0AF68" stroke-width="1.6" fill="none"></path>
-<path d="{{ema}}" stroke="#7AA2F7" stroke-width="1.6" fill="none"></path>
-<path d="{{vwap}}" stroke="{{accent}}" stroke-width="1.6" fill="none"></path>
-<path d="{{hl}}" stroke="#9ECE6A" stroke-width="1.3" stroke-dasharray="6 4" fill="none"></path>
+<path d="{{d_sma20}}" stroke="#E0AF68" stroke-width="1.6" fill="none"></path><path d="{{d_sma50}}" stroke="#F7A8C0" stroke-width="1.6" fill="none"></path><path d="{{d_ema9}}" stroke="#4FD1B5" stroke-width="1.4" fill="none"></path><path d="{{d_ema21}}" stroke="#7AA2F7" stroke-width="1.4" fill="none"></path><path d="{{d_ema50}}" stroke="#9DBBFF" stroke-width="1.4" fill="none"></path><path d="{{d_vwap}}" stroke="{{accent}}" stroke-width="1.8" fill="none"></path>
 <path d="{{guides}}" stroke="#2E3F3A" stroke-width="1" stroke-dasharray="3 4" fill="none"></path>
-<path d="{{rsi}}" stroke="#C792EA" stroke-width="1.6" fill="none"></path>
+<path d="{{p_rsi}}" stroke="#C792EA" stroke-width="1.5" fill="none"></path><path d="{{p_stK}}" stroke="#4FD1B5" stroke-width="1.5" fill="none"></path><path d="{{p_stD}}" stroke="#E0AF68" stroke-width="1.5" fill="none"></path><path d="{{p_atr}}" stroke="#E0AF68" stroke-width="1.5" fill="none"></path><path d="{{p_macd}}" stroke="#7AA2F7" stroke-width="1.5" fill="none"></path><path d="{{p_signal}}" stroke="#E0AF68" stroke-width="1.5" fill="none"></path>
 <path d="{{histUp}}" fill="{{gain}}" fill-opacity="0.55"></path>
 <path d="{{histDn}}" fill="{{loss}}" fill-opacity="0.55"></path>
-<path d="{{macd}}" stroke="#7AA2F7" stroke-width="1.4" fill="none"></path>
-<path d="{{signal}}" stroke="#E0AF68" stroke-width="1.4" fill="none"></path>
+<path d="{{drawn}}" stroke="#F7A8C0" stroke-width="1.5" fill="none"></path>
+<path d="{{measureBox}}" fill="{{measureFill}}" fill-opacity="0.12" stroke="{{measureFill}}" stroke-width="1" stroke-dasharray="4 3"></path>
 <path d="{{cross}}" stroke="#BFCCC6" stroke-width="1" stroke-dasharray="3 3" fill="none"></path>
 </svg>
 <template data-scfor list="{{yl}}" as="y" hint-placeholder-count="5"><div style="position: absolute; right: 4px; top: {{y.top}}%; transform: translateY(-50%); font-size: 11px; color: #8DA098; pointer-events: none">{{y.text}}</div></template>
 <template data-scfor list="{{xl}}" as="x" hint-placeholder-count="6"><div style="position: absolute; left: {{x.left}}%; top: {{x.top}}%; transform: translateX(-50%); font-size: 11px; color: #8DA098; white-space: nowrap; pointer-events: none">{{x.text}}</div></template>
 <template data-scfor list="{{paneLabels}}" as="p" hint-placeholder-count="1"><div style="position: absolute; left: 8px; top: {{p.top}}%; font-size: 11px; color: {{p.color}}; pointer-events: none">{{p.text}}</div></template>
+<template data-scfor list="{{pins}}" as="p" hint-placeholder-count="2"><div style="position: absolute; left: {{p.left}}%; top: {{p.top}}%; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: none"><span style="padding: 2px 6px; border-radius: 3px; background: #C792EA; color: #0C1110; font-size: 10px; font-weight: 700; white-space: nowrap">{{p.text}}</span><span style="width: 1px; height: 8px; background: #C792EA"></span></div></template>
 <template data-scfor list="{{tags}}" as="g" hint-placeholder-count="1"><div style="position: absolute; right: 0; top: {{g.top}}%; transform: translateY(-50%); padding: 1px 6px; border-radius: 3px; background: {{g.bg}}; color: {{g.fg}}; font-size: 11px; font-weight: 600; pointer-events: none">{{g.text}}</div></template>
+<template data-scif value="{{hasMeasure}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; left: {{mLeft}}%; top: {{mTop}}%; transform: translate(-50%, -110%); padding: 4px 8px; border-radius: 3px; background: {{measureFill}}; color: #0C1110; font-size: 12px; font-weight: 700; white-space: nowrap; pointer-events: none">{{measureText}}</div></template>
 </div>
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 6px 14px 12px; font-size: 12px; color: #74877F"><span>Scroll or pinch to zoom · drag to pan · pick Horizontal line, then tap the chart to mark a level</span><span>Sample data · a live version would use licensed market data</span></div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 6px 14px 12px; font-size: 12px; color: #74877F"><span>{{hint}}</span><span>Sample data · a live version would use licensed market data</span></div>
 </section>
 <div style="display: flex; flex-wrap: wrap; gap: 16px">
 <section aria-labelledby="idh" style="background: rgba(18, 26, 24, 0.9); border: 1px solid #22302C; border-radius: 3px; padding: 16px; box-sizing: border-box; min-width: 0; flex: 2 1 600px">
@@ -316,354 +329,254 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 class Component extends DCLogic {
   constructor(...args) {
     super(...args);
-    this.state = { tf: '1D', start: null, end: null, tool: 'cross', hlines: [], hover: null, narrow: false,
-      ind: { vol: true, vwap: true, strikes: true, sma: false, ema: false, bb: false, rsi: false, macd: false } };
-    this._cache = {};
-    this._drag = null;
-    this._el = null;
-    this._geo = null;
-    this._pts = {};
-    this._pinch = null;
+    this.DEF = { vol: true, vwap: true, strikes: true, ideas: true };
+    this.state = { tf: '1D', start: null, end: null, tool: 'cross', type: 'candles', ind: Object.assign({}, this.DEF), hover: null, narrow: false, fs: false, ddOpen: false, q: '', draws: {}, pending: null, measure: null };
+    this._cache = {}; this._drag = null; this._el = null; this._sec = null; this._geo = null; this._pts = {}; this._pinch = null;
     this.setRef = (el) => {
       this._el = el;
-      if (el && !el.__wheelBound) {
-        el.__wheelBound = true;
-        el.addEventListener('wheel', (e) => {
-          e.preventDefault();
-          this.zoomAt(e.deltaY < 0 ? 0.82 : 1.22, this.frac(e.clientX));
-        }, { passive: false });
+      if (el && !el.__bound) {
+        el.__bound = true;
+        el.addEventListener('wheel', (e) => { e.preventDefault(); this.zoomAt(e.deltaY < 0 ? 0.82 : 1.22, this.frac(e.clientX)); }, { passive: false });
         if (typeof ResizeObserver !== 'undefined') {
-          const ro = new ResizeObserver((entries) => {
-            const nr = entries[0].contentRect.width < 600;
-            if (nr !== this.state.narrow) this.setState({ narrow: nr });
-          });
-          ro.observe(el);
+          new ResizeObserver((en) => { const nr = en[0].contentRect.width < 600; if (nr !== this.state.narrow) this.setState({ narrow: nr }); else if (this.state.fs) this.forceUpdate(); }).observe(el);
         }
       }
     };
+    this.setSec = (el) => { this._sec = el; };
+    this._onFs = () => this.setState({ fs: !!document.fullscreenElement, ddOpen: false });
+    this._onResize = () => { if (this.state.fs) this.forceUpdate(); };
   }
-  rng(seed) {
-    let a = seed >>> 0;
-    return function () {
-      a = (a + 0x6D2B79F5) | 0;
-      let t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  tradingDays(count) {
-    const out = [];
-    const d = new Date(2026, 9, 20);
-    while (out.length < count) {
-      const w = d.getDay();
-      if (w !== 0 && w !== 6) out.unshift(new Date(d.getTime()));
-      d.setDate(d.getDate() - 1);
-    }
-    return out;
-  }
-  ema(arr, len) {
-    const k = 2 / (len + 1);
-    const out = new Array(arr.length).fill(null);
-    let prev = null, seen = 0;
-    for (let i = 0; i < arr.length; i++) {
-      const v = arr[i];
-      if (v == null) continue;
-      prev = prev == null ? v : v * k + prev * (1 - k);
-      seen++;
-      if (seen >= len) out[i] = prev;
-    }
-    return out;
-  }
+  componentDidMount() { document.addEventListener('fullscreenchange', this._onFs); window.addEventListener('resize', this._onResize); }
+  componentWillUnmount() { document.removeEventListener('fullscreenchange', this._onFs); window.removeEventListener('resize', this._onResize); }
+  rng(seed) { let a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  tradingDays(count) { const out = []; const d = new Date(2026, 9, 20); while (out.length < count) { const w = d.getDay(); if (w !== 0 && w !== 6) out.unshift(new Date(d.getTime())); d.setDate(d.getDate() - 1); } return out; }
+  ema(arr, len) { const k = 2 / (len + 1); const out = new Array(arr.length).fill(null); let prev = null, seen = 0; for (let i = 0; i < arr.length; i++) { const v = arr[i]; if (v == null) continue; prev = prev == null ? v : v * k + prev * (1 - k); seen++; if (seen >= len) out[i] = prev; } return out; }
+  sma(arr, len) { const out = new Array(arr.length).fill(null); let s = 0, c = 0; for (let i = 0; i < arr.length; i++) { const v = arr[i]; if (v == null) { s = 0; c = 0; continue; } s += v; c++; if (c > len) { s -= arr[i - len]; c = len; } if (c === len) out[i] = s / len; } return out; }
   series(tf) {
     if (this._cache[tf]) return this._cache[tf];
-    const C = { '1D': { days: 1, per: 78, step: 5, vol: 0.0009, seed: 198 }, '5D': { days: 5, per: 26, step: 15, vol: 0.0016, seed: 11 },
-      '1M': { days: 21, per: 7, step: 60, vol: 0.0032, seed: 19 }, '6M': { days: 126, per: 1, step: 0, vol: 0.0085, seed: 23 },
-      '1Y': { days: 252, per: 1, step: 0, vol: 0.009, seed: 29 } }[tf];
+    const C = { '1D': { days: 1, per: 78, step: 5, vol: 0.0009, seed: 198 }, '5D': { days: 5, per: 26, step: 15, vol: 0.0016, seed: 11 }, '1M': { days: 21, per: 7, step: 60, vol: 0.0032, seed: 19 }, '6M': { days: 126, per: 1, step: 0, vol: 0.0085, seed: 23 }, '1Y': { days: 252, per: 1, step: 0, vol: 0.009, seed: 29 } }[tf];
     const r = this.rng(C.seed);
     const gauss = () => { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
     const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const dl = this.tradingDays(C.days);
-    const bars = [];
-    let p = C.per === 1 ? 5200 : 5790;
-    const drift = C.per === 1 ? 0.0006 : 0.00004;
-    for (let di = 0; di < dl.length; di++) {
-      for (let k = 0; k < C.per; k++) {
-        const o = p;
-        const c = o * (1 + drift + gauss() * C.vol);
-        const h = Math.max(o, c) * (1 + Math.abs(gauss()) * C.vol * 0.5);
-        const l = Math.min(o, c) * (1 - Math.abs(gauss()) * C.vol * 0.5);
-        let v;
-        if (C.per > 1) { const u = k / (C.per - 1); v = 1e5 * (0.6 + r() * 0.5) * (1 + 2.2 * Math.exp(-u * 8) + 1.4 * Math.exp(-(1 - u) * 9)); }
-        else v = 2.4e6 * (0.7 + r() * 0.6);
-        let time = '';
-        if (C.per > 1) { const mins = 9 * 60 + 30 + k * C.step; const hh = Math.floor(mins / 60), mm = mins % 60; time = (((hh + 11) % 12) + 1) + ':' + String(mm).padStart(2, '0'); }
-        bars.push({ o: o, h: h, l: l, c: c, v: v, day: di, dayLabel: MON[dl[di].getMonth()] + ' ' + dl[di].getDate(), time: time });
-        p = c;
-      }
+    const dl = this.tradingDays(C.days); const bars = [];
+    let p = C.per === 1 ? 5200 : 5790; const drift = C.per === 1 ? 0.0006 : 0.00004;
+    for (let di = 0; di < dl.length; di++) for (let k = 0; k < C.per; k++) {
+      const o = p, c = o * (1 + drift + gauss() * C.vol);
+      const h = Math.max(o, c) * (1 + Math.abs(gauss()) * C.vol * 0.5), l = Math.min(o, c) * (1 - Math.abs(gauss()) * C.vol * 0.5);
+      let v; if (C.per > 1) { const u = k / (C.per - 1); v = 1e5 * (0.6 + r() * 0.5) * (1 + 2.2 * Math.exp(-u * 8) + 1.4 * Math.exp(-(1 - u) * 9)); } else v = 2.4e6 * (0.7 + r() * 0.6);
+      let time = ''; if (C.per > 1) { const mins = 9 * 60 + 30 + k * C.step; const hh = Math.floor(mins / 60), mm = mins % 60; time = (((hh + 11) % 12) + 1) + ':' + String(mm).padStart(2, '0'); }
+      bars.push({ o, h, l, c, v, day: di, k: k, dayLabel: MON[dl[di].getMonth()] + ' ' + dl[di].getDate(), time });
+      p = c;
     }
-    if (C.per === 1) { const k = 5790 / bars[bars.length - 1].c; bars.forEach((x) => { x.o *= k; x.h *= k; x.l *= k; x.c *= k; }); }
-    const n = bars.length, cl = bars.map((b) => b.c);
-    const sma = new Array(n).fill(null), bbU = new Array(n).fill(null), bbL = new Array(n).fill(null);
-    for (let i = 19; i < n; i++) {
-      let s = 0; for (let j = i - 19; j <= i; j++) s += cl[j];
-      const m = s / 20; let q = 0; for (let j = i - 19; j <= i; j++) q += (cl[j] - m) * (cl[j] - m);
-      const sd = Math.sqrt(q / 20); sma[i] = m; bbU[i] = m + 2 * sd; bbL[i] = m - 2 * sd;
-    }
-    const ema50 = this.ema(cl, 50);
+    if (C.per === 1) { const kk = 5790 / bars[bars.length - 1].c; bars.forEach((x) => { x.o *= kk; x.h *= kk; x.l *= kk; x.c *= kk; }); }
+    const n = bars.length, cl = bars.map((b) => b.c), hi = bars.map((b) => b.h), lo = bars.map((b) => b.l);
+    const sma20 = this.sma(cl, 20), sma50 = this.sma(cl, 50), ema9 = this.ema(cl, 9), ema21 = this.ema(cl, 21), ema50 = this.ema(cl, 50), ema20 = this.ema(cl, 20);
+    const bbU = new Array(n).fill(null), bbL = new Array(n).fill(null);
+    for (let i = 19; i < n; i++) { const m = sma20[i]; let q = 0; for (let j = i - 19; j <= i; j++) q += (cl[j] - m) * (cl[j] - m); const sd = Math.sqrt(q / 20); bbU[i] = m + 2 * sd; bbL[i] = m - 2 * sd; }
+    const atr = new Array(n).fill(null); let a = null;
+    for (let i = 0; i < n; i++) { const tr = i === 0 ? hi[i] - lo[i] : Math.max(hi[i] - lo[i], Math.abs(hi[i] - cl[i - 1]), Math.abs(lo[i] - cl[i - 1])); a = a == null ? tr : (a * 13 + tr) / 14; if (i >= 13) atr[i] = a; }
+    const kcU = cl.map((_, i) => ema20[i] != null && atr[i] != null ? ema20[i] + 2 * atr[i] : null), kcL = cl.map((_, i) => ema20[i] != null && atr[i] != null ? ema20[i] - 2 * atr[i] : null);
+    const dcU = new Array(n).fill(null), dcL = new Array(n).fill(null);
+    for (let i = 19; i < n; i++) { let H = -Infinity, Lw = Infinity; for (let j = i - 19; j <= i; j++) { H = Math.max(H, hi[j]); Lw = Math.min(Lw, lo[j]); } dcU[i] = H; dcL[i] = Lw; }
     const e12 = this.ema(cl, 12), e26 = this.ema(cl, 26);
-    const macd = cl.map((_, i) => (e12[i] != null && e26[i] != null) ? e12[i] - e26[i] : null);
-    const signal = this.ema(macd, 9);
+    const macd = cl.map((_, i) => (e12[i] != null && e26[i] != null) ? e12[i] - e26[i] : null); const signal = this.ema(macd, 9);
     const hist = macd.map((v, i) => (v != null && signal[i] != null) ? v - signal[i] : null);
-    const rsi = new Array(n).fill(null);
-    let g = 0, ls = 0;
-    for (let i = 1; i < n; i++) {
-      const d = cl[i] - cl[i - 1]; const up = Math.max(d, 0), dn = Math.max(-d, 0);
-      if (i <= 14) { g += up; ls += dn; if (i === 14) { g /= 14; ls /= 14; rsi[i] = ls === 0 ? 100 : 100 - 100 / (1 + g / ls); } }
-      else { g = (g * 13 + up) / 14; ls = (ls * 13 + dn) / 14; rsi[i] = ls === 0 ? 100 : 100 - 100 / (1 + g / ls); }
-    }
-    const vwap = new Array(n).fill(null);
-    let pv = 0, vv = 0, lastDay = -1;
+    const rsi = new Array(n).fill(null); let g = 0, ls = 0;
+    for (let i = 1; i < n; i++) { const d = cl[i] - cl[i - 1]; const up = Math.max(d, 0), dn = Math.max(-d, 0); if (i <= 14) { g += up; ls += dn; if (i === 14) { g /= 14; ls /= 14; rsi[i] = ls === 0 ? 100 : 100 - 100 / (1 + g / ls); } } else { g = (g * 13 + up) / 14; ls = (ls * 13 + dn) / 14; rsi[i] = ls === 0 ? 100 : 100 - 100 / (1 + g / ls); } }
+    const raw = new Array(n).fill(null); for (let i = 13; i < n; i++) { let H = -Infinity, Lw = Infinity; for (let j = i - 13; j <= i; j++) { H = Math.max(H, hi[j]); Lw = Math.min(Lw, lo[j]); } raw[i] = H === Lw ? 50 : (cl[i] - Lw) / (H - Lw) * 100; }
+    const stK = this.sma(raw, 3), stD = this.sma(stK, 3);
+    const vwap = new Array(n).fill(null); let pv = 0, vv = 0, last = -1;
+    for (let i = 0; i < n; i++) { const b = bars[i]; if (C.per > 1 && b.day !== last) { pv = 0; vv = 0; last = b.day; } pv += (b.h + b.l + b.c) / 3 * b.v; vv += b.v; vwap[i] = pv / vv; }
+    const prevH = new Array(n).fill(null), prevL = new Array(n).fill(null), pivP = new Array(n).fill(null), pivR = new Array(n).fill(null), pivS = new Array(n).fill(null), orH = new Array(n).fill(null), orL = new Array(n).fill(null);
+    const dayAgg = []; bars.forEach((b) => { const d = dayAgg[b.day] || (dayAgg[b.day] = { h: -Infinity, l: Infinity, c: 0, o: b.o }); d.h = Math.max(d.h, b.h); d.l = Math.min(d.l, b.l); d.c = b.c; });
+    const nOR = C.per > 1 ? Math.max(1, Math.ceil(30 / C.step)) : 0;
     for (let i = 0; i < n; i++) {
-      const b = bars[i];
-      if (C.per > 1 && b.day !== lastDay) { pv = 0; vv = 0; lastDay = b.day; }
-      pv += (b.h + b.l + b.c) / 3 * b.v; vv += b.v; vwap[i] = pv / vv;
+      const b = bars[i]; let ph, pl, pc;
+      if (C.per > 1) { const pd = dayAgg[b.day - 1]; if (pd) { ph = pd.h; pl = pd.l; pc = pd.c; } else { const o0 = dayAgg[b.day].o; ph = o0 * 1.0045; pl = o0 * 0.9958; pc = o0 * 1.0006; } }
+      else if (i > 0) { ph = bars[i - 1].h; pl = bars[i - 1].l; pc = bars[i - 1].c; }
+      if (ph != null) { prevH[i] = ph; prevL[i] = pl; const P = (ph + pl + pc) / 3; pivP[i] = P; pivR[i] = 2 * P - pl; pivS[i] = 2 * P - ph; }
+      if (nOR && b.k >= nOR) { let H = -Infinity, Lw = Infinity; for (let j = i - b.k; j < i - b.k + nOR; j++) { H = Math.max(H, bars[j].h); Lw = Math.min(Lw, bars[j].l); } orH[i] = H; orL[i] = Lw; }
     }
-    const out = { bars: bars, sma: sma, bbU: bbU, bbL: bbL, ema50: ema50, macd: macd, signal: signal, hist: hist, rsi: rsi, vwap: vwap };
-    this._cache[tf] = out;
-    return out;
+    const ha = []; for (let i = 0; i < n; i++) { const b = bars[i]; const c = (b.o + b.h + b.l + b.c) / 4; const o = i === 0 ? (b.o + b.c) / 2 : (ha[i - 1].o + ha[i - 1].c) / 2; ha.push({ o, c, h: Math.max(b.h, o, c), l: Math.min(b.l, o, c) }); }
+    const out = { bars, intraday: C.per > 1, sma20, sma50, ema9, ema21, ema50, bbU, bbL, kcU, kcL, dcU, dcL, macd, signal, hist, rsi, stK, stD, atr, vwap, prevH, prevL, pivP, pivR, pivS, orH, orL, ha };
+    this._cache[tf] = out; return out;
   }
-  win() {
-    const n = this.series(this.state.tf).bars.length;
-    let s = this.state.start, e = this.state.end;
-    if (s == null || e == null) { s = 0; e = n - 1; }
-    const m = Math.max(12, Math.min(n, e - s + 1));
-    s = Math.max(0, Math.min(s, n - m));
-    return { s: s, e: s + m - 1 };
-  }
-  frac(clientX) {
-    if (!this._el) return 0.5;
-    const r = this._el.getBoundingClientRect();
-    const g = this._geo || { VW: 1000, PW: 930 };
-    return Math.min(1, Math.max(0, ((clientX - r.left) / r.width * g.VW) / g.PW));
-  }
-  zoomAt(f, frac) {
-    const n = this.series(this.state.tf).bars.length;
-    const w = this.win(); const m = w.e - w.s + 1;
-    let nm = Math.round(m * f);
-    if (nm === m) nm = f < 1 ? m - 1 : m + 1;
-    nm = Math.max(12, Math.min(n, nm));
-    const anchor = w.s + frac * m;
-    let ns = Math.round(anchor - frac * nm);
-    ns = Math.max(0, Math.min(ns, n - nm));
-    this.setState({ start: ns, end: ns + nm - 1 });
-  }
+  win() { const n = this.series(this.state.tf).bars.length; let s = this.state.start, e = this.state.end; if (s == null || e == null) { s = 0; e = n - 1; } const m = Math.max(12, Math.min(n, e - s + 1)); s = Math.max(0, Math.min(s, n - m)); return { s, e: s + m - 1 }; }
+  frac(cx) { if (!this._el) return 0.5; const r = this._el.getBoundingClientRect(); const g = this._geo || { VW: 1000, PW: 930 }; return Math.min(1, Math.max(0, ((cx - r.left) / r.width * g.VW) / g.PW)); }
+  zoomAt(f, frac) { const n = this.series(this.state.tf).bars.length; const w = this.win(); const m = w.e - w.s + 1; let nm = Math.round(m * f); if (nm === m) nm = f < 1 ? m - 1 : m + 1; nm = Math.max(12, Math.min(n, nm)); let ns = Math.round(w.s + frac * m - frac * nm); ns = Math.max(0, Math.min(ns, n - nm)); this.setState({ start: ns, end: ns + nm - 1 }); }
+  pan(bars) { const n = this.series(this.state.tf).bars.length; const w = this.win(); const m = w.e - w.s + 1; let ns = Math.max(0, Math.min(w.s + bars, n - m)); this.setState({ start: ns, end: ns + m - 1 }); }
+  pt(ev) { const g = this._geo, r = this._el.getBoundingClientRect(); const sx = (ev.clientX - r.left) / r.width * g.VW, sy = (ev.clientY - r.top) / r.height * g.H; const i = Math.max(g.s, Math.min(g.e, g.s + Math.floor(sx / g.bw))); return { i, y: sy, x: sx, p: g.hi - (sy - g.MT) / g.MH * (g.hi - g.lo), inMain: sy >= g.MT && sy <= g.MT + g.MH && sx <= g.PW }; }
   renderVals() {
     const gain = this.props.gain ?? '#4FD1B5', loss = this.props.loss ?? '#F0607A', accent = this.props.accent ?? '#D8B25A';
-    const st = this.state, ind = st.ind;
-    const S = this.series(st.tf), bars = S.bars, n = bars.length;
+    const st = this.state, ind = st.ind, S = this.series(st.tf), n = S.bars.length;
+    const bars = st.type === 'ha' ? S.ha.map((h, i) => Object.assign({}, S.bars[i], h)) : S.bars;
     const w = this.win(), s = w.s, e = w.e, m = e - s + 1;
-    const VW = st.narrow ? 560 : 1000, PW = VW - 70, bw = PW / m;
-    const X = (i) => (i - s + 0.5) * bw;
-    const f1 = (v) => v.toFixed(1);
+    const VW = st.narrow ? 560 : 1000, PW = VW - 70, bw = PW / m, X = (i) => (i - s + 0.5) * bw, f1 = (v) => v.toFixed(1);
     const fmt = (v) => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const COL = { vol: '#8DA098', vwap: accent, sma20: '#E0AF68', sma50: '#F7A8C0', ema9: '#4FD1B5', ema21: '#7AA2F7', ema50: '#9DBBFF', bb: '#C792EA', kc: '#9ECE6A', dc: '#E8B38F', prev: '#BFCCC6', orng: '#F0C674', piv: '#8FD6E8', strikes: '#D9B8F5', ideas: '#C792EA', rsi: '#C792EA', macd: '#7AA2F7', stoch: '#4FD1B5', atr: '#E0AF68' };
     let hi = -Infinity, lo = Infinity;
-    for (let i = s; i <= e; i++) {
-      hi = Math.max(hi, bars[i].h); lo = Math.min(lo, bars[i].l);
-      if (ind.bb && S.bbU[i] != null) { hi = Math.max(hi, S.bbU[i]); lo = Math.min(lo, S.bbL[i]); }
-    }
-    const strikesOn = ind.strikes && st.tf === '1D';
-    const base = bars[0].o;
+    const inc = (a) => { for (let i = s; i <= e; i++) if (a[i] != null) { hi = Math.max(hi, a[i]); lo = Math.min(lo, a[i]); } };
+    for (let i = s; i <= e; i++) { hi = Math.max(hi, bars[i].h); lo = Math.min(lo, bars[i].l); }
+    if (ind.bb) { inc(S.bbU); inc(S.bbL); } if (ind.kc) { inc(S.kcU); inc(S.kcL); } if (ind.dc) { inc(S.dcU); inc(S.dcL); } if (ind.prev) { inc(S.prevH); inc(S.prevL); } if (ind.orng) { inc(S.orH); inc(S.orL); }
+    const strikesOn = ind.strikes && st.tf === '1D', base = S.bars[0].o;
     if (strikesOn) { hi = Math.max(hi, base * 1.0112); lo = Math.min(lo, base * 0.993); }
     const pad = (hi - lo) * 0.07; hi += pad; lo -= pad;
-    const MT = 10, MH = 300;
+    const paneKeys = ['rsi', 'macd', 'stoch', 'atr'].filter((k) => ind[k]);
+    const PH = st.fs ? 90 : 76, MT = 10;
+    let MH = 300;
+    if (st.fs && this._el) { const r = this._el.getBoundingClientRect(); const availH = window.innerHeight - r.top - 52; const tH = VW * availH / Math.max(1, r.width); MH = Math.max(220, tH - (MT + 14 + paneKeys.length * (PH + 28) + 22)); }
     const Y = (p) => MT + (hi - p) / (hi - lo) * MH;
-    let y0 = MT + MH + 14;
-    const paneLabels = [];
-    let rsiTop = null, macdTop = null;
-    if (ind.rsi) { rsiTop = y0 + 18; paneLabels.push({ text: 'RSI 14', y: y0 + 2, color: '#C792EA' }); y0 += 18 + 76 + 10; }
-    if (ind.macd) { macdTop = y0 + 18; paneLabels.push({ text: 'MACD 12, 26, 9', y: y0 + 2, color: '#7AA2F7' }); y0 += 18 + 76 + 10; }
+    let y0 = MT + MH + 14; const paneTops = {}; const paneLabels = [];
+    const PL = { rsi: 'RSI 14', macd: 'MACD 12, 26, 9', stoch: 'Stochastic 14, 3, 3', atr: 'ATR 14' };
+    paneKeys.forEach((k) => { paneTops[k] = y0 + 18; paneLabels.push({ text: PL[k], y: y0 + 2, color: COL[k] }); y0 += 18 + PH + 10; });
     const H = Math.round(y0 + 22);
-    this._geo = { s: s, e: e, n: n, bw: bw, H: H, hi: hi, lo: lo, MT: MT, MH: MH, VW: VW, PW: PW };
-    let wickUp = '', wickDn = '', bodyUp = '', bodyDn = '', volUp = '', volDn = '';
+    this._geo = { s, e, n, bw, H, hi, lo, MT, MH, VW, PW };
+    const rect = (x, y, wd, ht) => 'M' + f1(x) + ' ' + f1(y) + 'h' + f1(wd) + 'v' + f1(ht) + 'h' + f1(-wd) + 'Z';
+    const line = (arr, yf) => { let d = '', pen = false; for (let i = s; i <= e; i++) { const v = arr[i]; if (v == null) { pen = false; continue; } d += (pen ? 'L' : 'M') + f1(X(i)) + ' ' + f1(yf(v)); pen = true; } return d; };
+    const step = (arr) => { let d = '', pv = null; for (let i = s; i <= e; i++) { const v = arr[i]; if (v == null) { pv = null; continue; } const y = f1(Y(v)); const x0 = f1(X(i) - bw / 2), x1 = f1(X(i) + bw / 2); d += (pv === v ? 'L' : 'M') + x0 + ' ' + y + 'L' + x1 + ' ' + y; pv = v; } return d; };
+    let wickUp = '', wickDn = '', bodyUp = '', bodyDn = '', volUp = '', volDn = '', priceLine = '', areaFill = '';
     let vmax = 0; for (let i = s; i <= e; i++) vmax = Math.max(vmax, bars[i].v);
     const bodyW = Math.max(1, bw * 0.64);
-    const rect = (x, y, wd, ht) => 'M' + f1(x) + ' ' + f1(y) + 'h' + f1(wd) + 'v' + f1(ht) + 'h' + f1(-wd) + 'Z';
     for (let i = s; i <= e; i++) {
       const b = bars[i], cx = X(i), up = b.c >= b.o;
-      const wk = 'M' + f1(cx) + ' ' + f1(Y(b.h)) + 'V' + f1(Y(b.l));
-      const yt = Y(Math.max(b.o, b.c)), hh = Math.max(1, Y(Math.min(b.o, b.c)) - yt);
-      const bd = rect(cx - bodyW / 2, yt, bodyW, hh);
-      if (up) { wickUp += wk; bodyUp += bd; } else { wickDn += wk; bodyDn += bd; }
+      if (st.type === 'candles' || st.type === 'ha') {
+        const wk = 'M' + f1(cx) + ' ' + f1(Y(b.h)) + 'V' + f1(Y(b.l)); const yt = Y(Math.max(b.o, b.c)), hh = Math.max(1, Y(Math.min(b.o, b.c)) - yt); const bd = rect(cx - bodyW / 2, yt, bodyW, hh);
+        if (up) { wickUp += wk; bodyUp += bd; } else { wickDn += wk; bodyDn += bd; }
+      }
       if (ind.vol) { const vh = b.v / vmax * 64; const vd = rect(cx - bodyW / 2, MT + MH - vh, bodyW, vh); if (up) volUp += vd; else volDn += vd; }
     }
-    const line = (arr, yf) => { let d = '', pen = false; for (let i = s; i <= e; i++) { const v = arr[i]; if (v == null) { pen = false; continue; } d += (pen ? 'L' : 'M') + f1(X(i)) + ' ' + f1(yf(v)); pen = true; } return d; };
+    if (st.type === 'line' || st.type === 'area') { priceLine = line(S.bars.map((b) => b.c), Y); if (st.type === 'area') areaFill = priceLine + 'L' + f1(X(e)) + ' ' + f1(MT + MH) + 'L' + f1(X(s)) + ' ' + f1(MT + MH) + 'Z'; }
+    const D = {};
+    const add = (k, arr, dash, wdt, isStep, key) => { D['d_' + key] = isStep ? step(arr) : line(arr, Y); };
+    if (ind.bb) { add('bb', S.bbU, 0, 0, false, 'bbU'); add('bb', S.bbL, 0, 0, false, 'bbL'); }
+    if (ind.kc) { add('kc', S.kcU, 0, 0, false, 'kcU'); add('kc', S.kcL, 0, 0, false, 'kcL'); }
+    if (ind.dc) { add('dc', S.dcU, 0, 0, true, 'dcU'); add('dc', S.dcL, 0, 0, true, 'dcL'); }
+    if (ind.prev) { add('prev', S.prevH, 0, 0, true, 'prevH'); add('prev', S.prevL, 0, 0, true, 'prevL'); }
+    if (ind.orng) { add('orng', S.orH, 0, 0, true, 'orH'); add('orng', S.orL, 0, 0, true, 'orL'); }
+    if (ind.piv) { add('piv', S.pivP, 0, 0, true, 'pivP'); add('piv', S.pivR, 0, 0, true, 'pivR'); add('piv', S.pivS, 0, 0, true, 'pivS'); }
+    if (ind.sma20) D.d_sma20 = line(S.sma20, Y);
+    if (ind.sma50) D.d_sma50 = line(S.sma50, Y);
+    if (ind.ema9) D.d_ema9 = line(S.ema9, Y);
+    if (ind.ema21) D.d_ema21 = line(S.ema21, Y);
+    if (ind.ema50) D.d_ema50 = line(S.ema50, Y);
+    if (ind.vwap) D.d_vwap = line(S.vwap, Y);
     let bbFill = '';
-    if (ind.bb) {
-      const idx = []; for (let i = s; i <= e; i++) if (S.bbU[i] != null) idx.push(i);
-      if (idx.length > 1) {
-        bbFill = 'M' + idx.map((i) => f1(X(i)) + ' ' + f1(Y(S.bbU[i]))).join('L') + 'L' + idx.slice().reverse().map((i) => f1(X(i)) + ' ' + f1(Y(S.bbL[i]))).join('L') + 'Z';
-      }
-    }
-    let grid = '';
-    const raw = (hi - lo) / 5, mag = Math.pow(10, Math.floor(Math.log10(raw))), norm = raw / mag;
-    const step = (norm < 1.5 ? 1 : norm < 3 ? 2 : norm < 7 ? 5 : 10) * mag;
-    const yl = [];
-    for (let p = Math.ceil(lo / step) * step; p <= hi; p += step) {
-      const y = Y(p); if (y < MT + 6 || y > MT + MH - 4) continue;
-      grid += 'M0 ' + f1(y) + 'H' + PW;
-      yl.push({ top: (y / H * 100).toFixed(2), text: p.toLocaleString('en-US', { maximumFractionDigits: step < 1 ? 2 : 0 }) });
-    }
-    let guides = '', rsi = '', macd = '', signal = '', histUp = '', histDn = '';
-    if (rsiTop != null) {
-      const RY = (v) => rsiTop + (100 - v) / 100 * 76;
-      guides += 'M0 ' + f1(RY(70)) + 'H' + PW + 'M0 ' + f1(RY(30)) + 'H' + PW;
-      grid += 'M0 ' + f1(rsiTop - 18) + 'H' + PW;
-      rsi = line(S.rsi, RY);
-    }
-    if (macdTop != null) {
-      let mx = 1e-9;
-      for (let i = s; i <= e; i++) { [S.macd[i], S.signal[i], S.hist[i]].forEach((v) => { if (v != null) mx = Math.max(mx, Math.abs(v)); }); }
-      const MY = (v) => macdTop + 38 - v / mx * 36;
-      guides += 'M0 ' + f1(MY(0)) + 'H' + PW;
-      grid += 'M0 ' + f1(macdTop - 18) + 'H' + PW;
-      for (let i = s; i <= e; i++) {
-        const hv = S.hist[i]; if (hv == null) continue;
-        const y1 = MY(Math.max(hv, 0)), y2 = MY(Math.min(hv, 0));
-        const d = rect(X(i) - bodyW / 2, y1, bodyW, Math.max(0.8, y2 - y1));
-        if (hv >= 0) histUp += d; else histDn += d;
-      }
-      macd = line(S.macd, MY); signal = line(S.signal, MY);
-    }
-    let bands = '';
-    if (strikesOn) {
-      bands = rect(0, Y(base * 1.0112), PW, Y(base * 1.0096) - Y(base * 1.0112)) + rect(0, Y(base * 0.9946), PW, Y(base * 0.993) - Y(base * 0.9946));
-      paneLabels.push({ text: 'Verified call strikes', y: Y(base * 1.0112) + 2, color: '#D9B8F5' });
-      paneLabels.push({ text: 'Verified put strikes', y: Y(base * 0.9946) + 2, color: '#D9B8F5' });
-    }
-    const tags = [];
-    let hl = '';
-    st.hlines.forEach((p) => { if (p > lo && p < hi) { const y = Y(p); hl += 'M0 ' + f1(y) + 'H' + PW; tags.push({ top: (y / H * 100).toFixed(2), text: fmt(p), bg: '#9ECE6A', fg: '#0C1110' }); } });
-    const last = bars[e];
-    tags.push({ top: (Y(last.c) / H * 100).toFixed(2), text: fmt(last.c), bg: last.c >= last.o ? gain : loss, fg: '#0C1110' });
-    let cross = '';
-    const hv = st.hover;
-    let hi_ = e;
-    if (hv) {
-      hi_ = Math.max(s, Math.min(e, hv.i));
-      cross = 'M' + f1(X(hi_)) + ' ' + MT + 'V' + (H - 22);
-      if (hv.y >= MT && hv.y <= MT + MH) {
-        cross += 'M0 ' + f1(hv.y) + 'H' + PW;
-        tags.push({ top: (hv.y / H * 100).toFixed(2), text: fmt(hi - (hv.y - MT) / MH * (hi - lo)), bg: '#2E3F3A', fg: '#FFFFFF' });
-      }
-    }
-    const b = bars[hi_];
-    const prev = hi_ > 0 ? bars[hi_ - 1].c : b.o;
-    const pct = (b.c - prev) / prev * 100;
-    const legend = [];
-    const fv = (v, d) => v == null ? '—' : (d === 1 ? v.toFixed(1) : d === 2 ? v.toFixed(2) : fmt(v));
-    if (ind.vol) legend.push({ label: 'Vol', value: b.v >= 1e6 ? (b.v / 1e6).toFixed(2) + 'M' : Math.round(b.v / 1e3) + 'K', color: '#8DA098' });
-    if (ind.vwap) legend.push({ label: 'VWAP', value: fv(S.vwap[hi_]), color: accent });
-    if (ind.sma) legend.push({ label: 'SMA 20', value: fv(S.sma[hi_]), color: '#E0AF68' });
-    if (ind.ema) legend.push({ label: 'EMA 50', value: fv(S.ema50[hi_]), color: '#7AA2F7' });
-    if (ind.bb) legend.push({ label: 'BB', value: fv(S.bbU[hi_]) + ' / ' + fv(S.bbL[hi_]), color: '#C792EA' });
-    if (ind.rsi) legend.push({ label: 'RSI', value: fv(S.rsi[hi_], 1), color: '#C792EA' });
-    if (ind.macd) legend.push({ label: 'MACD', value: fv(S.macd[hi_], 2) + ' / ' + fv(S.signal[hi_], 2), color: '#7AA2F7' });
-    const xl = [];
-    const cnt = Math.min(st.narrow ? 4 : 6, m);
-    for (let k = 0; k < cnt; k++) {
-      const i = s + Math.round(k * (m - 1) / Math.max(1, cnt - 1));
-      const bb = bars[i];
-      let text = st.tf === '1D' ? bb.time : (st.tf === '5D' || st.tf === '1M') ? (m < 40 ? bb.dayLabel + ' ' + bb.time : bb.dayLabel) : bb.dayLabel;
-      xl.push({ left: Math.min(86, Math.max(6, X(i) / VW * 100)).toFixed(2), top: ((H - 18) / H * 100).toFixed(2), text: text });
-    }
-    const onBtn = (on) => ({ bg: 'transparent', fg: on ? '#FFFFFF' : '#8DA098', ac: on ? accent : 'transparent' });
-    const tfs = ['1D', '5D', '1M', '6M', '1Y'].map((t) => Object.assign({ label: t, on: st.tf === t, pick: () => this.setState({ tf: t, start: null, end: null, hover: null }) }, onBtn(st.tf === t)));
-    const tools = [['cross', 'Crosshair'], ['hline', 'Horizontal line']].map((t) => Object.assign({ label: t[1], on: st.tool === t[0], pick: () => this.setState({ tool: t[0] }) }, onBtn(st.tool === t[0])));
-    const defs = [['vol', 'Volume', '#8DA098'], ['vwap', 'VWAP', accent], ['sma', 'SMA 20', '#E0AF68'], ['ema', 'EMA 50', '#7AA2F7'], ['bb', 'Bollinger 20, 2', '#C792EA'], ['rsi', 'RSI 14', '#C792EA'], ['macd', 'MACD', '#7AA2F7'], ['strikes', 'Verified strikes (1D)', '#D9B8F5']];
-    const inds = defs.map((d) => {
-      const on = !!ind[d[0]];
-      return { label: d[1], color: d[2], on: on, bd: on ? d[2] : '#2E3F3A', bg: on ? 'color-mix(in srgb, ' + d[2] + ' 16%, transparent)' : 'transparent', fg: on ? '#E4ECE8' : '#8DA098',
-        pick: () => { const ni = Object.assign({}, this.state.ind); ni[d[0]] = !ni[d[0]]; this.setState({ ind: ni }); } };
+    if (ind.bb) { const idx = []; for (let i = s; i <= e; i++) if (S.bbU[i] != null) idx.push(i); if (idx.length > 1) bbFill = 'M' + idx.map((i) => f1(X(i)) + ' ' + f1(Y(S.bbU[i]))).join('L') + 'L' + idx.slice().reverse().map((i) => f1(X(i)) + ' ' + f1(Y(S.bbL[i]))).join('L') + 'Z'; }
+    let grid = ''; const yl = [];
+    const raw = (hi - lo) / 5, mag = Math.pow(10, Math.floor(Math.log10(raw))), nm = raw / mag, stp = (nm < 1.5 ? 1 : nm < 3 ? 2 : nm < 7 ? 5 : 10) * mag;
+    for (let p = Math.ceil(lo / stp) * stp; p <= hi; p += stp) { const y = Y(p); if (y < MT + 6 || y > MT + MH - 4) continue; grid += 'M0 ' + f1(y) + 'H' + PW; yl.push({ top: (y / H * 100).toFixed(2), text: p.toLocaleString('en-US', { maximumFractionDigits: stp < 1 ? 2 : 0 }) }); }
+    let guides = '', histUp = '', histDn = '';
+    const PY = (k, v, lo2, hi2) => paneTops[k] + (hi2 - v) / (hi2 - lo2) * PH;
+    paneKeys.forEach((k) => {
+      const top = paneTops[k]; grid += 'M0 ' + f1(top - 18) + 'H' + PW;
+      if (k === 'rsi') { const f = (v) => PY('rsi', v, 0, 100); guides += 'M0 ' + f1(f(70)) + 'H' + PW + 'M0 ' + f1(f(30)) + 'H' + PW; D.p_rsi = line(S.rsi, f); }
+      if (k === 'stoch') { const f = (v) => PY('stoch', v, 0, 100); guides += 'M0 ' + f1(f(80)) + 'H' + PW + 'M0 ' + f1(f(20)) + 'H' + PW; D.p_stK = line(S.stK, f); D.p_stD = line(S.stD, f); }
+      if (k === 'atr') { let a = Infinity, b = -Infinity; for (let i = s; i <= e; i++) if (S.atr[i] != null) { a = Math.min(a, S.atr[i]); b = Math.max(b, S.atr[i]); } if (a < b) { const f = (v) => PY('atr', v, a - (b - a) * 0.1, b + (b - a) * 0.1); D.p_atr = line(S.atr, f); } }
+      if (k === 'macd') { let mx = 1e-9; for (let i = s; i <= e; i++) [S.macd[i], S.signal[i], S.hist[i]].forEach((v) => { if (v != null) mx = Math.max(mx, Math.abs(v)); }); const f = (v) => top + PH / 2 - v / mx * (PH / 2 - 2); guides += 'M0 ' + f1(f(0)) + 'H' + PW;
+        for (let i = s; i <= e; i++) { const hv = S.hist[i]; if (hv == null) continue; const y1 = f(Math.max(hv, 0)), y2 = f(Math.min(hv, 0)); const d = rect(X(i) - bodyW / 2, y1, bodyW, Math.max(0.8, y2 - y1)); if (hv >= 0) histUp += d; else histDn += d; }
+        D.p_macd = line(S.macd, f); D.p_signal = line(S.signal, f); }
     });
-    return {
-      gain, loss, accent, H, VW, tfs, tools, inds, grid, bands, bbFill,
-      bbU: ind.bb ? line(S.bbU, Y) : '', bbL: ind.bb ? line(S.bbL, Y) : '',
-      volUp, volDn, wickUp, wickDn, bodyUp, bodyDn,
-      sma: ind.sma ? line(S.sma, Y) : '', ema: ind.ema ? line(S.ema50, Y) : '', vwap: ind.vwap ? line(S.vwap, Y) : '',
-      hl, guides, rsi, macd, signal, histUp, histDn, cross, tags, yl, xl, legend,
+    let bands = '';
+    if (strikesOn) { bands = rect(0, Y(base * 1.0112), PW, Y(base * 1.0096) - Y(base * 1.0112)) + rect(0, Y(base * 0.9946), PW, Y(base * 0.993) - Y(base * 0.9946)); paneLabels.push({ text: 'Verified call strikes', y: Y(base * 1.0112) + 2, color: '#D9B8F5' }); paneLabels.push({ text: 'Verified put strikes', y: Y(base * 0.9946) + 2, color: '#D9B8F5' }); }
+    const tags = [];
+    const draws = st.draws[st.tf] || { h: [], t: [] };
+    let drawn = '';
+    draws.h.forEach((p) => { if (p > lo && p < hi) { const y = Y(p); drawn += 'M0 ' + f1(y) + 'H' + PW; tags.push({ top: (y / H * 100).toFixed(2), text: fmt(p), bg: '#F7A8C0', fg: '#0C1110' }); } });
+    const seg = (a, b) => 'M' + f1(X(a.i)) + ' ' + f1(Y(a.p)) + 'L' + f1(X(b.i)) + ' ' + f1(Y(b.p));
+    draws.t.forEach((t) => { drawn += seg(t[0], t[1]); });
+    if (st.pending && st.hover) drawn += seg(st.pending, { i: st.hover.i, p: st.hover.p });
+    const lastB = bars[e];
+    tags.push({ top: (Y(S.bars[e].c) / H * 100).toFixed(2), text: fmt(S.bars[e].c), bg: S.bars[e].c >= S.bars[e].o ? gain : loss, fg: '#0C1110' });
+    let cross = ''; const hv = st.hover; let hi_ = e;
+    if (hv) { hi_ = Math.max(s, Math.min(e, hv.i)); cross = 'M' + f1(X(hi_)) + ' ' + MT + 'V' + (H - 22); if (hv.y >= MT && hv.y <= MT + MH) { cross += 'M0 ' + f1(hv.y) + 'H' + PW; tags.push({ top: (hv.y / H * 100).toFixed(2), text: fmt(hi - (hv.y - MT) / MH * (hi - lo)), bg: '#2E3F3A', fg: '#FFFFFF' }); } }
+    let measureBox = '', hasMeasure = false, measureText = '', mLeft = 0, mTop = 0, measureFill = gain;
+    const ms = st.measure;
+    if (ms && ms.b) { const a = ms.a, b = ms.b; const x1 = X(Math.min(a.i, b.i)), x2 = X(Math.max(a.i, b.i)), y1 = Y(Math.max(a.p, b.p)), y2 = Y(Math.min(a.p, b.p)); measureBox = rect(x1, y1, Math.max(1, x2 - x1), Math.max(1, y2 - y1)); const pct = (b.p - a.p) / a.p * 100; measureFill = pct >= 0 ? gain : loss; hasMeasure = true; measureText = (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(2) + '% · ' + (b.p - a.p >= 0 ? '+' : '−') + Math.abs(b.p - a.p).toFixed(2) + ' · ' + (Math.abs(b.i - a.i) + 1) + ' bars'; mLeft = ((x1 + x2) / 2 / VW * 100).toFixed(2); mTop = (y1 / H * 100).toFixed(2); }
+    const pins = [];
+    if (ind.ideas) [[0.32, '@gammaghost · range idea'], [0.61, '@flyfisher · CPI sizing'], [0.86, '@newtrader22 · question']].forEach((pd) => { const i = Math.floor(pd[0] * (n - 1)); if (i >= s && i <= e) pins.push({ left: (X(i) / VW * 100).toFixed(2), top: (Math.max(MT + 14, Y(S.bars[i].h) - 6) / H * 100).toFixed(2), text: pd[1] }); });
+    const b = bars[hi_], prev = hi_ > 0 ? S.bars[hi_ - 1].c : b.o, pct = (S.bars[hi_].c - prev) / prev * 100;
+    const fv = (v, d) => v == null ? '—' : (d === 1 ? v.toFixed(1) : d === 2 ? v.toFixed(2) : fmt(v));
+    const legend = [];
+    const L1 = (k, label, v) => legend.push({ label, value: v, color: COL[k] });
+    if (ind.vol) L1('vol', 'Vol', S.bars[hi_].v >= 1e6 ? (S.bars[hi_].v / 1e6).toFixed(2) + 'M' : Math.round(S.bars[hi_].v / 1e3) + 'K');
+    if (ind.vwap) L1('vwap', 'VWAP', fv(S.vwap[hi_])); if (ind.sma20) L1('sma20', 'SMA 20', fv(S.sma20[hi_])); if (ind.sma50) L1('sma50', 'SMA 50', fv(S.sma50[hi_]));
+    if (ind.ema9) L1('ema9', 'EMA 9', fv(S.ema9[hi_])); if (ind.ema21) L1('ema21', 'EMA 21', fv(S.ema21[hi_])); if (ind.ema50) L1('ema50', 'EMA 50', fv(S.ema50[hi_]));
+    if (ind.bb) L1('bb', 'BB', fv(S.bbU[hi_]) + ' / ' + fv(S.bbL[hi_])); if (ind.kc) L1('kc', 'KC', fv(S.kcU[hi_]) + ' / ' + fv(S.kcL[hi_])); if (ind.dc) L1('dc', 'Donchian', fv(S.dcU[hi_]) + ' / ' + fv(S.dcL[hi_]));
+    if (ind.prev) L1('prev', 'Prev H/L', fv(S.prevH[hi_]) + ' / ' + fv(S.prevL[hi_])); if (ind.orng) L1('orng', 'Open range', fv(S.orH[hi_]) + ' / ' + fv(S.orL[hi_])); if (ind.piv) L1('piv', 'Pivot', fv(S.pivP[hi_]));
+    if (ind.rsi) L1('rsi', 'RSI', fv(S.rsi[hi_], 1)); if (ind.macd) L1('macd', 'MACD', fv(S.macd[hi_], 2)); if (ind.stoch) L1('stoch', 'Stoch', fv(S.stK[hi_], 1) + ' / ' + fv(S.stD[hi_], 1)); if (ind.atr) L1('atr', 'ATR', fv(S.atr[hi_], 2));
+    const xl = []; const cnt = Math.min(st.narrow ? 4 : 7, m);
+    for (let k = 0; k < cnt; k++) { const i = s + Math.round(k * (m - 1) / Math.max(1, cnt - 1)); const bb = S.bars[i]; const text = st.tf === '1D' ? bb.time : (st.tf === '5D' || st.tf === '1M') ? (m < 40 ? bb.dayLabel + ' ' + bb.time : bb.dayLabel) : bb.dayLabel; xl.push({ left: Math.min(88, Math.max(5, X(i) / VW * 100)).toFixed(2), top: ((H - 18) / H * 100).toFixed(2), text }); }
+    const tab = (on) => ({ fg: on ? '#FFFFFF' : '#A3B3AC', ac: on ? accent : 'transparent' });
+    const tfs = ['1D', '5D', '1M', '6M', '1Y'].map((t) => Object.assign({ label: t, on: st.tf === t, pick: () => this.setState({ tf: t, start: null, end: null, hover: null, pending: null, measure: null }) }, tab(st.tf === t)));
+    const types = [['candles', 'Candles', 'Candlesticks'], ['ha', 'HA', 'Heikin Ashi candles'], ['line', 'Line', 'Line of closing prices'], ['area', 'Area', 'Area chart of closing prices']].map((t) => Object.assign({ label: t[1], title: t[2], on: st.type === t[0], pick: () => this.setState({ type: t[0] }) }, tab(st.type === t[0])));
+    const tools = [['cross', 'Cursor', 'Crosshair. Drag to pan'], ['hline', 'H-line', 'Click to add a horizontal level'], ['trend', 'Trend', 'Click two points to draw a trend line'], ['measure', 'Measure', 'Drag to measure change and bars']].map((t) => Object.assign({ label: t[1], title: t[2], on: st.tool === t[0], pick: () => this.setState({ tool: t[0], pending: null }) }, tab(st.tool === t[0])));
+    const DEFS = [['Overlays', [['vol', 'Volume', ''], ['vwap', 'VWAP', ''], ['sma20', 'SMA 20', ''], ['sma50', 'SMA 50', ''], ['ema9', 'EMA 9', ''], ['ema21', 'EMA 21', ''], ['ema50', 'EMA 50', ''], ['bb', 'Bollinger Bands', '20, 2'], ['kc', 'Keltner Channels', '20, 2×ATR'], ['dc', 'Donchian Channels', '20'], ['prev', 'Previous day high / low', ''], ['orng', 'Opening range', '30 min'], ['piv', 'Pivot points', 'P, R1, S1']]], ['Lower panels', [['rsi', 'RSI', '14'], ['macd', 'MACD', '12, 26, 9'], ['stoch', 'Stochastic', '14, 3, 3'], ['atr', 'ATR', '14']]], ['Trade Journal', [['strikes', 'Verified strikes', '1D only'], ['ideas', 'Community ideas', 'Pins']]]];
+    const q = st.q.trim().toLowerCase();
+    const groups = DEFS.map((g) => ({ name: g[0], items: g[1].filter((d) => !q || d[1].toLowerCase().indexOf(q) >= 0).map((d) => ({ label: d[1], note: d[2], color: COL[d[0]], on: !!ind[d[0]], toggle: () => { const ni = Object.assign({}, this.state.ind); ni[d[0]] = !ni[d[0]]; this.setState({ ind: ni }); } })) })).filter((g) => g.items.length);
+    const indCount = Object.keys(ind).filter((k) => ind[k]).length;
+    const vs = S.bars[s].o, ve = S.bars[e].c, vp = (ve - vs) / vs * 100;
+    const HINT = { cross: 'Scroll or pinch to zoom · drag to pan · arrow keys pan · double-click to reset', hline: 'Click the chart to add a horizontal level', trend: st.pending ? 'Click a second point to finish the trend line' : 'Click the first point of your trend line', measure: 'Drag across the chart to measure change and bars' };
+    const KEYS = ['d_bbU','d_bbL','d_kcU','d_kcL','d_dcU','d_dcL','d_prevH','d_prevL','d_orH','d_orL','d_pivP','d_pivR','d_pivS','d_sma20','d_sma50','d_ema9','d_ema21','d_ema50','d_vwap','p_rsi','p_stK','p_stD','p_atr','p_macd','p_signal'];
+    KEYS.forEach((k) => { if (D[k] == null) D[k] = ''; });
+    return Object.assign(D, {
+      gain, loss, accent, H, VW, tfs, types, tools, groups, indCount, q: st.q, ddOpen: st.ddOpen, ddBd: st.ddOpen ? accent : '#2E3F3A',
+      grid, bands, bbFill, volUp, volDn, wickUp, wickDn, bodyUp, bodyDn, priceLine, areaFill, guides, histUp, histDn, drawn, cross, tags, yl, xl, legend, pins,
+      measureBox, hasMeasure, measureText, mLeft, mTop, measureFill,
       paneLabels: paneLabels.map((p) => ({ text: p.text, color: p.color, top: (p.y / H * 100).toFixed(2) })),
-      tfLabel: st.tf, when: b.dayLabel + (b.time ? ' ' + b.time : ''),
-      O: fmt(b.o), Hh: fmt(b.h), L: fmt(b.l), C: fmt(b.c),
-      chg: (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(2) + '%', barColor: b.c >= b.o ? gain : loss,
-      cursor: st.tool === 'hline' ? 'copy' : 'crosshair',
-      aria: 'SPX ' + st.tf + ' candlestick chart with sample data, showing ' + m + ' bars',
-      setRef: this.setRef,
-      zoomIn: () => this.zoomAt(0.7, 1), zoomOut: () => this.zoomAt(1.4, 1),
-      resetView: () => this.setState({ start: null, end: null }),
-      clearLines: () => this.setState({ hlines: [] }),
+      when: S.bars[hi_].dayLabel + (S.bars[hi_].time ? ' ' + S.bars[hi_].time : ''),
+      O: fmt(b.o), Hh: fmt(b.h), L: fmt(b.l), C: fmt(b.c), chg: (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(2) + '%', barColor: b.c >= b.o ? gain : loss,
+      rangeText: fmt(vs) + ' → ' + fmt(ve) + ' (' + (vp >= 0 ? '+' : '−') + Math.abs(vp).toFixed(2) + '%)', rangeColor: vp >= 0 ? gain : loss,
+      cursor: st.tool === 'cross' ? 'crosshair' : 'cell', hint: HINT[st.tool],
+      fsLabel: st.fs ? 'Exit full screen' : 'Full screen', fsShort: st.fs ? 'Exit' : 'Full screen',
+      aria: 'SPX ' + st.tf + ' chart with sample data, showing ' + m + ' bars',
+      setRef: this.setRef, setSec: this.setSec,
+      toggleFs: () => { try { if (document.fullscreenElement) document.exitFullscreen(); else if (this._sec && this._sec.requestFullscreen) this._sec.requestFullscreen(); } catch (err) {} },
+      ddToggle: () => this.setState({ ddOpen: !this.state.ddOpen }), ddClose: () => this.setState({ ddOpen: false }),
+      ddKey: (ev) => { if (ev.key === 'Escape' && this.state.ddOpen) { ev.stopPropagation(); this.setState({ ddOpen: false }); } },
+      setQ: (ev) => this.setState({ q: ev.target.value }), resetInd: () => this.setState({ ind: Object.assign({}, this.DEF) }),
+      clearDraw: () => { const d = Object.assign({}, this.state.draws); d[this.state.tf] = { h: [], t: [] }; this.setState({ draws: d, pending: null, measure: null }); },
+      zoomIn: () => this.zoomAt(0.7, 1), zoomOut: () => this.zoomAt(1.4, 1), resetView: () => this.setState({ start: null, end: null }),
+      onKey: (ev) => { const mm = this.win(); const k = Math.max(1, Math.round((mm.e - mm.s + 1) * 0.1)); if (ev.key === 'ArrowLeft') { ev.preventDefault(); this.pan(-k); } else if (ev.key === 'ArrowRight') { ev.preventDefault(); this.pan(k); } else if (ev.key === '+' || ev.key === '=') { ev.preventDefault(); this.zoomAt(0.8, 0.5); } else if (ev.key === '-') { ev.preventDefault(); this.zoomAt(1.25, 0.5); } else if (ev.key === 'Escape') this.setState({ pending: null, measure: null }); },
       onDown: (ev) => {
         if (ev.button != null && ev.button !== 0) return;
         try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (err) {}
         this._pts[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
         const ids = Object.keys(this._pts);
-        if (ids.length === 2) {
-          const a = this._pts[ids[0]], b = this._pts[ids[1]];
-          this._pinch = { d0: Math.max(10, Math.hypot(a.x - b.x, a.y - b.y)), w0: this.win(), mid: this.frac((a.x + b.x) / 2) };
-          this._drag = null;
-          return;
-        }
-        const ww = this.win();
-        this._drag = { x: ev.clientX, s: ww.s, e: ww.e, moved: false };
+        if (ids.length === 2) { const a = this._pts[ids[0]], c = this._pts[ids[1]]; this._pinch = { d0: Math.max(10, Math.hypot(a.x - c.x, a.y - c.y)), w0: this.win(), mid: this.frac((a.x + c.x) / 2) }; this._drag = null; return; }
+        if (!this._geo || !this._el) return;
+        const P2 = this.pt(ev);
+        if (this.state.tool === 'measure' && P2.inMain) { this._drag = { measuring: true }; this.setState({ measure: { a: { i: P2.i, p: P2.p }, b: null } }); return; }
+        const ww = this.win(); this._drag = { x: ev.clientX, s: ww.s, e: ww.e, moved: false };
       },
       onMove: (ev) => {
         const g = this._geo; if (!g || !this._el) return;
-        const r = this._el.getBoundingClientRect();
         if (this._pts[ev.pointerId]) this._pts[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
         const ids = Object.keys(this._pts);
-        if (this._pinch && ids.length >= 2) {
-          const a = this._pts[ids[0]], b = this._pts[ids[1]];
-          const d = Math.max(10, Math.hypot(a.x - b.x, a.y - b.y));
-          const w0 = this._pinch.w0, m0 = w0.e - w0.s + 1, mid = this._pinch.mid;
-          let nm = Math.round(m0 * this._pinch.d0 / d);
-          nm = Math.max(12, Math.min(g.n, nm));
-          let ns = Math.round(w0.s + mid * m0 - mid * nm);
-          ns = Math.max(0, Math.min(ns, g.n - nm));
-          this.setState({ start: ns, end: ns + nm - 1, hover: null });
-          return;
+        if (this._pinch && ids.length >= 2) { const a = this._pts[ids[0]], c = this._pts[ids[1]]; const d = Math.max(10, Math.hypot(a.x - c.x, a.y - c.y)); const w0 = this._pinch.w0, m0 = w0.e - w0.s + 1, mid = this._pinch.mid; let nm = Math.max(12, Math.min(g.n, Math.round(m0 * this._pinch.d0 / d))); let ns = Math.max(0, Math.min(Math.round(w0.s + mid * m0 - mid * nm), g.n - nm)); this.setState({ start: ns, end: ns + nm - 1, hover: null }); return; }
+        const P2 = this.pt(ev);
+        if (this._drag && this._drag.measuring) { const ms = this.state.measure; if (ms) this.setState({ measure: { a: ms.a, b: { i: P2.i, p: P2.p } }, hover: { i: P2.i, y: P2.y, p: P2.p } }); return; }
+        if (this._drag && this.state.tool === 'cross') {
+          const dx = ev.clientX - this._drag.x; if (Math.abs(dx) > 4) this._drag.moved = true;
+          if (this._drag.moved) { const r = this._el.getBoundingClientRect(); const mm = this._drag.e - this._drag.s + 1; let ns = Math.max(0, Math.min(Math.round(this._drag.s - dx * mm / (r.width * g.PW / g.VW)), g.n - mm)); this.setState({ start: ns, end: ns + mm - 1, hover: null }); return; }
         }
-        if (this._drag) {
-          const dx = ev.clientX - this._drag.x;
-          if (Math.abs(dx) > 4) this._drag.moved = true;
-          if (this._drag.moved) {
-            const mm = this._drag.e - this._drag.s + 1;
-            let ns = Math.round(this._drag.s - dx * mm / (r.width * g.PW / g.VW));
-            ns = Math.max(0, Math.min(ns, g.n - mm));
-            this.setState({ start: ns, end: ns + mm - 1, hover: null });
-            return;
-          }
-        }
-        const sx = (ev.clientX - r.left) / r.width * g.VW;
-        const sy = (ev.clientY - r.top) / r.height * g.H;
-        if (sx > g.PW) { if (this.state.hover) this.setState({ hover: null }); return; }
-        const i = Math.max(g.s, Math.min(g.e, g.s + Math.floor(sx / g.bw)));
-        this.setState({ hover: { i: i, y: sy } });
+        if (P2.x > g.PW) { if (this.state.hover) this.setState({ hover: null }); return; }
+        this.setState({ hover: { i: P2.i, y: P2.y, p: P2.p } });
       },
       onUp: (ev) => {
-        const wasPinch = !!this._pinch;
-        delete this._pts[ev.pointerId];
-        if (Object.keys(this._pts).length < 2) this._pinch = null;
+        const wasPinch = !!this._pinch; delete this._pts[ev.pointerId]; if (Object.keys(this._pts).length < 2) this._pinch = null;
         const d = this._drag; this._drag = null;
-        if (!wasPinch && d && !d.moved && this.state.tool === 'hline' && this._el && this._geo) {
-          const g = this._geo; const r = this._el.getBoundingClientRect();
-          const sy = (ev.clientY - r.top) / r.height * g.H;
-          if (sy >= g.MT && sy <= g.MT + g.MH) {
-            const price = g.hi - (sy - g.MT) / g.MH * (g.hi - g.lo);
-            this.setState({ hlines: this.state.hlines.concat([price]).slice(-8) });
-          }
+        if (wasPinch || !this._geo || !this._el) return;
+        if (d && d.measuring) return;
+        const P2 = this.pt(ev); if (!P2.inMain) return;
+        const tf = this.state.tf; const dr = Object.assign({}, this.state.draws); const cur = dr[tf] ? { h: dr[tf].h.slice(), t: dr[tf].t.slice() } : { h: [], t: [] };
+        if (this.state.tool === 'hline' && d && !d.moved) { cur.h = cur.h.concat([P2.p]).slice(-10); dr[tf] = cur; this.setState({ draws: dr }); }
+        else if (this.state.tool === 'trend' && d && !d.moved) {
+          if (!this.state.pending) this.setState({ pending: { i: P2.i, p: P2.p } });
+          else { cur.t = cur.t.concat([[this.state.pending, { i: P2.i, p: P2.p }]]).slice(-10); dr[tf] = cur; this.setState({ draws: dr, pending: null }); }
         }
       },
-      onLeave: (ev) => { if (ev && ev.pointerId != null) delete this._pts[ev.pointerId]; if (Object.keys(this._pts).length < 2) this._pinch = null; this._drag = null; if (this.state.hover) this.setState({ hover: null }); }
-    };
+      onLeave: (ev) => { if (ev && ev.pointerId != null) delete this._pts[ev.pointerId]; if (Object.keys(this._pts).length < 2) this._pinch = null; if (this._drag && !this._drag.measuring) this._drag = null; if (this.state.hover) this.setState({ hover: null }); }
+    });
   }
 }
 </script>

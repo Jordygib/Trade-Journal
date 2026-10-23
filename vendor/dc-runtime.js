@@ -61,7 +61,7 @@
     if (node.nodeType !== 1) return null;
     var tag = node.localName;
     if (tag === 'template') {
-      var kids = node.content.childNodes;
+      var kids = node.content ? node.content.childNodes : node.childNodes;
       if (node.hasAttribute('data-scfor')) {
         var list = interp(node.getAttribute('list') || '', scope) || [], as = node.getAttribute('as') || 'item';
         return list.map(function (it, i) { var sc = Object.assign({}, scope); sc[as] = it; return h(React.Fragment, { key: i }, renderKids(kids, sc)); });
