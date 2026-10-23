@@ -90,6 +90,9 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 .chart-sec:fullscreen{background:#0C1110 !important;border:none !important;border-radius:0 !important;overflow:auto;padding:0 8px !important}
 .chart-sec::backdrop{background:#0C1110}
 .ddi:hover{background:#16201D}
+.tvb:hover{background:#16211E !important;color:#FFFFFF !important}
+.wlr:hover{background:#16201D !important}
+@media (max-width: 1100px){.wl{display:none !important}}
 @media (max-width: 760px){
 .hdr{display:grid !important;grid-template-columns:minmax(0,1fr) auto;padding:0 12px !important;column-gap:8px}
 .hdr-left{display:contents !important}
@@ -177,21 +180,19 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 <svg width="96" height="28" viewBox="0 0 96 28" aria-hidden="true"><path d="M0.0 21.6 L16.0 15.1 L32.0 26.0 L48.0 10.7 L64.0 2.0 L80.0 12.9 L96.0 6.4 L96 28 L0 28 Z" fill="#7AA2F7" fill-opacity="0.12"></path><path d="M0.0 21.6 L16.0 15.1 L32.0 26.0 L48.0 10.7 L64.0 2.0 L80.0 12.9 L96.0 6.4" fill="none" stroke="#7AA2F7" stroke-width="1.5" stroke-linejoin="round"></path></svg>
 </div>
 </div></section>
-<section aria-labelledby="chh" class="tap chart-sec" ref="{{setSec}}" style="background: rgba(18, 26, 24, 0.9); border: 1px solid #22302C; border-radius: 3px; box-sizing: border-box; min-width: 0; padding: 0; position: relative; z-index: 15">
-<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #1C2724">
-<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
-<h2 id="chh" style="margin: 0; font-size: 16px; font-weight: 700; font-family: 'Barlow Semi Condensed', sans-serif">SPX</h2>
-<div role="group" aria-label="Timeframe" style="display: flex; gap: 0; border-bottom: 1px solid #22302C"><template data-scfor list="{{tfs}}" as="t" hint-placeholder-count="5"><button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" style="min-height: 34px; padding: 0 10px; border: none; background: transparent; color: {{t.fg}}; box-shadow: inset 0 -2px 0 {{t.ac}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">{{t.label}}</button></template></div>
-<div role="group" aria-label="Chart type" style="display: flex; gap: 0; border-bottom: 1px solid #22302C"><template data-scfor list="{{types}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" title="{{t.title}}" style="min-height: 34px; padding: 0 10px; border: none; background: transparent; color: {{t.fg}}; box-shadow: inset 0 -2px 0 {{t.ac}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">{{t.label}}</button></template></div>
-</div>
-<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
-<div role="group" aria-label="Drawing tool" style="display: flex; gap: 0; border-bottom: 1px solid #22302C"><template data-scfor list="{{tools}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" title="{{t.title}}" style="min-height: 34px; padding: 0 10px; border: none; background: transparent; color: {{t.fg}}; box-shadow: inset 0 -2px 0 {{t.ac}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">{{t.label}}</button></template></div>
-<button type="button" onClick="{{clearDraw}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">Clear</button>
+<section aria-labelledby="chh" class="tap chart-sec" ref="{{setSec}}" style="background: #0A0F0E; border: 1px solid #22302C; border-radius: 3px; box-sizing: border-box; min-width: 0; padding: 0; position: relative; z-index: 15">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; padding: 6px 10px; border-bottom: 1px solid #1C2724; background: #0F1614">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 0 8px 0 2px"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: {{symColor}}; color: #0C1110; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800">{{symShort}}</span><h2 id="chh" style="margin: 0; font-size: 15px; font-weight: 700; font-family: 'Barlow Semi Condensed', sans-serif">{{sym}}</h2></span>
+<span aria-hidden="true" style="width: 1px; height: 20px; background: #22302C; margin: 0 4px"></span>
+<div role="group" aria-label="Range" style="display: flex; gap: 0"><template data-scfor list="{{tfs}}" as="t" hint-placeholder-count="6"><button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" title="{{t.title}}" style="min-height: 34px; padding: 0 9px; border: none; background: transparent; color: {{t.fg}}; box-shadow: inset 0 -2px 0 {{t.ac}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">{{t.label}}</button></template></div>
+<span aria-hidden="true" style="width: 1px; height: 20px; background: #22302C; margin: 0 4px"></span>
+<div role="group" aria-label="Chart type" style="display: flex; gap: 0"><template data-scfor list="{{types}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" title="{{t.title}}" style="min-height: 34px; padding: 0 9px; border: none; background: transparent; color: {{t.fg}}; box-shadow: inset 0 -2px 0 {{t.ac}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">{{t.label}}</button></template></div>
+<span aria-hidden="true" style="width: 1px; height: 20px; background: #22302C; margin: 0 4px"></span>
 <div onKeyDown="{{ddKey}}" style="position: relative">
-<button type="button" onClick="{{ddToggle}}" aria-haspopup="true" aria-expanded="{{ddOpen}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; border-color: {{ddBd}}"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12.5l3.5-4 3 2.5 5.5-7"></path></svg>Indicators <span style="padding: 0 6px; border-radius: 2px; background: #D8B25A; color: #0C1110; font-size: 11px">{{indCount}}</span></button>
+<button type="button" class="tvb" onClick="{{ddToggle}}" aria-haspopup="true" aria-expanded="{{ddOpen}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; min-width: 32px; padding: 0 9px; border-radius: 3px; border: 1px solid transparent; background: transparent; color: #D3DDD8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; border-color: {{ddBd}}"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12.5l3.5-4 3 2.5 5.5-7"></path></svg>Indicators <span style="padding: 0 6px; border-radius: 2px; background: #D8B25A; color: #0C1110; font-size: 11px">{{indCount}}</span></button>
 <template data-scif value="{{ddOpen}}" hint-placeholder-val="{{ false }}">
 <button type="button" tabindex="-1" aria-label="Close indicators" onClick="{{ddClose}}" style="position: fixed; inset: 0; z-index: 40; border: none; background: transparent; cursor: default"></button>
-<div role="dialog" aria-label="Indicators" style="position: absolute; right: 0; top: calc(100% + 6px); z-index: 41; width: 320px; max-width: calc(100vw - 32px); padding: 10px; background: #121A18; border: 1px solid #2E3F3A; border-radius: 3px; box-shadow: 0 16px 36px rgba(0,0,0,0.55)">
+<div role="dialog" aria-label="Indicators" style="position: absolute; left: 0; top: calc(100% + 6px); z-index: 41; width: 320px; max-width: calc(100vw - 32px); padding: 10px; background: #121A18; border: 1px solid #2E3F3A; border-radius: 3px; box-shadow: 0 16px 36px rgba(0,0,0,0.55)">
 <label style="display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px; border: 1px solid #2E3F3A; border-radius: 3px; background: #0F1614; color: #8DA098"><span class="sr">Search indicators</span><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2.5a4.5 4.5 0 1 0 0 9a4.5 4.5 0 1 0 0-9M10.5 10.5l4 4"></path></svg><input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Search indicators" style="flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: #E4ECE8; font: inherit; font-size: 13px"></label>
 <div style="max-height: 340px; overflow-y: auto; margin-top: 6px">
 <template data-scfor list="{{groups}}" as="g" hint-placeholder-count="2"><div style="padding: 10px 6px 4px; font-size: 11px; font-weight: 700; color: #8DA098; letter-spacing: 0.04em">{{g.name}}</div><template data-scfor list="{{g.items}}" as="o" hint-placeholder-count="5"><label class="ddi" style="display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 6px; border-radius: 2px; cursor: pointer"><input type="checkbox" checked="{{o.on}}" onChange="{{o.toggle}}" style="width: 16px; height: 16px; margin: 0; accent-color: #D8B25A"><span style="width: 14px; height: 3px; border-radius: 2px; background: {{o.color}}"></span><span style="flex: 1; font-size: 13px; color: #E4ECE8">{{o.label}}</span><span style="font-size: 11px; color: #74877F">{{o.note}}</span></label></template></template>
@@ -200,49 +201,79 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 </div>
 </template>
 </div>
-<div role="group" aria-label="Zoom" style="display: flex; gap: 4px"><button type="button" onClick="{{zoomOut}}" aria-label="Zoom out" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">−</button><button type="button" onClick="{{zoomIn}}" aria-label="Zoom in" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">+</button><button type="button" onClick="{{resetView}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">Reset</button></div>
-<button type="button" onClick="{{toggleFs}}" aria-label="{{fsLabel}}" title="{{fsLabel}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"></path></svg><span class="hide-sm">{{fsShort}}</span></button>
+<span style="flex: 1"></span>
+<span class="hide-sm" style="font-size: 12px; color: #8DA098">Visible <strong style="color: {{rangeColor}}; font-weight: 700">{{rangePct}}</strong></span>
+<span aria-hidden="true" style="width: 1px; height: 20px; background: #22302C; margin: 0 4px"></span>
+<button type="button" class="tvb" onClick="{{zoomOut}}" aria-label="Zoom out" title="Zoom out" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; min-width: 32px; padding: 0 9px; border-radius: 3px; border: 1px solid transparent; background: transparent; color: #D3DDD8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">−</button><button type="button" class="tvb" onClick="{{zoomIn}}" aria-label="Zoom in" title="Zoom in" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; min-width: 32px; padding: 0 9px; border-radius: 3px; border: 1px solid transparent; background: transparent; color: #D3DDD8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">+</button><button type="button" class="tvb" onClick="{{resetView}}" title="Reset zoom" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; min-width: 32px; padding: 0 9px; border-radius: 3px; border: 1px solid transparent; background: transparent; color: #D3DDD8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap">Reset</button>
+<span aria-hidden="true" style="width: 1px; height: 20px; background: #22302C; margin: 0 4px"></span>
+<button type="button" class="tvb hide-sm" onClick="{{toggleWatch}}" aria-pressed="{{watch}}" title="Show or hide the watchlist" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; min-width: 32px; padding: 0 9px; border-radius: 3px; border: 1px solid transparent; background: transparent; color: #D3DDD8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3.5h12M2 8h12M2 12.5h8"></path></svg>Watchlist</button>
+<button type="button" class="tvb" onClick="{{toggleFs}}" aria-label="{{fsLabel}}" title="{{fsLabel}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; min-width: 32px; padding: 0 9px; border-radius: 3px; border: 1px solid transparent; background: transparent; color: #D3DDD8; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"></path></svg></button>
 </div>
+<div style="display: flex; align-items: stretch; min-width: 0">
+<div role="toolbar" aria-label="Drawing tools" aria-orientation="vertical" style="flex: none; width: 44px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; border-right: 1px solid #1C2724; background: #0F1614">
+<template data-scfor list="{{tools}}" as="t" hint-placeholder-count="4"><button type="button" class="tvb" aria-pressed="{{t.on}}" aria-label="{{t.title}}" title="{{t.title}}" onClick="{{t.pick}}" style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: none; background: {{t.bg}}; color: {{t.fg}}; cursor: pointer"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.icon}}"></path></svg></button></template>
+<span aria-hidden="true" style="width: 22px; height: 1px; background: #22302C; margin: 4px 0"></span>
+<button type="button" class="tvb" onClick="{{clearDraw}}" aria-label="Remove drawings" title="Remove drawings" style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: none; background: transparent; color: #A3B3AC; cursor: pointer"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.8 9.5h6.4L12 4"></path></svg></button>
 </div>
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding: 10px 14px 0; font-size: 12px; color: #A3B3AC; min-height: 38px">
-<div style="display: flex; flex-direction: column; gap: 3px">
-<div style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline"><span style="color: #ECEBFA; font-weight: 700; color: #E4ECE8">{{when}}</span><span>O <span style="color: {{barColor}}; font-weight: 600">{{O}}</span></span><span>H <span style="color: {{barColor}}; font-weight: 600">{{Hh}}</span></span><span>L <span style="color: {{barColor}}; font-weight: 600">{{L}}</span></span><span>C <span style="color: {{barColor}}; font-weight: 600">{{C}}</span></span><span style="color: {{barColor}}; font-weight: 600">{{chg}}</span></div>
-<div style="display: flex; flex-wrap: wrap; gap: 4px 12px"><template data-scfor list="{{legend}}" as="g" hint-placeholder-count="2"><span style="color: {{g.color}}">{{g.label}} <span style="font-weight: 600">{{g.value}}</span></span></template></div>
-</div>
-<div style="text-align: right"><div style="font-size: 11px; color: #74877F">Visible range</div><div style="font-weight: 700; color: {{rangeColor}}">{{rangeText}}</div></div>
-</div>
-<div ref="{{setRef}}" tabindex="0" aria-label="Chart. Arrow keys pan, plus and minus zoom." onKeyDown="{{onKey}}" onDoubleClick="{{resetView}}" onPointerDown="{{onDown}}" onPointerMove="{{onMove}}" onPointerUp="{{onUp}}" onPointerCancel="{{onLeave}}" onPointerLeave="{{onLeave}}" style="position: relative; touch-action: none; user-select: none; cursor: {{cursor}}; margin: 8px 8px 4px; outline: none">
+<div style="flex: 1; min-width: 0">
+<div ref="{{setRef}}" tabindex="0" aria-label="Chart. Arrow keys pan, plus and minus zoom. Shift-drag to measure a range." onKeyDown="{{onKey}}" onDoubleClick="{{resetView}}" onPointerDown="{{onDown}}" onPointerMove="{{onMove}}" onPointerUp="{{onUp}}" onPointerCancel="{{onLeave}}" onPointerLeave="{{onLeave}}" style="position: relative; touch-action: none; user-select: none; cursor: {{cursor}}; outline: none">
 <svg viewBox="0 0 {{VW}} {{H}}" width="100%" style="display: block" role="img" aria-label="{{aria}}">
-<path d="{{grid}}" stroke="#1A2522" stroke-width="1" fill="none"></path>
+<path d="{{grid}}" stroke="#16201D" stroke-width="1" fill="none"></path>
+<path d="{{axis}}" stroke="#22302C" stroke-width="1" fill="none"></path>
 <path d="{{bands}}" fill="#C792EA" fill-opacity="0.13"></path>
+<path d="{{measureBox}}" fill="{{measureFill}}" fill-opacity="0.13" stroke="{{measureFill}}" stroke-width="1"></path>
 <path d="{{bbFill}}" fill="#C792EA" fill-opacity="0.06"></path>
 <path d="{{d_bbU}}" stroke="#C792EA" stroke-width="1" stroke-dasharray="none" fill="none"></path><path d="{{d_bbL}}" stroke="#C792EA" stroke-width="1" stroke-dasharray="none" fill="none"></path><path d="{{d_kcU}}" stroke="#9ECE6A" stroke-width="1" stroke-dasharray="5 3" fill="none"></path><path d="{{d_kcL}}" stroke="#9ECE6A" stroke-width="1" stroke-dasharray="5 3" fill="none"></path><path d="{{d_dcU}}" stroke="#E8B38F" stroke-width="1" stroke-dasharray="none" fill="none"></path><path d="{{d_dcL}}" stroke="#E8B38F" stroke-width="1" stroke-dasharray="none" fill="none"></path><path d="{{d_prevH}}" stroke="#BFCCC6" stroke-width="1.2" stroke-dasharray="2 3" fill="none"></path><path d="{{d_prevL}}" stroke="#BFCCC6" stroke-width="1.2" stroke-dasharray="2 3" fill="none"></path><path d="{{d_orH}}" stroke="#F0C674" stroke-width="1.2" stroke-dasharray="6 3" fill="none"></path><path d="{{d_orL}}" stroke="#F0C674" stroke-width="1.2" stroke-dasharray="6 3" fill="none"></path><path d="{{d_pivP}}" stroke="#8FD6E8" stroke-width="1.2" stroke-dasharray="1 3" fill="none"></path><path d="{{d_pivR}}" stroke="#8FD6E8" stroke-width="1" stroke-dasharray="1 3" fill="none"></path><path d="{{d_pivS}}" stroke="#8FD6E8" stroke-width="1" stroke-dasharray="1 3" fill="none"></path>
 <path d="{{volUp}}" fill="{{gain}}" fill-opacity="0.2"></path>
 <path d="{{volDn}}" fill="{{loss}}" fill-opacity="0.2"></path>
 <path d="{{areaFill}}" fill="{{gain}}" fill-opacity="0.14"></path>
 <path d="{{priceLine}}" stroke="{{gain}}" stroke-width="2" fill="none"></path>
-<path d="{{wickUp}}" stroke="{{gain}}" stroke-width="1.2" fill="none"></path>
-<path d="{{wickDn}}" stroke="{{loss}}" stroke-width="1.2" fill="none"></path>
+<path d="{{wickUp}}" stroke="{{gain}}" stroke-width="1.1" fill="none"></path>
+<path d="{{wickDn}}" stroke="{{loss}}" stroke-width="1.1" fill="none"></path>
 <path d="{{bodyUp}}" fill="{{gain}}"></path>
 <path d="{{bodyDn}}" fill="{{loss}}"></path>
 <path d="{{d_sma20}}" stroke="#E0AF68" stroke-width="1.6" fill="none"></path><path d="{{d_sma50}}" stroke="#F7A8C0" stroke-width="1.6" fill="none"></path><path d="{{d_ema9}}" stroke="#4FD1B5" stroke-width="1.4" fill="none"></path><path d="{{d_ema21}}" stroke="#7AA2F7" stroke-width="1.4" fill="none"></path><path d="{{d_ema50}}" stroke="#9DBBFF" stroke-width="1.4" fill="none"></path><path d="{{d_vwap}}" stroke="{{accent}}" stroke-width="1.8" fill="none"></path>
+<path d="{{lastLine}}" stroke="{{lastColor}}" stroke-width="1" stroke-dasharray="1 3" fill="none"></path>
 <path d="{{guides}}" stroke="#2E3F3A" stroke-width="1" stroke-dasharray="3 4" fill="none"></path>
 <path d="{{p_rsi}}" stroke="#C792EA" stroke-width="1.5" fill="none"></path><path d="{{p_stK}}" stroke="#4FD1B5" stroke-width="1.5" fill="none"></path><path d="{{p_stD}}" stroke="#E0AF68" stroke-width="1.5" fill="none"></path><path d="{{p_atr}}" stroke="#E0AF68" stroke-width="1.5" fill="none"></path><path d="{{p_macd}}" stroke="#7AA2F7" stroke-width="1.5" fill="none"></path><path d="{{p_signal}}" stroke="#E0AF68" stroke-width="1.5" fill="none"></path>
 <path d="{{histUp}}" fill="{{gain}}" fill-opacity="0.55"></path>
 <path d="{{histDn}}" fill="{{loss}}" fill-opacity="0.55"></path>
 <path d="{{drawn}}" stroke="#F7A8C0" stroke-width="1.5" fill="none"></path>
-<path d="{{measureBox}}" fill="{{measureFill}}" fill-opacity="0.12" stroke="{{measureFill}}" stroke-width="1" stroke-dasharray="4 3"></path>
 <path d="{{cross}}" stroke="#E4ECE8" stroke-opacity="0.7" stroke-width="1" stroke-dasharray="4 3" fill="none"></path><path d="{{crossDot}}" fill="#0C1110" stroke="#E4ECE8" stroke-width="1.5"></path>
 </svg>
-<template data-scfor list="{{yl}}" as="y" hint-placeholder-count="5"><div style="position: absolute; right: 4px; top: {{y.top}}%; transform: translateY(-50%); font-size: 11px; color: #8DA098; pointer-events: none">{{y.text}}</div></template>
-<template data-scfor list="{{xl}}" as="x" hint-placeholder-count="6"><div style="position: absolute; left: {{x.left}}%; top: {{x.top}}%; transform: translateX(-50%); font-size: 11px; color: #8DA098; white-space: nowrap; pointer-events: none">{{x.text}}</div></template>
-<template data-scfor list="{{paneLabels}}" as="p" hint-placeholder-count="1"><div style="position: absolute; left: 8px; top: {{p.top}}%; font-size: 11px; color: {{p.color}}; pointer-events: none">{{p.text}}</div></template>
-<template data-scfor list="{{pins}}" as="p" hint-placeholder-count="2"><div style="position: absolute; left: {{p.left}}%; top: {{p.top}}%; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: none"><span style="padding: 2px 6px; border-radius: 3px; background: #C792EA; color: #0C1110; font-size: 10px; font-weight: 700; white-space: nowrap">{{p.text}}</span><span style="width: 1px; height: 8px; background: #C792EA"></span></div></template>
-<template data-scfor list="{{tags}}" as="g" hint-placeholder-count="1"><div style="position: absolute; right: 0; top: {{g.top}}%; transform: translateY(-50%); padding: 1px 6px; border-radius: 3px; background: {{g.bg}}; color: {{g.fg}}; font-size: 11px; font-weight: 600; pointer-events: none">{{g.text}}</div></template>
-<template data-scif value="{{hasX}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; left: {{xLeft}}%; top: {{xTop}}%; transform: translateX(-50%); padding: 1px 7px; border-radius: 3px; background: #E4ECE8; color: #0C1110; font-size: 11px; font-weight: 700; white-space: nowrap; pointer-events: none; z-index: 2">{{xText}}</div></template>
-<template data-scif value="{{hasMeasure}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; left: {{mLeft}}%; top: {{mTop}}%; transform: translate(-50%, -110%); padding: 4px 8px; border-radius: 3px; background: {{measureFill}}; color: #0C1110; font-size: 12px; font-weight: 700; white-space: nowrap; pointer-events: none">{{measureText}}</div></template>
+<div style="position: absolute; left: 10px; top: 6px; right: 90px; pointer-events: none; display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: #A3B3AC">
+<div style="display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline"><span style="color: #E4ECE8; font-weight: 700">{{symLong}} · {{ivl}}</span><span>{{when}}</span><span>O<span style="color: {{barColor}}; font-weight: 600"> {{O}}</span></span><span>H<span style="color: {{barColor}}; font-weight: 600"> {{Hh}}</span></span><span>L<span style="color: {{barColor}}; font-weight: 600"> {{L}}</span></span><span>C<span style="color: {{barColor}}; font-weight: 600"> {{C}}</span></span><span style="color: {{barColor}}; font-weight: 600">{{chg}}</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 2px 10px"><template data-scfor list="{{legend}}" as="g" hint-placeholder-count="2"><span style="color: {{g.color}}">{{g.label}} <span style="font-weight: 600">{{g.value}}</span></span></template></div>
 </div>
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 6px 14px 12px; font-size: 12px; color: #74877F"><span>{{hint}}</span><span>Sample data · a live version would use licensed market data</span></div>
+<template data-scfor list="{{yl}}" as="y" hint-placeholder-count="5"><div style="position: absolute; right: 6px; top: {{y.top}}%; transform: translateY(-50%); font-size: 11px; color: #8DA098; pointer-events: none">{{y.text}}</div></template>
+<template data-scfor list="{{xl}}" as="x" hint-placeholder-count="6"><div style="position: absolute; left: {{x.left}}%; top: {{x.top}}%; transform: translateX(-50%); font-size: 11px; color: #8DA098; white-space: nowrap; pointer-events: none">{{x.text}}</div></template>
+<template data-scfor list="{{paneLabels}}" as="p" hint-placeholder-count="1"><div style="position: absolute; left: 10px; top: {{p.top}}%; font-size: 11px; color: {{p.color}}; pointer-events: none">{{p.text}}</div></template>
+<template data-scfor list="{{pins}}" as="p" hint-placeholder-count="2"><div style="position: absolute; left: {{p.left}}%; top: {{p.top}}%; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: none"><span style="padding: 2px 6px; border-radius: 3px; background: #C792EA; color: #0C1110; font-size: 10px; font-weight: 700; white-space: nowrap">{{p.text}}</span><span style="width: 1px; height: 8px; background: #C792EA"></span></div></template>
+<template data-scfor list="{{tags}}" as="g" hint-placeholder-count="1"><div style="position: absolute; right: 0; top: {{g.top}}%; transform: translateY(-50%); padding: 1px 6px; border-radius: 2px; background: {{g.bg}}; color: {{g.fg}}; font-size: 11px; font-weight: 700; pointer-events: none">{{g.text}}</div></template>
+<template data-scif value="{{hasX}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; left: {{xLeft}}%; top: {{xTop}}%; transform: translateX(-50%); padding: 1px 7px; border-radius: 2px; background: #E4ECE8; color: #0C1110; font-size: 11px; font-weight: 700; white-space: nowrap; pointer-events: none; z-index: 2">{{xText}}</div></template>
+<template data-scif value="{{hasMeasure}}" hint-placeholder-val="{{ false }}"><div role="status" style="position: absolute; left: {{mLeft}}%; top: {{mTop}}%; transform: translateX(-50%); min-width: 190px; padding: 10px 12px; border-radius: 4px; background: rgba(12, 17, 16, 0.94); border: 1px solid {{measureFill}}; box-shadow: 0 10px 26px rgba(0,0,0,.5); pointer-events: none; z-index: 3">
+<div style="font-family: 'Barlow Semi Condensed', sans-serif; font-size: 24px; font-weight: 700; line-height: 1; color: {{measureFill}}">{{measureText}}</div>
+<div style="margin-top: 6px; display: flex; flex-direction: column; gap: 2px; font-size: 12px"><template data-scfor list="{{mRows}}" as="r" hint-placeholder-count="5"><div style="display: flex; justify-content: space-between; gap: 14px"><span style="color: #8DA098">{{r.k}}</span><span style="color: #E4ECE8; font-weight: 600">{{r.v}}</span></div></template></div>
+</div></template>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 6px 12px 10px; font-size: 12px; color: #74877F; border-top: 1px solid #1C2724"><span>{{hint}}</span><span>Sample data · a live version would use licensed market data</span></div>
+</div>
+<template data-scif value="{{watch}}" hint-placeholder-val="{{ true }}">
+<aside class="wl" aria-label="Watchlist" style="flex: none; width: 250px; border-left: 1px solid #1C2724; background: #0F1614; display: flex; flex-direction: column">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid #1C2724"><span style="font-weight: 700; font-size: 13px">Watchlist</span><span style="font-size: 11px; color: #74877F">sample</span></div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 72px 60px; gap: 6px; padding: 6px 12px; font-size: 11px; color: #74877F"><span>Symbol</span><span style="text-align: right">Last</span><span style="text-align: right">Chg%</span></div>
+<template data-scfor list="{{wl}}" as="w" hint-placeholder-count="8"><button type="button" class="wlr" onClick="{{w.pick}}" aria-pressed="{{w.on}}" style="display: grid; grid-template-columns: minmax(0, 1fr) 72px 60px; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border: none; border-left: 2px solid {{w.bd}}; background: {{w.bg}}; color: #E4ECE8; font: inherit; font-size: 12px; text-align: left; cursor: pointer"><span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span aria-hidden="true" style="flex: none; width: 18px; height: 18px; border-radius: 50%; background: {{w.color}}; color: #0C1110; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800">{{w.short}}</span><span style="font-weight: 700">{{w.sym}}</span></span><span style="text-align: right">{{w.last}}</span><span style="text-align: right; font-weight: 600; color: {{w.cc}}">{{w.chg}}</span></button></template>
+<div style="margin-top: auto; padding: 14px 12px; border-top: 1px solid #1C2724">
+<div style="font-size: 12px; color: #8DA098">{{symLong}}</div>
+<div style="margin-top: 4px; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 30px; font-weight: 700; line-height: 1">{{lastPx}}</div>
+<div style="margin-top: 4px; font-size: 14px; font-weight: 700; color: {{dayColor}}">{{dayChg}}</div>
+<div style="margin-top: 12px; font-size: 11px; color: #74877F">Day range</div>
+<div style="margin-top: 4px; position: relative; height: 6px; border-radius: 3px; background: #1C2724"><span style="position: absolute; top: -3px; left: {{dayPos}}%; width: 3px; height: 12px; border-radius: 2px; background: #E4ECE8; transform: translateX(-50%)"></span></div>
+<div style="margin-top: 4px; display: flex; justify-content: space-between; font-size: 11px; color: #A3B3AC"><span>{{dayLo}}</span><span>{{dayHi}}</span></div>
+</div>
+</aside>
+</template>
+</div>
 </section>
 <div style="display: flex; flex-wrap: wrap; gap: 16px">
 <section aria-labelledby="idh" style="background: rgba(18, 26, 24, 0.9); border: 1px solid #22302C; border-radius: 3px; padding: 16px; box-sizing: border-box; min-width: 0; flex: 2 1 600px">
@@ -331,7 +362,8 @@ class Component extends DCLogic {
   constructor(...args) {
     super(...args);
     this.DEF = { vol: true, vwap: true, strikes: true, ideas: true };
-    this.state = { tf: '1D', start: null, end: null, tool: 'cross', type: 'candles', ind: Object.assign({}, this.DEF), hover: null, narrow: false, fs: false, ddOpen: false, q: '', draws: {}, pending: null, measure: null };
+    this.SYMS = { SPX: ['S&P 500 Index', 5790, 1, 0, '#D8B25A'], SPY: ['SPDR S&P 500 ETF', 578.4, 1, 101, '#7AA2F7'], QQQ: ['Invesco QQQ Trust', 498.2, 1.25, 202, '#4FD1B5'], IWM: ['iShares Russell 2000 ETF', 224.6, 1.35, 303, '#9ECE6A'], VIX: ['Cboe Volatility Index', 15.8, 4, 404, '#F0607A'], NVDA: ['NVIDIA', 182.4, 2.4, 505, '#9ECE6A'], TSLA: ['Tesla', 262.1, 2.8, 606, '#F7A8C0'], AAPL: ['Apple', 238.6, 1.2, 707, '#BFCCC6'] };
+    this.state = { sym: 'SPX', watch: true, tf: '1D', start: null, end: null, tool: 'cross', type: 'candles', ind: Object.assign({}, this.DEF), hover: null, narrow: false, fs: false, ddOpen: false, q: '', draws: {}, pending: null, measure: null };
     this._cache = {}; this._drag = null; this._el = null; this._sec = null; this._geo = null; this._pts = {}; this._pinch = null;
     this.setRef = (el) => {
       this._el = el;
@@ -353,23 +385,25 @@ class Component extends DCLogic {
   tradingDays(count) { const out = []; const d = new Date(2026, 9, 20); while (out.length < count) { const w = d.getDay(); if (w !== 0 && w !== 6) out.unshift(new Date(d.getTime())); d.setDate(d.getDate() - 1); } return out; }
   ema(arr, len) { const k = 2 / (len + 1); const out = new Array(arr.length).fill(null); let prev = null, seen = 0; for (let i = 0; i < arr.length; i++) { const v = arr[i]; if (v == null) continue; prev = prev == null ? v : v * k + prev * (1 - k); seen++; if (seen >= len) out[i] = prev; } return out; }
   sma(arr, len) { const out = new Array(arr.length).fill(null); let s = 0, c = 0; for (let i = 0; i < arr.length; i++) { const v = arr[i]; if (v == null) { s = 0; c = 0; continue; } s += v; c++; if (c > len) { s -= arr[i - len]; c = len; } if (c === len) out[i] = s / len; } return out; }
-  series(tf) {
-    if (this._cache[tf]) return this._cache[tf];
-    const C = { '1D': { days: 1, per: 78, step: 5, vol: 0.0009, seed: 198 }, '5D': { days: 5, per: 26, step: 15, vol: 0.0016, seed: 11 }, '1M': { days: 21, per: 7, step: 60, vol: 0.0032, seed: 19 }, '6M': { days: 126, per: 1, step: 0, vol: 0.0085, seed: 23 }, '1Y': { days: 252, per: 1, step: 0, vol: 0.009, seed: 29 } }[tf];
-    const r = this.rng(C.seed);
+  series(tf) { return this.seriesFor(this.state.sym, tf); }
+  seriesFor(sym, tf) {
+    const KEY = sym + '|' + tf; if (this._cache[KEY]) return this._cache[KEY];
+    const SY = this.SYMS[sym];
+    const C = { '1D': { days: 1, per: 78, step: 5, vol: 0.0009, seed: 198 }, '5D': { days: 5, per: 26, step: 15, vol: 0.0016, seed: 11 }, '1M': { days: 21, per: 7, step: 60, vol: 0.0032, seed: 19 }, '3M': { days: 63, per: 2, step: 240, vol: 0.0045, seed: 31 }, '6M': { days: 126, per: 1, step: 0, vol: 0.0085, seed: 23 }, '1Y': { days: 252, per: 1, step: 0, vol: 0.009, seed: 29 } }[tf];
+    const r = this.rng(C.seed + SY[3]); const VOL = C.vol * SY[2];
     const gauss = () => { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
     const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const dl = this.tradingDays(C.days); const bars = [];
-    let p = C.per === 1 ? 5200 : 5790; const drift = C.per === 1 ? 0.0006 : 0.00004;
+    let p = C.per === 1 ? SY[1] * 0.9 : SY[1]; const drift = C.per === 1 ? 0.0006 : 0.00004;
     for (let di = 0; di < dl.length; di++) for (let k = 0; k < C.per; k++) {
-      const o = p, c = o * (1 + drift + gauss() * C.vol);
-      const h = Math.max(o, c) * (1 + Math.abs(gauss()) * C.vol * 0.5), l = Math.min(o, c) * (1 - Math.abs(gauss()) * C.vol * 0.5);
+      const o = p, c = o * (1 + drift + gauss() * VOL);
+      const h = Math.max(o, c) * (1 + Math.abs(gauss()) * VOL * 0.5), l = Math.min(o, c) * (1 - Math.abs(gauss()) * VOL * 0.5);
       let v; if (C.per > 1) { const u = k / (C.per - 1); v = 1e5 * (0.6 + r() * 0.5) * (1 + 2.2 * Math.exp(-u * 8) + 1.4 * Math.exp(-(1 - u) * 9)); } else v = 2.4e6 * (0.7 + r() * 0.6);
       let time = ''; if (C.per > 1) { const mins = 9 * 60 + 30 + k * C.step; const hh = Math.floor(mins / 60), mm = mins % 60; time = (((hh + 11) % 12) + 1) + ':' + String(mm).padStart(2, '0'); }
       bars.push({ o, h, l, c, v, day: di, k: k, dayLabel: MON[dl[di].getMonth()] + ' ' + dl[di].getDate(), time });
       p = c;
     }
-    if (C.per === 1) { const kk = 5790 / bars[bars.length - 1].c; bars.forEach((x) => { x.o *= kk; x.h *= kk; x.l *= kk; x.c *= kk; }); }
+    if (tf !== '1D') { const ref = this.seriesFor(sym, '1D').bars; const kk = ref[ref.length - 1].c / bars[bars.length - 1].c; bars.forEach((x) => { x.o *= kk; x.h *= kk; x.l *= kk; x.c *= kk; }); }
     const n = bars.length, cl = bars.map((b) => b.c), hi = bars.map((b) => b.h), lo = bars.map((b) => b.l);
     const sma20 = this.sma(cl, 20), sma50 = this.sma(cl, 50), ema9 = this.ema(cl, 9), ema21 = this.ema(cl, 21), ema50 = this.ema(cl, 50), ema20 = this.ema(cl, 20);
     const bbU = new Array(n).fill(null), bbL = new Array(n).fill(null);
@@ -399,8 +433,8 @@ class Component extends DCLogic {
       if (nOR && b.k >= nOR) { let H = -Infinity, Lw = Infinity; for (let j = i - b.k; j < i - b.k + nOR; j++) { H = Math.max(H, bars[j].h); Lw = Math.min(Lw, bars[j].l); } orH[i] = H; orL[i] = Lw; }
     }
     const ha = []; for (let i = 0; i < n; i++) { const b = bars[i]; const c = (b.o + b.h + b.l + b.c) / 4; const o = i === 0 ? (b.o + b.c) / 2 : (ha[i - 1].o + ha[i - 1].c) / 2; ha.push({ o, c, h: Math.max(b.h, o, c), l: Math.min(b.l, o, c) }); }
-    const out = { bars, intraday: C.per > 1, sma20, sma50, ema9, ema21, ema50, bbU, bbL, kcU, kcL, dcU, dcL, macd, signal, hist, rsi, stK, stD, atr, vwap, prevH, prevL, pivP, pivR, pivS, orH, orL, ha };
-    this._cache[tf] = out; return out;
+    const out = { bars, per: C.per, step: C.step, intraday: C.per > 1, sma20, sma50, ema9, ema21, ema50, bbU, bbL, kcU, kcL, dcU, dcL, macd, signal, hist, rsi, stK, stD, atr, vwap, prevH, prevL, pivP, pivR, pivS, orH, orL, ha };
+    this._cache[KEY] = out; return out;
   }
   win() { const n = this.series(this.state.tf).bars.length; let s = this.state.start, e = this.state.end; if (s == null || e == null) { s = 0; e = n - 1; } const m = Math.max(12, Math.min(n, e - s + 1)); s = Math.max(0, Math.min(s, n - m)); return { s, e: s + m - 1 }; }
   frac(cx) { if (!this._el) return 0.5; const r = this._el.getBoundingClientRect(); const g = this._geo || { VW: 1000, PW: 930 }; return Math.min(1, Math.max(0, ((cx - r.left) / r.width * g.VW) / g.PW)); }
@@ -419,12 +453,12 @@ class Component extends DCLogic {
     const inc = (a) => { for (let i = s; i <= e; i++) if (a[i] != null) { hi = Math.max(hi, a[i]); lo = Math.min(lo, a[i]); } };
     for (let i = s; i <= e; i++) { hi = Math.max(hi, bars[i].h); lo = Math.min(lo, bars[i].l); }
     if (ind.bb) { inc(S.bbU); inc(S.bbL); } if (ind.kc) { inc(S.kcU); inc(S.kcL); } if (ind.dc) { inc(S.dcU); inc(S.dcL); } if (ind.prev) { inc(S.prevH); inc(S.prevL); } if (ind.orng) { inc(S.orH); inc(S.orL); }
-    const strikesOn = ind.strikes && st.tf === '1D', base = S.bars[0].o;
+    const strikesOn = ind.strikes && st.tf === '1D' && st.sym === 'SPX', base = S.bars[0].o;
     if (strikesOn) { hi = Math.max(hi, base * 1.0112); lo = Math.min(lo, base * 0.993); }
     const pad = (hi - lo) * 0.07; hi += pad; lo -= pad;
     const paneKeys = ['rsi', 'macd', 'stoch', 'atr'].filter((k) => ind[k]);
-    const PH = st.fs ? 90 : 76, MT = 10;
-    let MH = 300;
+    const PH = st.fs ? 90 : 76, MT = 52;
+    let MH = st.narrow ? 300 : 440;
     if (st.fs && this._el) { const r = this._el.getBoundingClientRect(); const availH = window.innerHeight - r.top - 52; const tH = VW * availH / Math.max(1, r.width); MH = Math.max(220, tH - (MT + 14 + paneKeys.length * (PH + 28) + 22)); }
     const Y = (p) => MT + (hi - p) / (hi - lo) * MH;
     let y0 = MT + MH + 14; const paneTops = {}; const paneLabels = [];
@@ -482,7 +516,7 @@ class Component extends DCLogic {
     let bands = '';
     if (strikesOn) { bands = rect(0, Y(base * 1.0112), PW, Y(base * 1.0096) - Y(base * 1.0112)) + rect(0, Y(base * 0.9946), PW, Y(base * 0.993) - Y(base * 0.9946)); paneLabels.push({ text: 'Verified call strikes', y: Y(base * 1.0112) + 2, color: '#D9B8F5' }); paneLabels.push({ text: 'Verified put strikes', y: Y(base * 0.9946) + 2, color: '#D9B8F5' }); }
     const tags = [];
-    const draws = st.draws[st.tf] || { h: [], t: [] };
+    const draws = st.draws[st.sym + st.tf] || { h: [], t: [] };
     let drawn = '';
     draws.h.forEach((p) => { if (p > lo && p < hi) { const y = Y(p); drawn += 'M0 ' + f1(y) + 'H' + PW; tags.push({ top: (y / H * 100).toFixed(2), text: fmt(p), bg: '#F7A8C0', fg: '#0C1110' }); } });
     const seg = (a, b) => 'M' + f1(X(a.i)) + ' ' + f1(Y(a.p)) + 'L' + f1(X(b.i)) + ' ' + f1(Y(b.p));
@@ -500,11 +534,27 @@ class Component extends DCLogic {
       if (onPane) { cross += 'M0 ' + f1(hv.y) + 'H' + PW; crossDot = 'M' + f1(cx - 3.5) + ' ' + f1(hv.y) + 'a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0'; }
       const hb = S.bars[hi_]; xTag = { left: Math.min(94, Math.max(4, cx / VW * 100)).toFixed(2), top: ((H - 20) / H * 100).toFixed(2), text: hb.dayLabel + (hb.time ? ' ' + hb.time : '') };
     }
-    let measureBox = '', hasMeasure = false, measureText = '', mLeft = 0, mTop = 0, measureFill = gain;
+    let measureBox = '', hasMeasure = false, measureText = '', mLeft = 0, mTop = 0, measureFill = gain; const mRows = [];
     const ms = st.measure;
-    if (ms && ms.b) { const a = ms.a, b = ms.b; const x1 = X(Math.min(a.i, b.i)), x2 = X(Math.max(a.i, b.i)), y1 = Y(Math.max(a.p, b.p)), y2 = Y(Math.min(a.p, b.p)); measureBox = rect(x1, y1, Math.max(1, x2 - x1), Math.max(1, y2 - y1)); const pct = (b.p - a.p) / a.p * 100; measureFill = pct >= 0 ? gain : loss; hasMeasure = true; measureText = (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(2) + '% · ' + (b.p - a.p >= 0 ? '+' : '−') + Math.abs(b.p - a.p).toFixed(2) + ' · ' + (Math.abs(b.i - a.i) + 1) + ' bars'; mLeft = ((x1 + x2) / 2 / VW * 100).toFixed(2); mTop = (y1 / H * 100).toFixed(2); }
+    if (ms && ms.b && ms.b.i !== ms.a.i) {
+      const i1 = Math.max(s, Math.min(ms.a.i, ms.b.i)), i2 = Math.min(e, Math.max(ms.a.i, ms.b.i));
+      const p0 = S.bars[i1].o, p1 = S.bars[i2].c; let mh = -Infinity, ml = Infinity;
+      for (let i = i1; i <= i2; i++) { mh = Math.max(mh, S.bars[i].h); ml = Math.min(ml, S.bars[i].l); }
+      const pc = (p1 - p0) / p0 * 100, x1 = X(i1) - bw / 2, x2 = X(i2) + bw / 2;
+      measureBox = rect(x1, MT, Math.max(1, x2 - x1), MH); measureFill = pc >= 0 ? gain : loss; hasMeasure = true;
+      measureText = (pc >= 0 ? '+' : '−') + Math.abs(pc).toFixed(2) + '%';
+      const nb = i2 - i1 + 1; let dur;
+      if (S.per > 1) { const mins = nb * S.step; dur = mins >= 60 ? Math.floor(mins / 60) + 'h' + (mins % 60 ? ' ' + (mins % 60) + 'm' : '') : mins + 'm'; if (S.per <= 2 || mins > 390) dur = (S.bars[i2].day - S.bars[i1].day + 1) + ' trading days'; } else dur = nb + ' trading days';
+      const lab = (b0) => b0.dayLabel + (b0.time ? ' ' + b0.time : '');
+      mRows.push({ k: 'Change', v: (p1 - p0 >= 0 ? '+' : '−') + Math.abs(p1 - p0).toFixed(2) });
+      mRows.push({ k: 'From', v: lab(S.bars[i1]) + ' · ' + fmt(p0) });
+      mRows.push({ k: 'To', v: lab(S.bars[i2]) + ' · ' + fmt(p1) });
+      mRows.push({ k: 'High / low', v: fmt(mh) + ' / ' + fmt(ml) });
+      mRows.push({ k: 'Length', v: nb + ' bars · ' + dur });
+      mLeft = Math.min(84, Math.max(16, (x1 + x2) / 2 / VW * 100)).toFixed(2); mTop = ((MT + 8) / H * 100).toFixed(2);
+    }
     const pins = [];
-    if (ind.ideas) [[0.32, '@gammaghost · range idea'], [0.61, '@flyfisher · CPI sizing'], [0.86, '@newtrader22 · question']].forEach((pd) => { const i = Math.floor(pd[0] * (n - 1)); if (i >= s && i <= e) pins.push({ left: (X(i) / VW * 100).toFixed(2), top: (Math.max(MT + 14, Y(S.bars[i].h) - 6) / H * 100).toFixed(2), text: pd[1] }); });
+    if (ind.ideas && st.sym === 'SPX') [[0.32, '@gammaghost · range idea'], [0.61, '@flyfisher · CPI sizing'], [0.86, '@newtrader22 · question']].forEach((pd) => { const i = Math.floor(pd[0] * (n - 1)); if (i >= s && i <= e) pins.push({ left: (X(i) / VW * 100).toFixed(2), top: (Math.max(MT + 14, Y(S.bars[i].h) - 6) / H * 100).toFixed(2), text: pd[1] }); });
     const b = bars[hi_], prev = hi_ > 0 ? S.bars[hi_ - 1].c : b.o, pct = (S.bars[hi_].c - prev) / prev * 100;
     const fv = (v, d) => v == null ? '—' : (d === 1 ? v.toFixed(1) : d === 2 ? v.toFixed(2) : fmt(v));
     const legend = [];
@@ -515,18 +565,33 @@ class Component extends DCLogic {
     if (ind.bb) L1('bb', 'BB', fv(S.bbU[hi_]) + ' / ' + fv(S.bbL[hi_])); if (ind.kc) L1('kc', 'KC', fv(S.kcU[hi_]) + ' / ' + fv(S.kcL[hi_])); if (ind.dc) L1('dc', 'Donchian', fv(S.dcU[hi_]) + ' / ' + fv(S.dcL[hi_]));
     if (ind.prev) L1('prev', 'Prev H/L', fv(S.prevH[hi_]) + ' / ' + fv(S.prevL[hi_])); if (ind.orng) L1('orng', 'Open range', fv(S.orH[hi_]) + ' / ' + fv(S.orL[hi_])); if (ind.piv) L1('piv', 'Pivot', fv(S.pivP[hi_]));
     if (ind.rsi) L1('rsi', 'RSI', fv(S.rsi[hi_], 1)); if (ind.macd) L1('macd', 'MACD', fv(S.macd[hi_], 2)); if (ind.stoch) L1('stoch', 'Stoch', fv(S.stK[hi_], 1) + ' / ' + fv(S.stD[hi_], 1)); if (ind.atr) L1('atr', 'ATR', fv(S.atr[hi_], 2));
-    const xl = []; const cnt = Math.min(st.narrow ? 4 : 7, m);
-    for (let k = 0; k < cnt; k++) { const i = s + Math.round(k * (m - 1) / Math.max(1, cnt - 1)); const bb = S.bars[i]; const text = st.tf === '1D' ? bb.time : (st.tf === '5D' || st.tf === '1M') ? (m < 40 ? bb.dayLabel + ' ' + bb.time : bb.dayLabel) : bb.dayLabel; xl.push({ left: Math.min(88, Math.max(5, X(i) / VW * 100)).toFixed(2), top: ((H - 18) / H * 100).toFixed(2), text }); }
+    const xl = []; const cnt = Math.min(st.narrow ? 4 : 9, m);
+    for (let k = 0; k < cnt; k++) { const i = s + Math.round(k * (m - 1) / Math.max(1, cnt - 1)); const bb = S.bars[i]; const text = st.tf === '1D' ? bb.time : (st.tf === '5D' || st.tf === '1M') ? (m < 40 ? bb.dayLabel + ' ' + bb.time : bb.dayLabel) : bb.dayLabel; grid += 'M' + f1(X(i)) + ' ' + MT + 'V' + (H - 22); xl.push({ left: Math.min(92, Math.max(4, X(i) / VW * 100)).toFixed(2), top: ((H - 18) / H * 100).toFixed(2), text }); }
     const tab = (on) => ({ fg: on ? '#FFFFFF' : '#A3B3AC', ac: on ? accent : 'transparent' });
-    const tfs = ['1D', '5D', '1M', '6M', '1Y'].map((t) => Object.assign({ label: t, on: st.tf === t, pick: () => this.setState({ tf: t, start: null, end: null, hover: null, pending: null, measure: null }) }, tab(st.tf === t)));
+    const IVL = { '1D': '5m', '5D': '15m', '1M': '1h', '3M': '4h', '6M': '1D', '1Y': '1D' };
+    const tfs = ['1D', '5D', '1M', '3M', '6M', '1Y'].map((t) => Object.assign({ label: t, title: 'Last ' + t + ' · ' + IVL[t] + ' bars', on: st.tf === t, pick: () => this.setState({ tf: t, start: null, end: null, hover: null, pending: null, measure: null }) }, tab(st.tf === t)));
     const types = [['candles', 'Candles', 'Candlesticks'], ['ha', 'HA', 'Heikin Ashi candles'], ['line', 'Line', 'Line of closing prices'], ['area', 'Area', 'Area chart of closing prices']].map((t) => Object.assign({ label: t[1], title: t[2], on: st.type === t[0], pick: () => this.setState({ type: t[0] }) }, tab(st.type === t[0])));
-    const tools = [['cross', 'Cursor', 'Crosshair. Drag to pan'], ['hline', 'H-line', 'Click to add a horizontal level'], ['trend', 'Trend', 'Click two points to draw a trend line'], ['measure', 'Measure', 'Drag to measure change and bars']].map((t) => Object.assign({ label: t[1], title: t[2], on: st.tool === t[0], pick: () => this.setState({ tool: t[0], pending: null }) }, tab(st.tool === t[0])));
+    const TI = { cross: 'M8 1.5v13M1.5 8h13', hline: 'M1.5 8h13M4 5v6', trend: 'M2.5 13.5L13.5 2.5M2.5 11.5v4M11.5 2.5h4', measure: 'M2 10.5L10.5 2 14 5.5 5.5 14zM5 7.5l1.6 1.6M7.3 5.2l1.6 1.6M9.6 2.9l1.6 1.6' };
+    const tools = [['cross', 'Crosshair: drag to pan'], ['hline', 'Horizontal line: click to place'], ['trend', 'Trend line: click two points'], ['measure', 'Measure: drag across a period to see its return']].map((t) => { const on = st.tool === t[0]; return { title: t[1], icon: TI[t[0]], on: on, bg: on ? 'color-mix(in srgb, ' + accent + ' 18%, transparent)' : 'transparent', fg: on ? accent : '#A3B3AC', pick: () => this.setState({ tool: t[0], pending: null }) }; });
     const DEFS = [['Overlays', [['vol', 'Volume', ''], ['vwap', 'VWAP', ''], ['sma20', 'SMA 20', ''], ['sma50', 'SMA 50', ''], ['ema9', 'EMA 9', ''], ['ema21', 'EMA 21', ''], ['ema50', 'EMA 50', ''], ['bb', 'Bollinger Bands', '20, 2'], ['kc', 'Keltner Channels', '20, 2×ATR'], ['dc', 'Donchian Channels', '20'], ['prev', 'Previous day high / low', ''], ['orng', 'Opening range', '30 min'], ['piv', 'Pivot points', 'P, R1, S1']]], ['Lower panels', [['rsi', 'RSI', '14'], ['macd', 'MACD', '12, 26, 9'], ['stoch', 'Stochastic', '14, 3, 3'], ['atr', 'ATR', '14']]], ['Trade Journal', [['strikes', 'Verified strikes', '1D only'], ['ideas', 'Community ideas', 'Pins']]]];
     const q = st.q.trim().toLowerCase();
     const groups = DEFS.map((g) => ({ name: g[0], items: g[1].filter((d) => !q || d[1].toLowerCase().indexOf(q) >= 0).map((d) => ({ label: d[1], note: d[2], color: COL[d[0]], on: !!ind[d[0]], toggle: () => { const ni = Object.assign({}, this.state.ind); ni[d[0]] = !ni[d[0]]; this.setState({ ind: ni }); } })) })).filter((g) => g.items.length);
     const indCount = Object.keys(ind).filter((k) => ind[k]).length;
     const vs = S.bars[s].o, ve = S.bars[e].c, vp = (ve - vs) / vs * 100;
-    const HINT = { cross: 'Scroll or pinch to zoom · drag to pan · arrow keys pan · double-click to reset', hline: 'Click the chart to add a horizontal level', trend: st.pending ? 'Click a second point to finish the trend line' : 'Click the first point of your trend line', measure: 'Drag across the chart to measure change and bars' };
+    const HINT = { cross: 'Scroll or pinch to zoom · drag to pan · Shift-drag to measure a period · double-click to reset', hline: 'Click the chart to add a horizontal level', trend: st.pending ? 'Click a second point to finish the trend line' : 'Click the first point of your trend line', measure: 'Drag across any period to see its return. Click once to clear.' };
+    const SY = this.SYMS[st.sym];
+    const fmtP = (v) => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const wl = Object.keys(this.SYMS).map((k) => { const ss = this.seriesFor(k, '1D'); const f0 = ss.bars[0].o, l0 = ss.bars[ss.bars.length - 1].c, pc = (l0 - f0) / f0 * 100, on = k === st.sym;
+      return { sym: k, short: k.slice(0, 3), color: this.SYMS[k][4], last: fmtP(l0), chg: (pc >= 0 ? '+' : '−') + Math.abs(pc).toFixed(2) + '%', cc: pc >= 0 ? gain : loss, on: on, bd: on ? accent : 'transparent', bg: on ? '#16211E' : 'transparent', pick: () => this.setState({ sym: k, start: null, end: null, hover: null, measure: null, pending: null }) }; });
+    const D1 = this.seriesFor(st.sym, '1D'); const dOpen = D1.bars[0].o, dLast = D1.bars[D1.bars.length - 1].c; let dHi = -Infinity, dLo = Infinity; D1.bars.forEach((x) => { dHi = Math.max(dHi, x.h); dLo = Math.min(dLo, x.l); });
+    const dPc = (dLast - dOpen) / dOpen * 100;
+    D.sym = st.sym; D.symShort = st.sym.slice(0, 3); D.symColor = SY[4]; D.symLong = SY[0]; D.ivl = IVL[st.tf]; D.watch = st.watch; D.wl = wl;
+    D.toggleWatch = () => this.setState({ watch: !this.state.watch });
+    D.lastPx = fmtP(dLast); D.dayChg = (dLast - dOpen >= 0 ? '+' : '−') + Math.abs(dLast - dOpen).toFixed(2) + ' (' + (dPc >= 0 ? '+' : '−') + Math.abs(dPc).toFixed(2) + '%)'; D.dayColor = dPc >= 0 ? gain : loss;
+    D.dayLo = fmtP(dLo); D.dayHi = fmtP(dHi); D.dayPos = ((dLast - dLo) / Math.max(1e-9, dHi - dLo) * 100).toFixed(1);
+    D.axis = 'M' + PW + ' 0V' + (H - 22) + 'M0 ' + (H - 22) + 'H' + VW;
+    D.lastLine = 'M0 ' + f1(Y(S.bars[e].c)) + 'H' + PW; D.lastColor = S.bars[e].c >= S.bars[e].o ? gain : loss;
+    D.mRows = mRows; D.rangePct = (vp >= 0 ? '+' : '−') + Math.abs(vp).toFixed(2) + '%';
     const KEYS = ['d_bbU','d_bbL','d_kcU','d_kcL','d_dcU','d_dcL','d_prevH','d_prevL','d_orH','d_orL','d_pivP','d_pivR','d_pivS','d_sma20','d_sma50','d_ema9','d_ema21','d_ema50','d_vwap','p_rsi','p_stK','p_stD','p_atr','p_macd','p_signal'];
     KEYS.forEach((k) => { if (D[k] == null) D[k] = ''; });
     return Object.assign(D, {
@@ -545,7 +610,7 @@ class Component extends DCLogic {
       ddToggle: () => this.setState({ ddOpen: !this.state.ddOpen }), ddClose: () => this.setState({ ddOpen: false }),
       ddKey: (ev) => { if (ev.key === 'Escape' && this.state.ddOpen) { ev.stopPropagation(); this.setState({ ddOpen: false }); } },
       setQ: (ev) => this.setState({ q: ev.target.value }), resetInd: () => this.setState({ ind: Object.assign({}, this.DEF) }),
-      clearDraw: () => { const d = Object.assign({}, this.state.draws); d[this.state.tf] = { h: [], t: [] }; this.setState({ draws: d, pending: null, measure: null }); },
+      clearDraw: () => { const d = Object.assign({}, this.state.draws); d[this.state.sym + this.state.tf] = { h: [], t: [] }; this.setState({ draws: d, pending: null, measure: null }); },
       zoomIn: () => this.zoomAt(0.7, 1), zoomOut: () => this.zoomAt(1.4, 1), resetView: () => this.setState({ start: null, end: null }),
       onKey: (ev) => { const mm = this.win(); const k = Math.max(1, Math.round((mm.e - mm.s + 1) * 0.1)); if (ev.key === 'ArrowLeft') { ev.preventDefault(); this.pan(-k); } else if (ev.key === 'ArrowRight') { ev.preventDefault(); this.pan(k); } else if (ev.key === '+' || ev.key === '=') { ev.preventDefault(); this.zoomAt(0.8, 0.5); } else if (ev.key === '-') { ev.preventDefault(); this.zoomAt(1.25, 0.5); } else if (ev.key === 'Escape') this.setState({ pending: null, measure: null }); },
       onDown: (ev) => {
@@ -556,7 +621,7 @@ class Component extends DCLogic {
         if (ids.length === 2) { const a = this._pts[ids[0]], c = this._pts[ids[1]]; this._pinch = { d0: Math.max(10, Math.hypot(a.x - c.x, a.y - c.y)), w0: this.win(), mid: this.frac((a.x + c.x) / 2) }; this._drag = null; return; }
         if (!this._geo || !this._el) return;
         const P2 = this.pt(ev);
-        if (this.state.tool === 'measure' && P2.inMain) { this._drag = { measuring: true }; this.setState({ measure: { a: { i: P2.i, p: P2.p }, b: null } }); return; }
+        if ((this.state.tool === 'measure' || ev.shiftKey) && P2.x <= this._geo.PW) { this._drag = { measuring: true }; this.setState({ measure: { a: { i: P2.i, p: P2.p }, b: null }, hover: null }); return; }
         const ww = this.win(); this._drag = { x: ev.clientX, s: ww.s, e: ww.e, moved: false };
       },
       onMove: (ev) => {
@@ -577,9 +642,9 @@ class Component extends DCLogic {
         const wasPinch = !!this._pinch; delete this._pts[ev.pointerId]; if (Object.keys(this._pts).length < 2) this._pinch = null;
         const d = this._drag; this._drag = null;
         if (wasPinch || !this._geo || !this._el) return;
-        if (d && d.measuring) return;
-        const P2 = this.pt(ev); if (!P2.inMain) return;
-        const tf = this.state.tf; const dr = Object.assign({}, this.state.draws); const cur = dr[tf] ? { h: dr[tf].h.slice(), t: dr[tf].t.slice() } : { h: [], t: [] };
+        if (d && d.measuring) { const mm2 = this.state.measure; if (!mm2 || !mm2.b || mm2.b.i === mm2.a.i) this.setState({ measure: null }); return; }
+        const P2 = this.pt(ev); if (this.state.measure && this.state.tool !== 'measure') this.setState({ measure: null }); if (!P2.inMain) return;
+        const tf = this.state.sym + this.state.tf; const dr = Object.assign({}, this.state.draws); const cur = dr[tf] ? { h: dr[tf].h.slice(), t: dr[tf].t.slice() } : { h: [], t: [] };
         if (this.state.tool === 'hline' && d && !d.moved) { cur.h = cur.h.concat([P2.p]).slice(-10); dr[tf] = cur; this.setState({ draws: dr }); }
         else if (this.state.tool === 'trend' && d && !d.moved) {
           if (!this.state.pending) this.setState({ pending: { i: P2.i, p: P2.p } });
