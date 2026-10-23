@@ -92,6 +92,8 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 .ddi:hover{background:#16201D}
 .tvb:hover{background:#16211E !important;color:#FFFFFF !important}
 .wlr:hover{background:#16201D !important}
+.wlx{opacity:.55}.wlr:hover .wlx,.wlx:focus-visible{opacity:1}
+.wlx:hover{color:#F0607A !important;background:#1C2724 !important}
 @media (max-width: 1100px){.wl{display:none !important}}
 @media (max-width: 760px){
 .hdr{display:grid !important;grid-template-columns:minmax(0,1fr) auto;padding:0 12px !important;column-gap:8px}
@@ -234,7 +236,7 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 <path d="{{bodyDn}}" fill="{{loss}}"></path>
 <path d="{{d_sma20}}" stroke="#E0AF68" stroke-width="1.6" fill="none"></path><path d="{{d_sma50}}" stroke="#F7A8C0" stroke-width="1.6" fill="none"></path><path d="{{d_ema9}}" stroke="#4FD1B5" stroke-width="1.4" fill="none"></path><path d="{{d_ema21}}" stroke="#7AA2F7" stroke-width="1.4" fill="none"></path><path d="{{d_ema50}}" stroke="#9DBBFF" stroke-width="1.4" fill="none"></path><path d="{{d_vwap}}" stroke="{{accent}}" stroke-width="1.8" fill="none"></path>
 <path d="{{lastLine}}" stroke="{{lastColor}}" stroke-width="1" stroke-dasharray="1 3" fill="none"></path>
-<path d="{{guides}}" stroke="#2E3F3A" stroke-width="1" stroke-dasharray="3 4" fill="none"></path>
+<path d="{{rsiBand}}" fill="#C792EA" fill-opacity="0.07"></path><path d="{{rsiOB}}" fill="{{gain}}" fill-opacity="0.35"></path><path d="{{rsiOS}}" fill="{{loss}}" fill-opacity="0.35"></path><path d="{{guides}}" stroke="#2E3F3A" stroke-width="1" stroke-dasharray="3 4" fill="none"></path>
 <path d="{{p_rsi}}" stroke="#C792EA" stroke-width="1.5" fill="none"></path><path d="{{p_stK}}" stroke="#4FD1B5" stroke-width="1.5" fill="none"></path><path d="{{p_stD}}" stroke="#E0AF68" stroke-width="1.5" fill="none"></path><path d="{{p_atr}}" stroke="#E0AF68" stroke-width="1.5" fill="none"></path><path d="{{p_macd}}" stroke="#7AA2F7" stroke-width="1.5" fill="none"></path><path d="{{p_signal}}" stroke="#E0AF68" stroke-width="1.5" fill="none"></path>
 <path d="{{histUp}}" fill="{{gain}}" fill-opacity="0.55"></path>
 <path d="{{histDn}}" fill="{{loss}}" fill-opacity="0.55"></path>
@@ -260,9 +262,15 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 </div>
 <template data-scif value="{{watch}}" hint-placeholder-val="{{ true }}">
 <aside class="wl" aria-label="Watchlist" style="flex: none; width: 250px; border-left: 1px solid #1C2724; background: #0F1614; display: flex; flex-direction: column">
-<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid #1C2724"><span style="font-weight: 700; font-size: 13px">Watchlist</span><span style="font-size: 11px; color: #74877F">sample</span></div>
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 8px 8px 12px; border-bottom: 1px solid #1C2724"><span style="font-weight: 700; font-size: 13px">Watchlist <span style="font-weight: 400; font-size: 11px; color: #74877F">sample</span></span><button type="button" class="tvb" onClick="{{toggleAdd}}" aria-expanded="{{adding}}" style="min-height: 30px; padding: 0 10px; border-radius: 3px; border: 1px solid #2E3F3A; background: transparent; color: #F7DC92; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{addLabel}}</button></div>
+<template data-scif value="{{adding}}" hint-placeholder-val="{{ false }}"><div style="padding: 10px 12px; border-bottom: 1px solid #1C2724; background: #121A18">
+<div style="display: flex; gap: 6px"><label style="flex: 1; min-width: 0"><span class="sr">Ticker to add</span><input type="text" value="{{addVal}}" onChange="{{setAdd}}" onKeyDown="{{addKey}}" placeholder="Ticker, e.g. AMD" maxlength="6" autocomplete="off" style="width: 100%; box-sizing: border-box; min-height: 34px; padding: 0 10px; border: 1px solid #2E3F3A; border-radius: 3px; background: #0F1614; color: #E4ECE8; font: inherit; font-size: 13px; text-transform: uppercase"></label><button type="button" onClick="{{doAdd}}" style="min-height: 34px; padding: 0 12px; border: none; border-radius: 3px; background: #D8B25A; color: #0C1110; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer">Add</button></div>
+<template data-scif value="{{hasAddErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin: 6px 0 0; font-size: 12px; color: #F0607A">{{addErr}}</p></template>
+<div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px"><template data-scfor list="{{sugg}}" as="g" hint-placeholder-count="5"><button type="button" class="tvb" onClick="{{g.add}}" style="min-height: 26px; padding: 0 8px; border-radius: 3px; border: 1px solid #22302C; background: transparent; color: #BFCCC6; font: inherit; font-size: 11px; font-weight: 600; cursor: pointer">+ {{g.sym}}</button></template></div>
+</div></template>
 <div style="display: grid; grid-template-columns: minmax(0, 1fr) 72px 60px; gap: 6px; padding: 6px 12px; font-size: 11px; color: #74877F"><span>Symbol</span><span style="text-align: right">Last</span><span style="text-align: right">Chg%</span></div>
-<template data-scfor list="{{wl}}" as="w" hint-placeholder-count="8"><button type="button" class="wlr" onClick="{{w.pick}}" aria-pressed="{{w.on}}" style="display: grid; grid-template-columns: minmax(0, 1fr) 72px 60px; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border: none; border-left: 2px solid {{w.bd}}; background: {{w.bg}}; color: #E4ECE8; font: inherit; font-size: 12px; text-align: left; cursor: pointer"><span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span aria-hidden="true" style="flex: none; width: 18px; height: 18px; border-radius: 50%; background: {{w.color}}; color: #0C1110; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800">{{w.short}}</span><span style="font-weight: 700">{{w.sym}}</span></span><span style="text-align: right">{{w.last}}</span><span style="text-align: right; font-weight: 600; color: {{w.cc}}">{{w.chg}}</span></button></template>
+<div style="flex: 1; min-height: 0; overflow-y: auto"><template data-scfor list="{{wl}}" as="w" hint-placeholder-count="8"><div class="wlr" style="position: relative; display: flex; align-items: center; border-left: 2px solid {{w.bd}}; background: {{w.bg}}"><button type="button" onClick="{{w.pick}}" aria-pressed="{{w.on}}" style="flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) 70px 58px; align-items: center; gap: 6px; padding: 7px 4px 7px 12px; min-height: 36px; border: none; background: transparent; color: #E4ECE8; font: inherit; font-size: 12px; text-align: left; cursor: pointer"><span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span aria-hidden="true" style="flex: none; width: 18px; height: 18px; border-radius: 50%; background: {{w.color}}; color: #0C1110; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800">{{w.short}}</span><span style="font-weight: 700">{{w.sym}}</span></span><span style="text-align: right">{{w.last}}</span><span style="text-align: right; font-weight: 600; color: {{w.cc}}">{{w.chg}}</span></button><button type="button" class="wlx" onClick="{{w.remove}}" aria-label="{{w.removeLabel}}" title="{{w.removeLabel}}" style="flex: none; width: 28px; height: 28px; margin-right: 4px; border: none; border-radius: 3px; background: transparent; color: #74877F; font: inherit; font-size: 15px; cursor: pointer">×</button></div></template>
+<template data-scif value="{{wlEmpty}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; padding: 14px 12px; font-size: 12px; color: #8DA098">Your watchlist is empty. Use + Add to put a ticker back.</p></template></div>
 <div style="margin-top: auto; padding: 14px 12px; border-top: 1px solid #1C2724">
 <div style="font-size: 12px; color: #8DA098">{{symLong}}</div>
 <div style="margin-top: 4px; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 30px; font-weight: 700; line-height: 1">{{lastPx}}</div>
@@ -363,7 +371,7 @@ class Component extends DCLogic {
     super(...args);
     this.DEF = { vol: true, vwap: true, strikes: true, ideas: true };
     this.SYMS = { SPX: ['S&P 500 Index', 5790, 1, 0, '#D8B25A'], SPY: ['SPDR S&P 500 ETF', 578.4, 1, 101, '#7AA2F7'], QQQ: ['Invesco QQQ Trust', 498.2, 1.25, 202, '#4FD1B5'], IWM: ['iShares Russell 2000 ETF', 224.6, 1.35, 303, '#9ECE6A'], VIX: ['Cboe Volatility Index', 15.8, 4, 404, '#F0607A'], NVDA: ['NVIDIA', 182.4, 2.4, 505, '#9ECE6A'], TSLA: ['Tesla', 262.1, 2.8, 606, '#F7A8C0'], AAPL: ['Apple', 238.6, 1.2, 707, '#BFCCC6'] };
-    this.state = { sym: 'SPX', watch: true, tf: '1D', start: null, end: null, tool: 'cross', type: 'candles', ind: Object.assign({}, this.DEF), hover: null, narrow: false, fs: false, ddOpen: false, q: '', draws: {}, pending: null, measure: null };
+    this.state = { wlist: ['SPX', 'SPY', 'QQQ', 'IWM', 'VIX', 'NVDA', 'TSLA', 'AAPL'], adding: false, addVal: '', addErr: '', sym: 'SPX', watch: true, tf: '1D', start: null, end: null, tool: 'cross', type: 'candles', ind: Object.assign({}, this.DEF), hover: null, narrow: false, fs: false, ddOpen: false, q: '', draws: {}, pending: null, measure: null };
     this._cache = {}; this._drag = null; this._el = null; this._sec = null; this._geo = null; this._pts = {}; this._pinch = null;
     this.setRef = (el) => {
       this._el = el;
@@ -379,24 +387,42 @@ class Component extends DCLogic {
     this._onFs = () => this.setState({ fs: !!document.fullscreenElement, ddOpen: false });
     this._onResize = () => { if (this.state.fs) this.forceUpdate(); };
   }
+  addSym(raw) {
+    const k = String(raw || '').trim().toUpperCase().replace(/^\$/, '');
+    if (!/^[A-Z]{1,5}$/.test(k)) { this.setState({ addErr: 'Use a ticker of 1 to 5 letters, like AMD.' }); return; }
+    if (this.state.wlist.indexOf(k) >= 0) { this.setState({ addErr: k + ' is already on your watchlist.', sym: k, start: null, end: null }); return; }
+    this.setState({ wlist: this.state.wlist.concat([k]), addVal: '', addErr: '', adding: false, sym: k, start: null, end: null, measure: null, pending: null });
+  }
+  removeSym(k) {
+    const nl = this.state.wlist.filter((x) => x !== k);
+    const patch = { wlist: nl };
+    if (this.state.sym === k && nl.length) Object.assign(patch, { sym: nl[0], start: null, end: null, measure: null, pending: null });
+    this.setState(patch);
+  }
   componentDidMount() { document.addEventListener('fullscreenchange', this._onFs); window.addEventListener('resize', this._onResize); }
   componentWillUnmount() { document.removeEventListener('fullscreenchange', this._onFs); window.removeEventListener('resize', this._onResize); }
   rng(seed) { let a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
   tradingDays(count) { const out = []; const d = new Date(2026, 9, 20); while (out.length < count) { const w = d.getDay(); if (w !== 0 && w !== 6) out.unshift(new Date(d.getTime())); d.setDate(d.getDate() - 1); } return out; }
   ema(arr, len) { const k = 2 / (len + 1); const out = new Array(arr.length).fill(null); let prev = null, seen = 0; for (let i = 0; i < arr.length; i++) { const v = arr[i]; if (v == null) continue; prev = prev == null ? v : v * k + prev * (1 - k); seen++; if (seen >= len) out[i] = prev; } return out; }
   sma(arr, len) { const out = new Array(arr.length).fill(null); let s = 0, c = 0; for (let i = 0; i < arr.length; i++) { const v = arr[i]; if (v == null) { s = 0; c = 0; continue; } s += v; c++; if (c > len) { s -= arr[i - len]; c = len; } if (c === len) out[i] = s / len; } return out; }
+  symInfo(k) {
+    if (this.SYMS[k]) return this.SYMS[k];
+    let hsh = 7; for (let i = 0; i < k.length; i++) hsh = (hsh * 31 + k.charCodeAt(i)) >>> 0;
+    const PAL = ['#7AA2F7', '#4FD1B5', '#C792EA', '#E0AF68', '#9ECE6A', '#F7A8C0', '#8FD6E8'];
+    return [k + ' (sample)', 20 + (hsh % 480), 1.6, 800 + (hsh % 9000), PAL[hsh % PAL.length]];
+  }
   series(tf) { return this.seriesFor(this.state.sym, tf); }
   seriesFor(sym, tf) {
     const KEY = sym + '|' + tf; if (this._cache[KEY]) return this._cache[KEY];
-    const SY = this.SYMS[sym];
-    const C = { '1D': { days: 1, per: 78, step: 5, vol: 0.0009, seed: 198 }, '5D': { days: 5, per: 26, step: 15, vol: 0.0016, seed: 11 }, '1M': { days: 21, per: 7, step: 60, vol: 0.0032, seed: 19 }, '3M': { days: 63, per: 2, step: 240, vol: 0.0045, seed: 31 }, '6M': { days: 126, per: 1, step: 0, vol: 0.0085, seed: 23 }, '1Y': { days: 252, per: 1, step: 0, vol: 0.009, seed: 29 } }[tf];
+    const SY = this.symInfo(sym);
+    const C = { '1D': { days: 1, per: 78, step: 5, vol: 0.0009, seed: 156 }, '5D': { days: 5, per: 26, step: 15, vol: 0.0016, seed: 11 }, '1M': { days: 21, per: 7, step: 60, vol: 0.0032, seed: 19 }, '3M': { days: 63, per: 2, step: 240, vol: 0.0045, seed: 31 }, '6M': { days: 126, per: 1, step: 0, vol: 0.0085, seed: 23 }, '1Y': { days: 252, per: 1, step: 0, vol: 0.009, seed: 29 } }[tf];
     const r = this.rng(C.seed + SY[3]); const VOL = C.vol * SY[2];
     const gauss = () => { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
     const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const dl = this.tradingDays(C.days); const bars = [];
-    let p = C.per === 1 ? SY[1] * 0.9 : SY[1]; const drift = C.per === 1 ? 0.0006 : 0.00004;
+    let p = C.per === 1 ? SY[1] * 0.9 : SY[1]; let mom = 0; const drift = C.per === 1 ? 0.0006 : 0.00004;
     for (let di = 0; di < dl.length; di++) for (let k = 0; k < C.per; k++) {
-      const o = p, c = o * (1 + drift + gauss() * VOL);
+      mom = mom * 0.75 + gauss() * VOL * 0.22; const o = p, c = o * (1 + drift + mom + gauss() * VOL * 0.75);
       const h = Math.max(o, c) * (1 + Math.abs(gauss()) * VOL * 0.5), l = Math.min(o, c) * (1 - Math.abs(gauss()) * VOL * 0.5);
       let v; if (C.per > 1) { const u = k / (C.per - 1); v = 1e5 * (0.6 + r() * 0.5) * (1 + 2.2 * Math.exp(-u * 8) + 1.4 * Math.exp(-(1 - u) * 9)); } else v = 2.4e6 * (0.7 + r() * 0.6);
       let time = ''; if (C.per > 1) { const mins = 9 * 60 + 30 + k * C.step; const hh = Math.floor(mins / 60), mm = mins % 60; time = (((hh + 11) % 12) + 1) + ':' + String(mm).padStart(2, '0'); }
@@ -457,7 +483,7 @@ class Component extends DCLogic {
     if (strikesOn) { hi = Math.max(hi, base * 1.0112); lo = Math.min(lo, base * 0.993); }
     const pad = (hi - lo) * 0.07; hi += pad; lo -= pad;
     const paneKeys = ['rsi', 'macd', 'stoch', 'atr'].filter((k) => ind[k]);
-    const PH = st.fs ? 90 : 76, MT = 52;
+    const PH = st.fs ? 170 : (st.narrow ? 90 : 150), MT = 52;
     let MH = st.narrow ? 300 : 440;
     if (st.fs && this._el) { const r = this._el.getBoundingClientRect(); const availH = window.innerHeight - r.top - 52; const tH = VW * availH / Math.max(1, r.width); MH = Math.max(220, tH - (MT + 14 + paneKeys.length * (PH + 28) + 22)); }
     const Y = (p) => MT + (hi - p) / (hi - lo) * MH;
@@ -497,7 +523,7 @@ class Component extends DCLogic {
     if (ind.vwap) D.d_vwap = line(S.vwap, Y);
     let bbFill = '';
     if (ind.bb) { const idx = []; for (let i = s; i <= e; i++) if (S.bbU[i] != null) idx.push(i); if (idx.length > 1) bbFill = 'M' + idx.map((i) => f1(X(i)) + ' ' + f1(Y(S.bbU[i]))).join('L') + 'L' + idx.slice().reverse().map((i) => f1(X(i)) + ' ' + f1(Y(S.bbL[i]))).join('L') + 'Z'; }
-    let grid = ''; const yl = [];
+    let grid = ''; const yl = []; const tags = [];
     const raw = (hi - lo) / 5, mag = Math.pow(10, Math.floor(Math.log10(raw))), nm = raw / mag, stp = (nm < 1.5 ? 1 : nm < 3 ? 2 : nm < 7 ? 5 : 10) * mag;
     for (let p = Math.ceil(lo / stp) * stp; p <= hi; p += stp) { const y = Y(p); if (y < MT + 6 || y > MT + MH - 4) continue; grid += 'M0 ' + f1(y) + 'H' + PW; yl.push({ top: (y / H * 100).toFixed(2), text: p.toLocaleString('en-US', { maximumFractionDigits: stp < 1 ? 2 : 0 }) }); }
     let guides = '', histUp = '', histDn = '';
@@ -506,8 +532,14 @@ class Component extends DCLogic {
     paneKeys.forEach((k) => {
       const top = paneTops[k]; grid += 'M0 ' + f1(top - 18) + 'H' + PW;
       if (k === 'rsi' || k === 'stoch') paneInfo.push({ top: top, bot: top + PH, d: 1, inv: (y) => 100 - (y - top) / PH * 100 });
-      if (k === 'rsi') { const f = (v) => PY('rsi', v, 0, 100); guides += 'M0 ' + f1(f(70)) + 'H' + PW + 'M0 ' + f1(f(30)) + 'H' + PW; D.p_rsi = line(S.rsi, f); }
-      if (k === 'stoch') { const f = (v) => PY('stoch', v, 0, 100); guides += 'M0 ' + f1(f(80)) + 'H' + PW + 'M0 ' + f1(f(20)) + 'H' + PW; D.p_stK = line(S.stK, f); D.p_stD = line(S.stD, f); }
+      if (k === 'rsi') { const f = (v) => PY('rsi', v, 0, 100); guides += 'M0 ' + f1(f(70)) + 'H' + PW + 'M0 ' + f1(f(30)) + 'H' + PW + 'M0 ' + f1(f(50)) + 'H' + PW; D.p_rsi = line(S.rsi, f);
+        D.rsiBand = rect(0, f(70), PW, f(30) - f(70));
+        const exc = (thr, above) => { let d = '', seg = []; const flush = () => { if (seg.length > 1) d += 'M' + f1(seg[0][0]) + ' ' + f1(f(thr)) + seg.map((q) => 'L' + f1(q[0]) + ' ' + f1(q[1])).join('') + 'L' + f1(seg[seg.length - 1][0]) + ' ' + f1(f(thr)) + 'Z'; seg = []; };
+          for (let i = s; i <= e; i++) { const v = S.rsi[i]; if (v != null && (above ? v > thr : v < thr)) seg.push([X(i), f(v)]); else flush(); } flush(); return d; };
+        D.rsiOB = exc(70, true); D.rsiOS = exc(30, false);
+        [70, 50, 30].forEach((lv) => yl.push({ top: (f(lv) / H * 100).toFixed(2), text: String(lv) }));
+        const lr = S.rsi[e]; if (lr != null) tags.push({ top: (f(lr) / H * 100).toFixed(2), text: lr.toFixed(1), bg: '#C792EA', fg: '#0C1110' }); }
+      if (k === 'stoch') { const f = (v) => PY('stoch', v, 0, 100); guides += 'M0 ' + f1(f(80)) + 'H' + PW + 'M0 ' + f1(f(20)) + 'H' + PW; [80, 20].forEach((lv) => yl.push({ top: (f(lv) / H * 100).toFixed(2), text: String(lv) })); D.p_stK = line(S.stK, f); D.p_stD = line(S.stD, f); }
       if (k === 'atr') { let a = Infinity, b = -Infinity; for (let i = s; i <= e; i++) if (S.atr[i] != null) { a = Math.min(a, S.atr[i]); b = Math.max(b, S.atr[i]); } if (a < b) { const lo2 = a - (b - a) * 0.1, hi2 = b + (b - a) * 0.1; paneInfo.push({ top: top, bot: top + PH, d: 2, inv: (y) => hi2 - (y - top) / PH * (hi2 - lo2) }); const f = (v) => PY('atr', v, lo2, hi2); D.p_atr = line(S.atr, f); } }
       if (k === 'macd') { let mx = 1e-9; for (let i = s; i <= e; i++) [S.macd[i], S.signal[i], S.hist[i]].forEach((v) => { if (v != null) mx = Math.max(mx, Math.abs(v)); }); const f = (v) => top + PH / 2 - v / mx * (PH / 2 - 2); paneInfo.push({ top: top, bot: top + PH, d: 2, inv: (y) => (top + PH / 2 - y) / (PH / 2 - 2) * mx }); guides += 'M0 ' + f1(f(0)) + 'H' + PW;
         for (let i = s; i <= e; i++) { const hv = S.hist[i]; if (hv == null) continue; const y1 = f(Math.max(hv, 0)), y2 = f(Math.min(hv, 0)); const d = rect(X(i) - bodyW / 2, y1, bodyW, Math.max(0.8, y2 - y1)); if (hv >= 0) histUp += d; else histDn += d; }
@@ -515,7 +547,7 @@ class Component extends DCLogic {
     });
     let bands = '';
     if (strikesOn) { bands = rect(0, Y(base * 1.0112), PW, Y(base * 1.0096) - Y(base * 1.0112)) + rect(0, Y(base * 0.9946), PW, Y(base * 0.993) - Y(base * 0.9946)); paneLabels.push({ text: 'Verified call strikes', y: Y(base * 1.0112) + 2, color: '#D9B8F5' }); paneLabels.push({ text: 'Verified put strikes', y: Y(base * 0.9946) + 2, color: '#D9B8F5' }); }
-    const tags = [];
+    
     const draws = st.draws[st.sym + st.tf] || { h: [], t: [] };
     let drawn = '';
     draws.h.forEach((p) => { if (p > lo && p < hi) { const y = Y(p); drawn += 'M0 ' + f1(y) + 'H' + PW; tags.push({ top: (y / H * 100).toFixed(2), text: fmt(p), bg: '#F7A8C0', fg: '#0C1110' }); } });
@@ -579,19 +611,27 @@ class Component extends DCLogic {
     const indCount = Object.keys(ind).filter((k) => ind[k]).length;
     const vs = S.bars[s].o, ve = S.bars[e].c, vp = (ve - vs) / vs * 100;
     const HINT = { cross: 'Scroll or pinch to zoom · drag to pan · Shift-drag to measure a period · double-click to reset', hline: 'Click the chart to add a horizontal level', trend: st.pending ? 'Click a second point to finish the trend line' : 'Click the first point of your trend line', measure: 'Drag across any period to see its return. Click once to clear.' };
-    const SY = this.SYMS[st.sym];
+    const SY = this.symInfo(st.sym);
     const fmtP = (v) => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const wl = Object.keys(this.SYMS).map((k) => { const ss = this.seriesFor(k, '1D'); const f0 = ss.bars[0].o, l0 = ss.bars[ss.bars.length - 1].c, pc = (l0 - f0) / f0 * 100, on = k === st.sym;
-      return { sym: k, short: k.slice(0, 3), color: this.SYMS[k][4], last: fmtP(l0), chg: (pc >= 0 ? '+' : '−') + Math.abs(pc).toFixed(2) + '%', cc: pc >= 0 ? gain : loss, on: on, bd: on ? accent : 'transparent', bg: on ? '#16211E' : 'transparent', pick: () => this.setState({ sym: k, start: null, end: null, hover: null, measure: null, pending: null }) }; });
+    const wl = st.wlist.map((k) => { const ss = this.seriesFor(k, '1D'); const f0 = ss.bars[0].o, l0 = ss.bars[ss.bars.length - 1].c, pc = (l0 - f0) / f0 * 100, on = k === st.sym;
+      return { sym: k, short: k.slice(0, 3), color: this.symInfo(k)[4], last: fmtP(l0), chg: (pc >= 0 ? '+' : '−') + Math.abs(pc).toFixed(2) + '%', cc: pc >= 0 ? gain : loss, on: on, bd: on ? accent : 'transparent', bg: on ? '#16211E' : 'transparent', pick: () => this.setState({ sym: k, start: null, end: null, hover: null, measure: null, pending: null }), remove: () => this.removeSym(k), removeLabel: 'Remove ' + k + ' from watchlist' }; });
     const D1 = this.seriesFor(st.sym, '1D'); const dOpen = D1.bars[0].o, dLast = D1.bars[D1.bars.length - 1].c; let dHi = -Infinity, dLo = Infinity; D1.bars.forEach((x) => { dHi = Math.max(dHi, x.h); dLo = Math.min(dLo, x.l); });
     const dPc = (dLast - dOpen) / dOpen * 100;
     D.sym = st.sym; D.symShort = st.sym.slice(0, 3); D.symColor = SY[4]; D.symLong = SY[0]; D.ivl = IVL[st.tf]; D.watch = st.watch; D.wl = wl;
     D.toggleWatch = () => this.setState({ watch: !this.state.watch });
+    D.adding = st.adding; D.addVal = st.addVal; D.addErr = st.addErr; D.hasAddErr = !!st.addErr; D.wlEmpty = st.wlist.length === 0;
+    D.toggleAdd = () => this.setState({ adding: !this.state.adding, addErr: '' });
+    D.setAdd = (ev) => this.setState({ addVal: ev.target.value, addErr: '' });
+    D.addKey = (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); this.addSym(this.state.addVal); } else if (ev.key === 'Escape') this.setState({ adding: false, addErr: '' }); };
+    D.doAdd = () => this.addSym(this.state.addVal);
+    D.addLabel = st.adding ? 'Cancel' : '+ Add';
+    D.sugg = ['DIA', 'XSP', 'AMD', 'MSFT', 'AMZN', 'META', 'GOOGL'].filter((k) => st.wlist.indexOf(k) < 0).slice(0, 5).map((k) => ({ sym: k, add: () => this.addSym(k) }));
     D.lastPx = fmtP(dLast); D.dayChg = (dLast - dOpen >= 0 ? '+' : '−') + Math.abs(dLast - dOpen).toFixed(2) + ' (' + (dPc >= 0 ? '+' : '−') + Math.abs(dPc).toFixed(2) + '%)'; D.dayColor = dPc >= 0 ? gain : loss;
     D.dayLo = fmtP(dLo); D.dayHi = fmtP(dHi); D.dayPos = ((dLast - dLo) / Math.max(1e-9, dHi - dLo) * 100).toFixed(1);
     D.axis = 'M' + PW + ' 0V' + (H - 22) + 'M0 ' + (H - 22) + 'H' + VW;
     D.lastLine = 'M0 ' + f1(Y(S.bars[e].c)) + 'H' + PW; D.lastColor = S.bars[e].c >= S.bars[e].o ? gain : loss;
     D.mRows = mRows; D.rangePct = (vp >= 0 ? '+' : '−') + Math.abs(vp).toFixed(2) + '%';
+    ['rsiBand', 'rsiOB', 'rsiOS'].forEach((k) => { if (D[k] == null) D[k] = ''; });
     const KEYS = ['d_bbU','d_bbL','d_kcU','d_kcL','d_dcU','d_dcL','d_prevH','d_prevL','d_orH','d_orL','d_pivP','d_pivR','d_pivS','d_sma20','d_sma50','d_ema9','d_ema21','d_ema50','d_vwap','p_rsi','p_stK','p_stD','p_atr','p_macd','p_signal'];
     KEYS.forEach((k) => { if (D[k] == null) D[k] = ''; });
     return Object.assign(D, {
