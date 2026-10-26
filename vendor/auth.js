@@ -24,7 +24,7 @@
         window.TJ_PROFILE = prof;
         var DATA_PAGES = ['dashboard.html', 'trades.html', 'my-rules.html', 'insights.html'];
         if (DATA_PAGES.indexOf(page) < 0 || !window.TJImport) { resolve(); return; }
-        var needRules = page === 'dashboard.html' || page === 'my-rules.html';
+        var needRules = page === 'dashboard.html' || page === 'my-rules.html' || page === 'insights.html';
         var pRules = needRules ? sb.from('rules').select('id, kind, params, active, created_at').order('created_at', { ascending: true }).then(function (r) { window.TJ_RULES = (r && r.data) || []; }, function () { window.TJ_RULES = []; }) : Promise.resolve();
         var pTrades = sb.from('trades').select('*').order('opened_at', { ascending: false }).limit(2000).then(function (tr) {
           var trades = (tr && tr.data) || [];
