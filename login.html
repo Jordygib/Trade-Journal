@@ -9,24 +9,24 @@
 <style>
 *{box-sizing:border-box}
 html{-webkit-font-smoothing:antialiased}
-body{margin:0;min-height:100vh;background:#0C1110;background-image:linear-gradient(rgba(216,178,90,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(216,178,90,.03) 1px,transparent 1px);background-size:32px 32px;color:#E4ECE8;font-family:'Barlow',system-ui,sans-serif;font-size:15px;display:flex;flex-direction:column}
+body{margin:0;min-height:100vh;background:#111A17;background-image:linear-gradient(rgba(216,178,90,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(216,178,90,.03) 1px,transparent 1px);background-size:32px 32px;color:#EFF5F2;font-family:'Barlow',system-ui,sans-serif;font-size:15px;display:flex;flex-direction:column}
 a{color:#D8B25A}
-.top{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #1C2724}
+.top{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #25332E}
 .logo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:20px}
 .mark{width:30px;height:30px;border-radius:4px;background:#D8B25A;display:flex;align-items:center;justify-content:center}
 .wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 16px}
-.card{width:100%;max-width:440px;background:rgba(18,26,24,.94);border:1px solid #22302C;border-radius:8px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.card{width:100%;max-width:440px;background:rgba(25, 36, 32, 0.94);border:1px solid #2B3B36;border-radius:8px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
 h1{margin:0;font-family:'Barlow Semi Condensed',sans-serif;font-size:32px;line-height:1.1}
-.sub{margin:6px 0 0;color:#A3B3AC}
-.tabs{display:flex;margin:22px 0 18px;border-bottom:1px solid #22302C}
-.tabs button{flex:1;min-height:44px;border:none;background:transparent;color:#A3B3AC;font:inherit;font-weight:700;cursor:pointer;box-shadow:inset 0 -2px 0 transparent}
+.sub{margin:6px 0 0;color:#B8C6C0}
+.tabs{display:flex;margin:22px 0 18px;border-bottom:1px solid #2B3B36}
+.tabs button{flex:1;min-height:44px;border:none;background:transparent;color:#B8C6C0;font:inherit;font-weight:700;cursor:pointer;box-shadow:inset 0 -2px 0 transparent}
 .tabs button[aria-selected="true"]{color:#fff;box-shadow:inset 0 -2px 0 #D8B25A}
-label.f{display:block;margin-top:14px;font-size:13px;font-weight:600;color:#BFCCC6}
-input.t{display:block;width:100%;margin-top:6px;min-height:46px;padding:0 12px;border:1px solid #2E3F3A;border-radius:4px;background:#0F1614;color:#E4ECE8;font:inherit;font-size:15px}
+label.f{display:block;margin-top:14px;font-size:13px;font-weight:600;color:#CFDAD5}
+input.t{display:block;width:100%;margin-top:6px;min-height:46px;padding:0 12px;border:1px solid #3A4E47;border-radius:4px;background:#151F1C;color:#EFF5F2;font:inherit;font-size:15px}
 input.t:focus{outline:2px solid #D8B25A;outline-offset:1px;border-color:transparent}
-.hint{margin-top:5px;font-size:12px;color:#74877F}
+.hint{margin-top:5px;font-size:12px;color:#8A9C95}
 .ok{color:#4FD1B5}.bad{color:#F0607A}
-.check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;color:#BFCCC6;cursor:pointer}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;color:#CFDAD5;cursor:pointer}
 .check input{width:18px;height:18px;margin:2px 0 0;accent-color:#D8B25A;flex:none}
 .btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin-top:20px;border:none;border-radius:4px;background:#D8B25A;color:#0C1110;font:inherit;font-weight:700;font-size:16px;cursor:pointer}
 .btn:disabled{opacity:.6;cursor:default}
@@ -35,14 +35,14 @@ input.t:focus{outline:2px solid #D8B25A;outline-offset:1px;border-color:transpar
 .msg.err{background:rgba(240,96,122,.1);border:1px solid rgba(240,96,122,.4);color:#F7B3C0}
 .msg.info{background:rgba(79,209,181,.08);border:1px solid rgba(79,209,181,.35);color:#BFEFE3}
 .row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-.foot{margin-top:18px;font-size:12px;color:#74877F;line-height:1.5}
+.foot{margin-top:18px;font-size:12px;color:#8A9C95;line-height:1.5}
 [hidden]{display:none !important}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="vendor/config.js"></script>
 </head>
 <body>
-<header class="top"><a class="logo" href="index.html"><span class="mark" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="#0C1110" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12.5l4-4.5 3 2.5 6-7M10.5 3.5h4v4"></path></svg></span>Trade Journal</a><a href="index.html" style="font-size:14px;font-weight:600;text-decoration:none;color:#BFCCC6">← Back to home</a></header>
+<header class="top"><a class="logo" href="index.html"><span class="mark" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="#0C1110" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12.5l4-4.5 3 2.5 6-7M10.5 3.5h4v4"></path></svg></span>Trade Journal</a><a href="index.html" style="font-size:14px;font-weight:600;text-decoration:none;color:#CFDAD5">← Back to home</a></header>
 <main class="wrap">
 <div class="card">
 <div id="authView">
