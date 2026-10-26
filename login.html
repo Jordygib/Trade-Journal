@@ -37,11 +37,13 @@ input.t:focus{outline:2px solid #D8B25A;outline-offset:1px;border-color:transpar
 .row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
 .foot{margin-top:18px;font-size:12px;color:#8A9C95;line-height:1.5}
 [hidden]{display:none !important}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(640px 320px at 15% 0%,rgba(56,189,248,.18),transparent 70%),radial-gradient(600px 360px at 95% 90%,rgba(59,130,246,.15),transparent 70%)}
-.top{box-shadow:0 1px 0 rgba(56,189,248,.45),0 10px 34px -14px rgba(56,189,248,.55)}
-.card{position:relative;box-shadow:0 0 0 1px rgba(56,189,248,.3),0 0 70px rgba(56,189,248,.16),0 30px 80px rgba(0,0,0,.45) !important}
-.card::before{content:"";position:absolute;left:10%;right:10%;top:-1px;height:1px;background:linear-gradient(90deg,transparent,#38BDF8,transparent);box-shadow:0 0 12px 1px rgba(56,189,248,.6)}
-input.t:focus{outline:none;border-color:transparent;box-shadow:0 0 0 2px rgba(56,189,248,.7),0 0 18px rgba(56,189,248,.35)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(760px 360px at 8% -8%,rgba(56,189,248,.3),transparent 70%),radial-gradient(660px 420px at 104% 92%,rgba(56,189,248,.24),transparent 70%)}
+body{background-image:linear-gradient(rgba(56,189,248,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.035) 1px,transparent 1px) !important}
+.top{box-shadow:0 1px 0 rgba(56,189,248,.7),0 14px 44px -12px rgba(56,189,248,.75)}
+.card{position:relative;border-color:rgba(56,189,248,.3) !important;background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0) 160px);box-shadow:0 0 0 1px rgba(56,189,248,.35),0 0 90px rgba(56,189,248,.25),0 30px 80px rgba(0,0,0,.45) !important}
+.card::before{content:"";position:absolute;left:12%;right:12%;top:-1px;height:1px;background:linear-gradient(90deg,transparent,#38BDF8 30%,#BAE6FD 50%,#38BDF8 70%,transparent);box-shadow:0 0 14px 2px rgba(56,189,248,.7)}
+.tabs button[aria-selected="true"]{box-shadow:inset 0 -2px 0 #38BDF8,0 10px 18px -12px rgba(56,189,248,1) !important}
+input.t:focus{outline:none;border-color:transparent;box-shadow:0 0 0 2px rgba(56,189,248,.75),0 0 18px rgba(56,189,248,.45)}
 /* neon */
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>

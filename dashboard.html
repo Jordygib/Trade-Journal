@@ -7,9 +7,9 @@
 <meta name="description" content="Trade Journal: an options trade journal with deep analytics, a verified leaderboard, and monthly awards. Prototype with sample data.">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet">
 <style>
-body{margin:0;background-color:#111A17;background-image:linear-gradient(rgba(216,178,90,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(216,178,90,0.04) 1px,transparent 1px);background-size:32px 32px;background-attachment:fixed}
+body{margin:0;background-color:#111A17;background-image:linear-gradient(rgba(56,189,248,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.035) 1px,transparent 1px);background-size:32px 32px;background-attachment:fixed}
 .bgfx{position:relative}
-.bgfx::before{content:"";position:fixed;inset:-10%;pointer-events:none;z-index:0;background:radial-gradient(520px 360px at 82% 4%,rgba(79,209,181,0.10),transparent 70%),radial-gradient(480px 340px at 8% 38%,rgba(216,178,90,0.08),transparent 70%),radial-gradient(420px 300px at 60% 95%,rgba(122,162,247,0.06),transparent 70%);animation:drift 26s ease-in-out infinite alternate}
+.bgfx::before{content:"";position:fixed;inset:-10%;pointer-events:none;z-index:0;background:radial-gradient(560px 380px at 82% 4%,rgba(56,189,248,0.12),transparent 70%),radial-gradient(520px 360px at 8% 40%,rgba(56,189,248,0.09),transparent 70%),radial-gradient(460px 320px at 60% 95%,rgba(56,189,248,0.08),transparent 70%);animation:drift 26s ease-in-out infinite alternate}
 .bgfx > *{position:relative;z-index:1}
 @keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-3%,2%,0)}}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -38,7 +38,7 @@ button:hover{filter:brightness(1.15)}
 button:active{transform:translateY(1px)}
 .tape a:hover{background:#18231F}
 .hdr-wrap{position:relative}
-.hdr-wrap::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,#D8B25A,transparent);background-size:35% 100%;background-repeat:no-repeat;animation:sheen 7s linear infinite}
+.hdr-wrap::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,transparent,#BAE6FD,transparent);background-size:35% 100%;background-repeat:no-repeat;animation:sheen 7s linear infinite}
 @keyframes sheen{from{background-position:-40% 0}to{background-position:140% 0}}
 .pulse{position:relative;flex:none;width:7px;height:7px;border-radius:50%;background:#4FD1B5}
 .pulse::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 0 rgba(79,209,181,.6);animation:ping 2s ease-out infinite}
@@ -68,7 +68,7 @@ h1,h2{font-family:'Barlow Semi Condensed','Barlow',sans-serif}
 .acct-name{color:#F7DC92 !important}
 .me-card{box-shadow:0 0 0 1px rgba(216,178,90,.45),0 0 32px rgba(216,178,90,.14) !important;border-color:color-mix(in srgb,#D8B25A 45%,#2B3B36) !important;background:radial-gradient(90% 120% at 0% 0%,rgba(216,178,90,.14),rgba(25, 36, 32, 0.92) 55%) !important}
 html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
-body{background-image:linear-gradient(rgba(216,178,90,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(216,178,90,0.025) 1px,transparent 1px) !important}
+body{background-image:linear-gradient(rgba(56,189,248,0.028) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.028) 1px,transparent 1px) !important}
 .bgfx::before{opacity:.7}
 .hdr-nav a{position:relative}
 .hdr-nav a::after{content:"";position:absolute;left:14px;right:14px;bottom:10px;height:2px;border-radius:2px;background:#D8B25A;transform:scaleX(0);transform-origin:left;transition:transform .22s ease}
@@ -105,25 +105,27 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 @media (prefers-reduced-motion: reduce){.calc,.tip{transition:none !important}}
 main section{box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 1px 2px rgba(0,0,0,.18)}
 .kpi{transition:background-color .2s ease}.kpi:hover{background:rgba(32,45,40,.96) !important}
-/* neon-glow */:root{--neon:#38BDF8;--neon2:#3B82F6}
-.bgfx::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(640px 300px at 10% -4%,rgba(56,189,248,.17),transparent 70%),radial-gradient(560px 340px at 102% 28%,rgba(59,130,246,.14),transparent 70%),radial-gradient(760px 280px at 50% 108%,rgba(56,189,248,.13),transparent 70%),linear-gradient(112deg,transparent 46%,rgba(56,189,248,.06) 49.6%,rgba(56,189,248,.16) 50%,rgba(56,189,248,.06) 50.4%,transparent 54%);animation:neonPulse 7s ease-in-out infinite alternate}
-@keyframes neonPulse{from{opacity:.6}to{opacity:1}}
-.hdr-wrap{box-shadow:0 1px 0 rgba(56,189,248,.45),0 10px 34px -14px rgba(56,189,248,.55)}
-.hdr-nav a[aria-current]{text-shadow:0 0 14px rgba(56,189,248,.7)}
-.hdr-logo{filter:drop-shadow(0 0 10px rgba(56,189,248,.35))}
-.pg-top h1{text-shadow:0 0 26px rgba(56,189,248,.4)}
-main section:not(.gold){position:relative}
-main section:not(.gold)::before{content:"";position:absolute;left:10%;right:10%;top:-1px;height:1px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--neon),transparent);opacity:.6;box-shadow:0 0 10px 1px rgba(56,189,248,.5);pointer-events:none;transition:opacity .3s ease,left .4s ease,right .4s ease;z-index:1}
-main section:not(.gold):hover::before{opacity:1;left:2%;right:2%}
-main section:not(.gold):hover{border-color:rgba(56,189,248,.42) !important;box-shadow:0 0 0 1px rgba(56,189,248,.16),0 0 30px rgba(56,189,248,.14),0 14px 34px rgba(0,0,0,.3) !important}
-.lp main section::before{display:none}.lp main section:not(.gold):hover{box-shadow:none !important}
-.kpi:hover{box-shadow:inset 0 0 0 1px rgba(56,189,248,.45),0 0 24px rgba(56,189,248,.2)}
-.lift:hover{border-color:rgba(56,189,248,.55) !important;box-shadow:0 0 0 1px rgba(56,189,248,.2),0 0 32px rgba(56,189,248,.2),0 18px 40px rgba(0,0,0,.35) !important}
-.stackwrap{box-shadow:0 0 0 1px rgba(56,189,248,.35),0 0 70px rgba(56,189,248,.2),0 30px 80px rgba(0,0,0,.5) !important}
-.float1,.float2,.float3{box-shadow:0 0 0 1px rgba(56,189,248,.35),0 0 24px rgba(56,189,248,.3) !important}
-.calc:hover,.calc:focus-visible{box-shadow:0 0 0 2px #FFFFFF,0 0 22px rgba(56,189,248,.75) !important}
-input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none !important;box-shadow:0 0 0 2px rgba(56,189,248,.65),0 0 16px rgba(56,189,248,.35) !important}
-button:focus-visible,a:focus-visible{outline:2px solid var(--neon) !important;outline-offset:2px;box-shadow:0 0 14px rgba(56,189,248,.5)}
+/* neon-glow */:root{--neon:#38BDF8}
+.bgfx::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(760px 360px at 6% -8%,rgba(56,189,248,.30),transparent 70%),radial-gradient(660px 420px at 106% 22%,rgba(56,189,248,.22),transparent 70%),radial-gradient(900px 340px at 50% 112%,rgba(56,189,248,.24),transparent 72%),radial-gradient(520px 300px at 72% 58%,rgba(56,189,248,.07),transparent 70%);animation:neonPulse 6s ease-in-out infinite alternate}
+@keyframes neonPulse{from{opacity:.72}to{opacity:1}}
+.hdr-wrap{box-shadow:0 1px 0 rgba(56,189,248,.7),0 14px 44px -12px rgba(56,189,248,.75)}
+.hdr-nav a[aria-current]{color:#FFFFFF !important;box-shadow:inset 0 -2px 0 #38BDF8,0 10px 18px -12px rgba(56,189,248,1) !important;text-shadow:0 0 18px rgba(56,189,248,.95)}
+.hdr-nav a::after{background:#38BDF8 !important;box-shadow:0 0 10px rgba(56,189,248,.9)}
+.hdr-logo{filter:drop-shadow(0 0 12px rgba(56,189,248,.5))}
+.pg-top h1{text-shadow:0 0 30px rgba(56,189,248,.5)}
+main section:not(.gold){position:relative;border-color:rgba(56,189,248,.18) !important;background-image:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 140px);transition:border-color .3s ease,box-shadow .3s ease}
+main section:not(.gold)::before{content:"";position:absolute;left:12%;right:12%;top:-1px;height:1px;border-radius:2px;background:linear-gradient(90deg,transparent,#38BDF8 30%,#BAE6FD 50%,#38BDF8 70%,transparent);opacity:.8;box-shadow:0 0 14px 2px rgba(56,189,248,.65);pointer-events:none;transition:opacity .35s ease,left .45s cubic-bezier(.2,.8,.2,1),right .45s cubic-bezier(.2,.8,.2,1);z-index:1}
+main section:not(.gold):hover::before{opacity:1;left:3%;right:3%}
+main section:not(.gold):hover{border-color:rgba(56,189,248,.55) !important;box-shadow:0 0 0 1px rgba(56,189,248,.22),0 0 38px rgba(56,189,248,.2),0 16px 36px rgba(0,0,0,.32) !important}
+.lp main section::before{display:none}.lp main section:not(.gold){border-color:transparent !important;background-image:none}.lp main section:not(.gold):hover{box-shadow:none !important}
+.kpi:hover{box-shadow:inset 0 0 0 1px rgba(56,189,248,.55),0 0 28px rgba(56,189,248,.25)}
+.lift:hover{border-color:rgba(56,189,248,.6) !important;box-shadow:0 0 0 1px rgba(56,189,248,.25),0 0 36px rgba(56,189,248,.25),0 18px 40px rgba(0,0,0,.35) !important}
+.stackwrap{border-color:rgba(56,189,248,.45) !important;box-shadow:0 0 0 1px rgba(56,189,248,.35),0 0 80px rgba(56,189,248,.28),0 30px 80px rgba(0,0,0,.5) !important}
+.float1,.float2,.float3{border-color:rgba(56,189,248,.5) !important;box-shadow:0 0 0 1px rgba(56,189,248,.35),0 0 28px rgba(56,189,248,.38) !important}
+.calc:hover,.calc:focus-visible{box-shadow:0 0 0 2px #FFFFFF,0 0 26px rgba(56,189,248,.85) !important}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none !important;box-shadow:0 0 0 2px rgba(56,189,248,.75),0 0 18px rgba(56,189,248,.45) !important}
+button:focus-visible,a:focus-visible{outline:2px solid #38BDF8 !important;outline-offset:2px;box-shadow:0 0 16px rgba(56,189,248,.6)}
+.lp header{box-shadow:0 1px 0 rgba(56,189,248,.7),0 14px 44px -12px rgba(56,189,248,.75)}.lp h1{text-shadow:0 0 40px rgba(56,189,248,.45)}.lp .btn-p:hover{box-shadow:0 10px 26px rgba(216,178,90,.35),0 0 30px rgba(56,189,248,.45)}
 @media (prefers-reduced-motion: reduce){.bgfx::after{animation:none}}
 @media (max-width: 760px){
 .toast{left:12px !important;right:12px !important;bottom:12px !important;max-width:none !important}
@@ -192,7 +194,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--neon) !important;ou
 </div>
 <main class="pg" style="padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; width: 100%; max-width: 1360px; margin: 0 auto">
 
-<template data-scif value="{{isSample}}" hint-placeholder-val="{{ true }}"><div role="note" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-radius: 6px; border: 1px solid color-mix(in srgb, #7AA2F7 40%, #2B3B36); background: color-mix(in srgb, #7AA2F7 8%, #151F1C)"><span style="font-size: 14px"><strong>You’re looking at sample data.</strong> <span style="color: #CFDAD5">Import your trades and every number here becomes yours.</span></span><a href="import.html" style="font-size: 13px; font-weight: 700; color: #F7DC92; text-decoration: none">Import a CSV →</a></div></template>
+<template data-scif value="{{isSample}}" hint-placeholder-val="{{ true }}"><div role="note" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-radius: 6px; border: 1px solid color-mix(in srgb, #38BDF8 40%, #2B3B36); background: color-mix(in srgb, #38BDF8 8%, #151F1C)"><span style="font-size: 14px"><strong>You’re looking at sample data.</strong> <span style="color: #CFDAD5">Import your trades and every number here becomes yours.</span></span><a href="import.html" style="font-size: 13px; font-weight: 700; color: #F7DC92; text-decoration: none">Import a CSV →</a></div></template>
 <template data-scif value="{{hasInsight}}" hint-placeholder-val="{{ true }}"><section aria-label="Highlight" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 16px; border-radius: 6px; border: 1px solid color-mix(in srgb, {{accent}} 30%, #2B3B36); background: color-mix(in srgb, {{accent}} 7%, #151F1C)"><span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 6px; background: color-mix(in srgb, {{accent}} 18%, transparent); color: {{accent}}; display: flex; align-items: center; justify-content: center">⚡</span><span style="flex: 1; min-width: 220px; font-size: 14px"><strong>{{insightLead}}</strong> {{insightText}}</span><a href="insights.html" style="font-size: 13px; font-weight: 600; color: #D8B25A; text-decoration: none">See Insights →</a></section></template>
 <a href="my-rules.html" class="lift" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 12px 16px; border-radius: 6px; border: 1px solid #2B3B36; background: rgba(25, 36, 32, 0.92); text-decoration: none; color: #EFF5F2"><span style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#D8B25A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1.5l5.5 2v4.2c0 3.3-2.4 5.7-5.5 6.8C4.9 13.4 2.5 11 2.5 7.7V3.5zM5.5 8l2 2 3-3.5"></path></svg>My rules</span><span style="font-size: 13px; color: #B8C6C0">{{rulesText}}</span><span style="margin-left: auto; font-size: 13px; font-weight: 700; color: #D8B25A">{{rulesCta}}</span></a>
 <template data-scif value="{{empty}}" hint-placeholder-val="{{ false }}"><section aria-label="No trades in range" style="background: rgba(25, 36, 32, 0.92); border: 1px solid #2B3B36; border-radius: 6px; padding: 16px; box-sizing: border-box; min-width: 0; text-align: center; padding: 40px 16px"><p style="margin: 0; font-size: 16px; font-weight: 600">No trades in this range.</p><p style="margin: 6px 0 0; color: #B8C6C0">Your most recent trade was {{lastTradeText}}. Choose <strong>All</strong> to see everything.</p><button type="button" onClick="{{showAll}}" style="margin-top: 14px; min-height: 40px; padding: 0 16px; border: none; border-radius: 6px; background: {{accent}}; color: #0C1110; font: inherit; font-weight: 700; cursor: pointer">Show all trades</button></section></template>
@@ -260,7 +262,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--neon) !important;ou
 </div>
 </div>
 </template>
-<script type="application/json" id="dc-props">{"accent":{"editor":"color","default":"#D8B25A","options":["#D8B25A","#D8B25A","#7AA2F7"]},"gain":{"editor":"color","default":"#4FD1B5","options":["#4FD1B5","#7AA2F7","#9ECE6A"]},"loss":{"editor":"color","default":"#F0607A","options":["#F0607A","#E0AF68","#9ECE6A"]},"$preview":{"width":1440,"height":1900}}</script>
+<script type="application/json" id="dc-props">{"accent":{"editor":"color","default":"#D8B25A","options":["#D8B25A","#D8B25A","#38BDF8"]},"gain":{"editor":"color","default":"#4FD1B5","options":["#4FD1B5","#38BDF8","#9ECE6A"]},"loss":{"editor":"color","default":"#F0607A","options":["#F0607A","#E0AF68","#9ECE6A"]},"$preview":{"width":1440,"height":1900}}</script>
 <script type="text/plain" id="dc-logic">
 class Component extends DCLogic {
   constructor(...args) { super(...args); this.state = { range: null, calOff: 0, selDay: null }; }
@@ -268,7 +270,7 @@ class Component extends DCLogic {
   tjx() {
     if (this._tjx) return this._tjx;
     const NAMES = { pcs: 'Put credit spread', ccs: 'Call credit spread', pds: 'Put debit spread', cds: 'Call debit spread', ic: 'Iron condor', ifly: 'Iron butterfly', condor: 'Condor', fly: 'Butterfly', bwb: 'Broken-wing butterfly', cal: 'Calendar', dcal: 'Double calendar', diag: 'Diagonal', ddiag: 'Double diagonal', long_call: 'Long call', long_put: 'Long put', short_call: 'Naked call', short_put: 'Naked put', sstrad: 'Short straddle', sstrang: 'Short strangle', lstrad: 'Long straddle', lstrang: 'Long strangle', ratio: 'Ratio spread', other: 'Other' };
-    const COLORS = { ic: '#7AA2F7', pcs: '#C792EA', ccs: '#F7A8C0', pds: '#8FD6E8', cds: '#E8B38F', fly: '#E0AF68', bwb: '#F0C674', condor: '#8FD6E8', ifly: '#9DBBFF', cal: '#9ECE6A', dcal: '#9ECE6A', diag: '#F7A8C0', ddiag: '#F7A8C0', short_put: '#9ECE6A', short_call: '#F0607A', long_call: '#4FD1B5', long_put: '#E0AF68', other: '#A2B4AC' };
+    const COLORS = { ic: '#38BDF8', pcs: '#C792EA', ccs: '#F7A8C0', pds: '#8FD6E8', cds: '#E8B38F', fly: '#E0AF68', bwb: '#F0C674', condor: '#8FD6E8', ifly: '#7DD3FC', cal: '#9ECE6A', dcal: '#9ECE6A', diag: '#F7A8C0', ddiag: '#F7A8C0', short_put: '#9ECE6A', short_call: '#F0607A', long_call: '#4FD1B5', long_put: '#E0AF68', other: '#A2B4AC' };
     const rng = (seed) => { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
     const sample = () => {
       const r = rng(77), out = []; const d = new Date(2026, 6, 6); const end = new Date(2026, 9, 20); let id = 0;
@@ -400,7 +402,7 @@ class Component extends DCLogic {
     const k = (label, value, color, sub, arr, sc) => Object.assign({ label, value, color, sub, spark: sc }, spark(arr));
     const kpis = [
       k('Net P&L', money(net), net >= 0 ? gain : loss, prior == null ? RL[range] : money(net - prior) + ' vs prior ' + (range === '30d' ? '30' : '90') + ' days', eqs, net >= 0 ? gain : loss),
-      k('Win rate', wr.toFixed(1) + '%', '#FFFFFF', wins.length + ' of ' + C.length + ' closed trades', wrS, '#7AA2F7'),
+      k('Win rate', wr.toFixed(1) + '%', '#FFFFFF', wins.length + ' of ' + C.length + ' closed trades', wrS, '#38BDF8'),
       k('Profit factor', pf == null ? '—' : pf.toFixed(2), pf == null || pf >= 1 ? '#FFFFFF' : loss, pf == null ? 'No losing trades yet' : pf >= 1 ? 'Wins outweigh losses' : 'Losses outweigh wins', pfS, '#C792EA'),
       k('Avg win / loss', '$' + Math.round(aw) + ' / $' + Math.round(al), '#FFFFFF', al ? 'Ratio ' + (aw / al).toFixed(2) : 'No losses yet', C.map((t) => t.pnl), '#A2B4AC'),
       k('Max drawdown', dd < 0 ? money(dd) : '$0', dd < 0 ? loss : '#FFFFFF', dd < 0 && ddFrom ? fd(ddFrom) + ' – ' + fd(ddAt) : 'No drawdown', dds, loss),
