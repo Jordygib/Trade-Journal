@@ -105,6 +105,26 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 @media (prefers-reduced-motion: reduce){.calc,.tip{transition:none !important}}
 main section{box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 1px 2px rgba(0,0,0,.18)}
 .kpi{transition:background-color .2s ease}.kpi:hover{background:rgba(32,45,40,.96) !important}
+/* neon-glow */:root{--neon:#38BDF8;--neon2:#3B82F6}
+.bgfx::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(640px 300px at 10% -4%,rgba(56,189,248,.17),transparent 70%),radial-gradient(560px 340px at 102% 28%,rgba(59,130,246,.14),transparent 70%),radial-gradient(760px 280px at 50% 108%,rgba(56,189,248,.13),transparent 70%),linear-gradient(112deg,transparent 46%,rgba(56,189,248,.06) 49.6%,rgba(56,189,248,.16) 50%,rgba(56,189,248,.06) 50.4%,transparent 54%);animation:neonPulse 7s ease-in-out infinite alternate}
+@keyframes neonPulse{from{opacity:.6}to{opacity:1}}
+.hdr-wrap{box-shadow:0 1px 0 rgba(56,189,248,.45),0 10px 34px -14px rgba(56,189,248,.55)}
+.hdr-nav a[aria-current]{text-shadow:0 0 14px rgba(56,189,248,.7)}
+.hdr-logo{filter:drop-shadow(0 0 10px rgba(56,189,248,.35))}
+.pg-top h1{text-shadow:0 0 26px rgba(56,189,248,.4)}
+main section:not(.gold){position:relative}
+main section:not(.gold)::before{content:"";position:absolute;left:10%;right:10%;top:-1px;height:1px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--neon),transparent);opacity:.6;box-shadow:0 0 10px 1px rgba(56,189,248,.5);pointer-events:none;transition:opacity .3s ease,left .4s ease,right .4s ease;z-index:1}
+main section:not(.gold):hover::before{opacity:1;left:2%;right:2%}
+main section:not(.gold):hover{border-color:rgba(56,189,248,.42) !important;box-shadow:0 0 0 1px rgba(56,189,248,.16),0 0 30px rgba(56,189,248,.14),0 14px 34px rgba(0,0,0,.3) !important}
+.lp main section::before{display:none}.lp main section:not(.gold):hover{box-shadow:none !important}
+.kpi:hover{box-shadow:inset 0 0 0 1px rgba(56,189,248,.45),0 0 24px rgba(56,189,248,.2)}
+.lift:hover{border-color:rgba(56,189,248,.55) !important;box-shadow:0 0 0 1px rgba(56,189,248,.2),0 0 32px rgba(56,189,248,.2),0 18px 40px rgba(0,0,0,.35) !important}
+.stackwrap{box-shadow:0 0 0 1px rgba(56,189,248,.35),0 0 70px rgba(56,189,248,.2),0 30px 80px rgba(0,0,0,.5) !important}
+.float1,.float2,.float3{box-shadow:0 0 0 1px rgba(56,189,248,.35),0 0 24px rgba(56,189,248,.3) !important}
+.calc:hover,.calc:focus-visible{box-shadow:0 0 0 2px #FFFFFF,0 0 22px rgba(56,189,248,.75) !important}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none !important;box-shadow:0 0 0 2px rgba(56,189,248,.65),0 0 16px rgba(56,189,248,.35) !important}
+button:focus-visible,a:focus-visible{outline:2px solid var(--neon) !important;outline-offset:2px;box-shadow:0 0 14px rgba(56,189,248,.5)}
+@media (prefers-reduced-motion: reduce){.bgfx::after{animation:none}}
 @media (max-width: 760px){
 .toast{left:12px !important;right:12px !important;bottom:12px !important;max-width:none !important}
 .hdr{display:grid !important;grid-template-columns:minmax(0,1fr) auto;padding:0 12px !important;column-gap:8px}
