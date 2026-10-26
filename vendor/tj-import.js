@@ -221,5 +221,12 @@
         fills: fl.length };
     });
   }
-  window.TJImport = { parse: parse, save: save, toView: toView, NAMES: NAMES, money: money, px: px, fmtDate: fmtDate, holdText: holdText };
+  function toLite(trades, fills) {
+    var closedBy = {}; (fills || []).forEach(function (f) { if (f.action === 'BTC' || f.action === 'STC') closedBy[f.trade_id] = true; });
+    return trades.map(function (t) {
+      return { id: t.id, sym: t.underlying, k: t.strategy, name: NAMES[t.strategy] || 'Other', o: new Date(t.opened_at), c: t.closed_at ? new Date(t.closed_at) : null, pnl: Number(t.pnl || 0), tk: t.time_known !== false,
+        qty: Number(t.quantity || 1), expired: t.status === 'closed' ? !closedBy[t.id] : false, structure: t.structure || '' };
+    });
+  }
+  window.TJImport = { toLite: toLite, parse: parse, save: save, toView: toView, NAMES: NAMES, money: money, px: px, fmtDate: fmtDate, holdText: holdText };
 })();

@@ -22,19 +22,23 @@
         prof.email = session.user.email;
         prof.handle = clean(prof.username) || clean((session.user.email || '').split('@')[0]) || 'trader';
         window.TJ_PROFILE = prof;
-        if (page !== 'trades.html' || !window.TJImport) { resolve(); return; }
-        sb.from('trades').select('*').order('opened_at', { ascending: false }).limit(1000).then(function (tr) {
+        var DATA_PAGES = ['dashboard.html', 'trades.html', 'my-rules.html'];
+        if (DATA_PAGES.indexOf(page) < 0 || !window.TJImport) { resolve(); return; }
+        var needRules = page !== 'trades.html';
+        var pRules = needRules ? sb.from('rules').select('id, kind, params, active, created_at').order('created_at', { ascending: true }).then(function (r) { window.TJ_RULES = (r && r.data) || []; }, function () { window.TJ_RULES = []; }) : Promise.resolve();
+        var pTrades = sb.from('trades').select('*').order('opened_at', { ascending: false }).limit(2000).then(function (tr) {
           var trades = (tr && tr.data) || [];
           window.TJ_TRADE_COUNT = trades.length;
-          if (!trades.length) { window.TJ_TRADES = []; resolve(); return; }
+          if (!trades.length) { window.TJ_TRADES = []; window.TJ_LITE = []; return; }
           var ids = trades.map(function (t) { return t.id; });
-          sb.from('fills').select('trade_id, executed_at, action, strike, option_type, quantity, price').in('trade_id', ids).then(function (fr) {
+          return sb.from('fills').select('trade_id, executed_at, action, strike, option_type, quantity, price').in('trade_id', ids).limit(20000).then(function (fr) {
             var fills = (fr && fr.data) || [];
             window.TJ_FILL_COUNT = fills.length;
             window.TJ_TRADES = window.TJImport.toView(trades, fills);
-            resolve();
-          }, function () { window.TJ_TRADES = window.TJImport.toView(trades, []); resolve(); });
-        }, function () { resolve(); });
+            window.TJ_LITE = window.TJImport.toLite(trades, fills);
+          }, function () { window.TJ_TRADES = window.TJImport.toView(trades, []); window.TJ_LITE = window.TJImport.toLite(trades, []); });
+        }, function () {});
+        Promise.all([pRules, pTrades]).then(function () { resolve(); }, function () { resolve(); });
       }, function () { resolve(); });
     }, function () { resolve(); });
   });
