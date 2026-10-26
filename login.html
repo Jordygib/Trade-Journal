@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign in · Trade Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html{-webkit-font-smoothing:antialiased}
+body{margin:0;min-height:100vh;background:#0C1110;background-image:linear-gradient(rgba(216,178,90,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(216,178,90,.03) 1px,transparent 1px);background-size:32px 32px;color:#E4ECE8;font-family:'Barlow',system-ui,sans-serif;font-size:15px;display:flex;flex-direction:column}
+a{color:#D8B25A}
+.top{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #1C2724}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:20px}
+.mark{width:30px;height:30px;border-radius:4px;background:#D8B25A;display:flex;align-items:center;justify-content:center}
+.wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 16px}
+.card{width:100%;max-width:440px;background:rgba(18,26,24,.94);border:1px solid #22302C;border-radius:8px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+h1{margin:0;font-family:'Barlow Semi Condensed',sans-serif;font-size:32px;line-height:1.1}
+.sub{margin:6px 0 0;color:#A3B3AC}
+.tabs{display:flex;margin:22px 0 18px;border-bottom:1px solid #22302C}
+.tabs button{flex:1;min-height:44px;border:none;background:transparent;color:#A3B3AC;font:inherit;font-weight:700;cursor:pointer;box-shadow:inset 0 -2px 0 transparent}
+.tabs button[aria-selected="true"]{color:#fff;box-shadow:inset 0 -2px 0 #D8B25A}
+label.f{display:block;margin-top:14px;font-size:13px;font-weight:600;color:#BFCCC6}
+input.t{display:block;width:100%;margin-top:6px;min-height:46px;padding:0 12px;border:1px solid #2E3F3A;border-radius:4px;background:#0F1614;color:#E4ECE8;font:inherit;font-size:15px}
+input.t:focus{outline:2px solid #D8B25A;outline-offset:1px;border-color:transparent}
+.hint{margin-top:5px;font-size:12px;color:#74877F}
+.ok{color:#4FD1B5}.bad{color:#F0607A}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;color:#BFCCC6;cursor:pointer}
+.check input{width:18px;height:18px;margin:2px 0 0;accent-color:#D8B25A;flex:none}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin-top:20px;border:none;border-radius:4px;background:#D8B25A;color:#0C1110;font:inherit;font-weight:700;font-size:16px;cursor:pointer}
+.btn:disabled{opacity:.6;cursor:default}
+.link{background:none;border:none;padding:0;color:#D8B25A;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.msg{margin-top:16px;padding:12px 14px;border-radius:4px;font-size:14px;line-height:1.45}
+.msg.err{background:rgba(240,96,122,.1);border:1px solid rgba(240,96,122,.4);color:#F7B3C0}
+.msg.info{background:rgba(79,209,181,.08);border:1px solid rgba(79,209,181,.35);color:#BFEFE3}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.foot{margin-top:18px;font-size:12px;color:#74877F;line-height:1.5}
+[hidden]{display:none !important}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="vendor/config.js"></script>
+</head>
+<body>
+<header class="top"><a class="logo" href="index.html"><span class="mark" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="#0C1110" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12.5l4-4.5 3 2.5 6-7M10.5 3.5h4v4"></path></svg></span>Trade Journal</a><a href="index.html" style="font-size:14px;font-weight:600;text-decoration:none;color:#BFCCC6">← Back to home</a></header>
+<main class="wrap">
+<div class="card">
+<div id="authView">
+<h1 id="title">Welcome back</h1>
+<p class="sub" id="subtitle">Sign in to your trading journal.</p>
+<div class="tabs" role="tablist" aria-label="Account">
+<button type="button" role="tab" id="tabIn" aria-selected="true">Sign in</button>
+<button type="button" role="tab" id="tabUp" aria-selected="false">Create account</button>
+</div>
+<form id="form" novalidate>
+<div id="userWrap" hidden>
+<label class="f" for="username">Username</label>
+<input class="t" id="username" name="username" autocomplete="username" maxlength="20" placeholder="e.g. thetaflow">
+<div class="hint" id="userHint">3–20 characters: lowercase letters, numbers, or _</div>
+</div>
+<label class="f" for="email">Email</label>
+<input class="t" id="email" name="email" type="email" autocomplete="email" required>
+<div id="pwWrap">
+<label class="f" for="password">Password</label>
+<input class="t" id="password" name="password" type="password" autocomplete="current-password" required minlength="8">
+<div class="hint" id="pwHint" hidden>At least 8 characters.</div>
+</div>
+<div id="upChecks" hidden>
+<label class="check"><input type="checkbox" id="adult"> <span>I confirm I’m 18 or older.</span></label>
+<label class="check"><input type="checkbox" id="terms"> <span>I agree to the <a href="#" target="_blank">Terms</a> and <a href="#" target="_blank">Privacy Policy</a>, and I understand Trade Journal is not investment advice.</span></label>
+</div>
+<div class="row" id="forgotRow"><span></span><button type="button" class="link" id="forgot">Forgot password?</button></div>
+<button class="btn" id="submit" type="submit">Sign in</button>
+<div id="msg" class="msg" role="alert" hidden></div>
+</form>
+<p class="foot" id="foot">Free plan forever. No credit card needed.</p>
+</div>
+<div id="resetView" hidden>
+<h1>Set a new password</h1>
+<p class="sub">Choose a new password for your account.</p>
+<form id="resetForm" novalidate>
+<label class="f" for="newpw">New password</label>
+<input class="t" id="newpw" type="password" autocomplete="new-password" minlength="8">
+<div class="hint">At least 8 characters.</div>
+<button class="btn" id="resetBtn" type="submit">Save new password</button>
+<div id="resetMsg" class="msg" role="alert" hidden></div>
+</form>
+</div>
+</div>
+</main>
+<script src="vendor/login.js"></script>
+</body>
+</html>

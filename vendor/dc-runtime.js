@@ -95,6 +95,7 @@
   document.addEventListener('submit', function (e) { e.preventDefault(); });
   function boot() {
     var tpl = document.getElementById('dc-template');
+    if (window.TJ_TRANSFORM) { var t2 = document.createElement('template'); t2.innerHTML = window.TJ_TRANSFORM(tpl.innerHTML); tpl = t2; }
     var code = document.getElementById('dc-logic').textContent;
     var spec = JSON.parse(document.getElementById('dc-props').textContent || '{}');
     var defaults = {};
@@ -105,5 +106,6 @@
     }
     ReactDOM.createRoot(document.getElementById('root')).render(h(Page, defaults));
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  function go() { Promise.resolve(window.TJ_READY).then(boot, boot); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
 })();
