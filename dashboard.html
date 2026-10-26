@@ -89,6 +89,20 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 @keyframes pgReveal{from{opacity:0;transform:translateY(32px) scale(.985)}}
 }
 @media (prefers-reduced-motion: reduce){main > *{animation:none !important}}
+.calc{position:relative;cursor:pointer;outline:none;transition:transform .18s cubic-bezier(.2,.7,.2,1),box-shadow .18s ease,filter .18s ease}
+.calc:hover,.calc:focus-visible{transform:scale(1.08);z-index:20;filter:brightness(1.18);box-shadow:0 0 0 2px #FFFFFF,0 10px 24px rgba(0,0,0,.55)}
+.tip{position:absolute;left:50%;bottom:calc(100% + 12px);transform:translate(-50%,8px) scale(.88);transform-origin:50% 100%;opacity:0;visibility:hidden;pointer-events:none;background:#FFFFFF;color:#0C1110;border-radius:10px;padding:9px 14px 11px;min-width:148px;max-width:230px;white-space:normal;text-align:left;box-shadow:0 18px 40px rgba(0,0,0,.55);z-index:30;font-family:'Barlow',system-ui,sans-serif;transition:opacity .15s ease,transform .26s cubic-bezier(.2,1.5,.4,1),visibility 0s linear .15s}
+.tip::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#FFFFFF}
+.calc:hover .tip,.calc:focus-visible .tip{opacity:1;visibility:visible;transform:translate(-50%,0) scale(1);transition:opacity .15s ease,transform .26s cubic-bezier(.2,1.5,.4,1),visibility 0s}
+.tip.l{left:-4px;transform:translate(0,8px) scale(.88);transform-origin:12px 100%}.tip.l::after{left:16px}
+.tip.r{left:auto;right:-4px;transform:translate(0,8px) scale(.88);transform-origin:calc(100% - 12px) 100%}.tip.r::after{left:auto;right:9px;transform:none}
+.calc:hover .tip.l,.calc:focus-visible .tip.l,.calc:hover .tip.r,.calc:focus-visible .tip.r{transform:translate(0,0) scale(1)}
+.tip-s{position:absolute;left:0;right:0;top:0;height:4px;border-radius:10px 10px 0 0}
+.tip-d{display:block;margin-top:2px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B7772}
+.tip-v{display:block;font-family:'Barlow Semi Condensed',sans-serif;font-size:26px;font-weight:700;line-height:1.05;margin-top:1px}
+.tip-n{display:block;margin-top:3px;font-size:12px;line-height:1.35;color:#3B4743}
+.cal > div{position:relative}.cal > div:hover,.cal > div:focus-within{z-index:25}
+@media (prefers-reduced-motion: reduce){.calc,.tip{transition:none !important}}
 @media (max-width: 760px){
 .toast{left:12px !important;right:12px !important;bottom:12px !important;max-width:none !important}
 .hdr{display:grid !important;grid-template-columns:minmax(0,1fr) auto;padding:0 12px !important;column-gap:8px}
@@ -197,8 +211,9 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 <section aria-labelledby="calh" style="background: rgba(18, 26, 24, 0.9); border: 1px solid #22302C; border-radius: 3px; padding: 16px; box-sizing: border-box; min-width: 0; flex: 1.2 1 420px">
 <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: -16px -16px 14px; padding: 9px 16px; min-height: 44px; box-sizing: border-box; background: #0F1614; border-bottom: 1px solid #22302C"><h2 style="margin: 0; font-size: 15px; font-weight: 600; font-family: 'Barlow Semi Condensed', 'Barlow', sans-serif; letter-spacing: 0.01em"><span id="calh">Daily P&amp;L</span></h2><div style="display: flex; align-items: center; gap: 6px"><button type="button" onClick="{{calPrev}}" aria-label="Previous month" style="width: 30px; height: 30px; border: 1px solid #2E3F3A; border-radius: 3px; background: transparent; color: #E4ECE8; cursor: pointer">‹</button><span style="min-width: 110px; text-align: center; font-size: 13px; font-weight: 600">{{calTitle}}</span><button type="button" onClick="{{calNext}}" aria-label="Next month" style="width: 30px; height: 30px; border: 1px solid #2E3F3A; border-radius: 3px; background: transparent; color: #E4ECE8; cursor: pointer">›</button></div></div>
 <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; font-size: 11px; color: #74877F; margin-bottom: 4px"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
-<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px"><template data-scfor list="{{cal}}" as="d" hint-placeholder-count="35"><div title="{{d.title}}" style="min-height: 52px; padding: 5px 6px; border-radius: 3px; background: {{d.bg}}; border: 1px solid {{d.bd}}; box-sizing: border-box; opacity: {{d.op}}"><div style="font-size: 11px; color: #8DA098">{{d.day}}</div><div style="font-size: 12px; font-weight: 700; color: {{d.c}}">{{d.v}}</div><div style="font-size: 10px; color: #74877F">{{d.n}}</div></div></template></div>
-<div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: #A3B3AC"><span>{{calSum}}</span><span>{{calDays}}</span></div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px"><template data-scfor list="{{cal}}" as="d" hint-placeholder-count="35"><div class="{{d.cls}}" tabindex="{{d.ti}}" onClick="{{d.pick}}" aria-label="{{d.aria}}" style="min-height: 52px; padding: 5px 6px; border-radius: 3px; background: {{d.bg}}; border: 1px solid {{d.bd}}; box-sizing: border-box; opacity: {{d.op}}; box-shadow: {{d.ring}}"><div style="font-size: 11px; color: #8DA098">{{d.day}}</div><div style="font-size: 12px; font-weight: 700; color: {{d.c}}">{{d.v}}</div><div style="font-size: 10px; color: #74877F">{{d.n}}</div><template data-scif value="{{d.has}}" hint-placeholder-val="{{ false }}"><span class="{{d.tipCls}}" role="tooltip"><span class="tip-s" style="background: {{d.tc}}"></span><span class="tip-d">{{d.td}}</span><span class="tip-v" style="color: {{d.tc}}">{{d.v}}</span><span class="tip-n">{{d.tn}}</span></span></template></div></template></div>
+<template data-scif value="{{hasSel}}" hint-placeholder-val="{{ false }}"><div style="margin-top: 12px; padding: 12px 14px; border-radius: 4px; border: 1px solid #2E3F3A; background: #0F1614"><div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px"><strong>{{selTitle}}</strong><span style="font-weight: 700; color: {{selC}}">{{selV}}</span></div><div style="margin-top: 6px; display: flex; flex-direction: column"><template data-scfor list="{{selRows}}" as="r" hint-placeholder-count="2"><div style="display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid #1C2724; font-size: 13px"><span><span style="color: #8DA098">{{r.time}}</span> <strong>{{r.sym}}</strong> {{r.name}}</span><span style="font-weight: 700; color: {{r.c}}">{{r.pnl}}</span></div></template></div></div></template>
+<div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: #A3B3AC"><span>{{calSum}} · click a day for its trades</span><span>{{calDays}}</span></div>
 </section>
 <section aria-labelledby="bhh" style="background: rgba(18, 26, 24, 0.9); border: 1px solid #22302C; border-radius: 3px; padding: 16px; box-sizing: border-box; min-width: 0; flex: 1 1 320px">
 <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: -16px -16px 14px; padding: 9px 16px; min-height: 44px; box-sizing: border-box; background: #0F1614; border-bottom: 1px solid #22302C"><h2 style="margin: 0; font-size: 15px; font-weight: 600; font-family: 'Barlow Semi Condensed', 'Barlow', sans-serif; letter-spacing: 0.01em"><span id="bhh">Behavior flags</span></h2><span style="font-size: 12px; color: #8DA098">In this range</span></div>
@@ -226,7 +241,7 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 <script type="application/json" id="dc-props">{"accent":{"editor":"color","default":"#D8B25A","options":["#D8B25A","#D8B25A","#7AA2F7"]},"gain":{"editor":"color","default":"#4FD1B5","options":["#4FD1B5","#7AA2F7","#9ECE6A"]},"loss":{"editor":"color","default":"#F0607A","options":["#F0607A","#E0AF68","#9ECE6A"]},"$preview":{"width":1440,"height":1900}}</script>
 <script type="text/plain" id="dc-logic">
 class Component extends DCLogic {
-  constructor(...args) { super(...args); this.state = { range: null, calOff: 0 }; }
+  constructor(...args) { super(...args); this.state = { range: null, calOff: 0, selDay: null }; }
 
   tjx() {
     if (this._tjx) return this._tjx;
@@ -288,7 +303,31 @@ class Component extends DCLogic {
       list.sort((a, b) => b.t.o - a.t.o);
       return { per: res, checked: checked.size, followed: fn, pct: checked.size ? Math.round(fn / checked.size * 100) : null, breaks: list.length, brokenTrades: bn, folAvg: fn ? fs / fn : null, brkAvg: bn ? bs / bn : null, list: list };
     };
-    this._tjx = { NAMES, COLORS, sample, evaluate, dayKey, CHECKABLE };
+    const ideas = (L, have) => {
+      const C = L.filter((t) => t.c).sort((a, b) => a.o - b.o);
+      const out = []; const m = (n) => (n >= 0 ? '+$' : '−$') + Math.abs(Math.round(n)).toLocaleString('en-US');
+      const avg = (a) => a.length ? a.reduce((s, t) => s + t.pnl, 0) / a.length : 0;
+      const pl = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+      const add = (kind, val, title, why, impact) => { if (have.indexOf(kind) < 0) out.push({ kind, val, title, why, impact }); };
+      const T = C.filter((t) => t.tk);
+      const after = T.filter((t) => T.some((p) => p !== t && p.pnl < 0 && p.c <= t.o && t.o - p.c < 3600000));
+      const rest = T.filter((t) => after.indexOf(t) < 0);
+      if (after.length >= 2 && avg(after) < 0 && avg(after) < avg(rest)) add('cool_off', 60, 'Cool-off after a loss: 60 min', 'Trades you opened within an hour of a loss averaged ' + m(avg(after)) + ' (' + pl(after.length, 'trade') + '), versus ' + m(avg(rest)) + ' for your other trades.', (avg(rest) - avg(after)) * after.length);
+      const per = {}; C.forEach((t) => { const k = dayKey(t.o); (per[k] = per[k] || []).push(t); });
+      const late = [], early = []; Object.values(per).forEach((a) => a.forEach((t, i) => (i >= 2 ? late : early).push(t)));
+      if (late.length >= 2 && avg(late) < 0 && avg(late) < avg(early)) add('max_trades', 2, 'Max trades per day: 2', 'Your 3rd and later trades of the day averaged ' + m(avg(late)) + ' (' + pl(late.length, 'trade') + '), versus ' + m(avg(early)) + ' for your first two.', (avg(early) - avg(late)) * late.length);
+      if (T.length >= 4) { const h0 = Math.min(...T.map((t) => t.o.getHours())); const first = T.filter((t) => t.o.getHours() === h0), oth = T.filter((t) => t.o.getHours() !== h0);
+        if (first.length >= 2 && oth.length >= 2 && avg(first) < 0 && avg(first) < avg(oth)) { const hh = String(h0 + 1).padStart(2, '0') + ':00'; add('no_before', hh, 'No entries before ' + hh, 'Trades you opened before ' + hh + ' (your broker’s time) averaged ' + m(avg(first)) + ' (' + pl(first.length, 'trade') + '), versus ' + m(avg(oth)) + ' later in the day.', (avg(oth) - avg(first)) * first.length); } }
+      const ls = C.filter((t) => t.pnl < 0), ws = C.filter((t) => t.pnl > 0);
+      if (ls.length >= 3) { const al = Math.abs(avg(ls)), aw = ws.length ? avg(ws) : 0, worst = Math.min(...ls.map((t) => t.pnl));
+        if (Math.abs(worst) > al * 1.5 && al > aw) { const cap = Math.max(10, Math.ceil(al / 10) * 10); const over = ls.filter((t) => -t.pnl > cap); add('max_loss', cap, 'Max loss per trade: $' + cap, 'Your average loss is ' + m(-al).replace('−', '') + ' but your largest was ' + m(worst).replace('−', '') + '. ' + pl(over.length, 'trade') + ' lost more than $' + cap + ', and together they cost ' + m(over.reduce((s, t) => s + t.pnl, 0)) + '.', over.reduce((s, t) => s - t.pnl - cap, 0)); } }
+      const streakT = C.filter((t) => { const k = dayKey(t.o); return C.filter((p) => p !== t && p.pnl < 0 && dayKey(p.c) === k && p.c <= t.o).length >= 2; });
+      if (streakT.length >= 2 && avg(streakT) < 0) add('loss_streak', 2, 'Stop after 2 losses in a day', 'After two losses in a day, your next trades averaged ' + m(avg(streakT)) + ' (' + pl(streakT.length, 'trade') + ').', -avg(streakT) * streakT.length);
+      const big = C.filter((t) => (t.qty || 1) > 1), one = C.filter((t) => (t.qty || 1) === 1);
+      if (big.length >= 2 && one.length >= 2 && avg(big) < 0 && avg(big) < avg(one)) add('max_size', 1, 'Max contracts per trade: 1', 'Your multi-contract trades averaged ' + m(avg(big)) + ' (' + pl(big.length, 'trade') + '), versus ' + m(avg(one)) + ' at one contract.', (avg(one) - avg(big)) * big.length);
+      return out.sort((a, b) => b.impact - a.impact).slice(0, 3);
+    };
+    this._tjx = { NAMES, COLORS, sample, evaluate, dayKey, CHECKABLE, ideas };
     return this._tjx;
   }
 
@@ -315,7 +354,7 @@ class Component extends DCLogic {
     const rules = Array.isArray(window.TJ_RULES) ? window.TJ_RULES.map((r) => ({ id: r.id, kind: r.kind, on: r.active, val: r.params && r.params.val != null ? r.params.val : null })) : (REAL ? [] : [{ id: 'a', kind: 'max_loss', on: true, val: 300 }, { id: 'b', kind: 'no_before', on: true, val: '10:00' }, { id: 'c', kind: 'max_trades', on: true, val: 2 }, { id: 'd', kind: 'max_size', on: true, val: 1 }, { id: 'e', kind: 'stop_entry', on: true, val: null }, { id: 'f', kind: 'cool_off', on: false, val: 60 }]);
     const onRules = rules.filter((r) => r.on);
     let rulesText, rulesCta;
-    if (!rules.length) { rulesText = 'You haven’t set any rules yet. Pick the limits you want to trade by, and we’ll check every trade against them.'; rulesCta = 'Set up rules →'; }
+    if (!rules.length) { const ni = REAL ? X.ideas(ALL, []).length : 0; rulesText = ni ? 'You haven’t set any rules yet. We spotted ' + ni + (ni === 1 ? ' pattern' : ' patterns') + ' in your trades that a rule could help with.' : 'You haven’t set any rules yet. Pick the limits you want to trade by, and we’ll check every trade against them.'; rulesCta = ni ? 'See rule ideas →' : 'Set up rules →'; }
     else if (!onRules.length) { rulesText = 'All your rules are switched off.'; rulesCta = 'Manage rules →'; }
     else { const ev = X.evaluate(rules, L); rulesText = onRules.length + ' on · ' + (ev.pct == null ? 'no trades in this range to check yet' : ev.pct + '% of trades followed every rule · ' + ev.breaks + (ev.breaks === 1 ? ' break' : ' breaks') + ' (' + RL[range].toLowerCase() + ')'); rulesCta = 'Manage rules →'; }
     const base = { gain, loss, accent, ranges, isSample: !REAL, isReal: REAL, rulesText, rulesCta, showAll: () => this.setState({ range: 'all' }),
@@ -371,13 +410,28 @@ class Component extends DCLogic {
     // calendar
     const lastD = C.reduce((m, t) => (t.c > m ? t.c : m), C[0].c);
     const cm = new Date(lastD.getFullYear(), lastD.getMonth() + st.calOff, 1);
-    const dayP = {}; C.forEach((t) => { const k2 = X.dayKey(t.c); const d = dayP[k2] || (dayP[k2] = { s: 0, n: 0 }); d.s += t.pnl; d.n++; });
+    const dayP = {}; C.forEach((t) => { const k2 = X.dayKey(t.c); const d = dayP[k2] || (dayP[k2] = { s: 0, n: 0, w: 0, ts: [] }); d.s += t.pnl; d.n++; if (t.pnl > 0) d.w++; d.ts.push(t); });
     const cal = []; const firstW = cm.getDay(); const dim = new Date(cm.getFullYear(), cm.getMonth() + 1, 0).getDate();
     let msum = 0, mup = 0, mdn = 0; const dmx = Math.max(1, ...Object.values(dayP).map((d) => Math.abs(d.s)));
-    for (let i = 0; i < firstW; i++) cal.push({ day: '', v: '', n: '', bg: 'transparent', bd: 'transparent', c: '#8DA098', op: 1, title: '' });
+    const DG = '#0B8F74', DL = '#D5345A', DOWN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const mDays = []; for (let d = 1; d <= dim; d++) { const x = dayP[X.dayKey(new Date(cm.getFullYear(), cm.getMonth(), d))]; if (x) mDays.push(x.s); }
+    const mBest = mDays.length ? Math.max(...mDays) : null, mWorst = mDays.length ? Math.min(...mDays) : null;
+    const blank = { day: '', v: '', n: '', bg: 'transparent', bd: 'transparent', c: '#8DA098', op: 1, cls: '', ti: '-1', has: false, ring: 'none', aria: '', pick: () => {}, tipCls: 'tip', tc: '', td: '', tn: '' };
+    for (let i = 0; i < firstW; i++) cal.push(blank);
     for (let d = 1; d <= dim; d++) { const dt = new Date(cm.getFullYear(), cm.getMonth(), d); const x = dayP[X.dayKey(dt)];
-      if (x) { msum += x.s; if (x.s >= 0) mup++; else mdn++; const a = 10 + Math.round(Math.abs(x.s) / dmx * 30); cal.push({ day: String(d), v: money(x.s), n: x.n + (x.n === 1 ? ' trade' : ' trades'), bg: 'color-mix(in srgb, ' + (x.s >= 0 ? gain : loss) + ' ' + a + '%, #0F1614)', bd: 'color-mix(in srgb, ' + (x.s >= 0 ? gain : loss) + ' 40%, transparent)', c: x.s >= 0 ? gain : loss, op: 1, title: fd(dt) + ': ' + money(x.s) }); }
-      else cal.push({ day: String(d), v: '', n: '', bg: '#0F1614', bd: '#1C2724', c: '#8DA098', op: dt.getDay() === 0 || dt.getDay() === 6 ? 0.45 : 1, title: '' }); }
+      if (x) { msum += x.s; if (x.s >= 0) mup++; else mdn++; const a = 10 + Math.round(Math.abs(x.s) / dmx * 30); const key = X.dayKey(dt); const col = dt.getDay();
+        let note;
+        if (mDays.length > 1 && x.s === mBest && x.s > 0) note = 'Best day of the month';
+        else if (mDays.length > 1 && x.s === mWorst && x.s < 0) note = 'Worst day of the month';
+        else if (x.n > 1) note = x.w + ' of ' + x.n + ' trades won';
+        else note = x.ts[0].name + (x.ts[0].expired ? ' · held to expiration' : '');
+        const isSel = st.selDay === key;
+        cal.push({ day: String(d), v: money(x.s), n: x.n + (x.n === 1 ? ' trade' : ' trades'), bg: 'color-mix(in srgb, ' + (x.s >= 0 ? gain : loss) + ' ' + a + '%, #0F1614)', bd: 'color-mix(in srgb, ' + (x.s >= 0 ? gain : loss) + ' 40%, transparent)', c: x.s >= 0 ? gain : loss, op: 1,
+          cls: 'calc', ti: '0', has: true, ring: isSel ? '0 0 0 2px ' + accent : 'none', aria: fd(dt) + ': ' + money(x.s) + ', ' + note, pick: () => this.setState({ selDay: isSel ? null : key }),
+          tipCls: 'tip' + (col <= 1 ? ' l' : col >= 5 ? ' r' : ''), tc: x.s >= 0 ? DG : DL, td: DOWN[col] + ', ' + fd(dt), tn: note }); }
+      else cal.push(Object.assign({}, blank, { day: String(d), bg: '#0F1614', bd: '#1C2724', op: dt.getDay() === 0 || dt.getDay() === 6 ? 0.45 : 1 })); }
+    const selX = st.selDay ? dayP[st.selDay] : null;
+    const selRows = selX ? selX.ts.slice().sort((a, b) => a.o - b.o).map((t) => ({ time: t.tk ? String(t.o.getHours()).padStart(2, '0') + ':' + String(t.o.getMinutes()).padStart(2, '0') : '', sym: t.sym, name: t.name.toLowerCase(), pnl: money(t.pnl), c: t.pnl >= 0 ? gain : loss })) : [];
     // flags
     const flags = [];
     const after = T.filter((t) => T.some((p) => p !== t && p.c && p.pnl < 0 && p.c <= t.o && t.o - p.c < 3600000));
@@ -398,7 +452,8 @@ class Component extends DCLogic {
       eqStart: fd(byClose[0].c) + ', ' + byClose[0].c.getFullYear(), eqEnd: fd(byClose[byClose.length - 1].c) + ', ' + byClose[byClose.length - 1].c.getFullYear(), eqNote: C.length + ' closed trades', eqAria: 'Equity curve ending at ' + money(net),
       strats, tod, hasTod: tod.length >= 2, noTod: tod.length < 2, todNote: T.length + ' trades with entry times',
       mg, mgNote, cal, calTitle: MN[cm.getMonth()] + ' ' + cm.getFullYear(), calSum: 'Month: ' + money(msum), calDays: mup + ' green · ' + mdn + ' red days',
-      calPrev: () => this.setState({ calOff: this.state.calOff - 1 }), calNext: () => this.setState({ calOff: Math.min(0, this.state.calOff + 1) }),
+      calPrev: () => this.setState({ calOff: this.state.calOff - 1, selDay: null }), calNext: () => this.setState({ calOff: Math.min(0, this.state.calOff + 1), selDay: null }),
+      hasSel: !!selX, selRows, selTitle: selX ? fd(selX.ts[0].c) + ' · ' + selX.n + (selX.n === 1 ? ' trade' : ' trades') : '', selV: selX ? money(selX.s) : '', selC: selX && selX.s >= 0 ? gain : loss,
       flags, recent });
   }
 }
