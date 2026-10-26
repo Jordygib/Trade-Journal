@@ -239,8 +239,18 @@ button:focus-visible,a:focus-visible{outline:2px solid #38BDF8 !important;outlin
 <template data-scfor list="{{r.legs}}" as="l" hint-placeholder-count="4"><div style="display: grid; grid-template-columns: 60px minmax(100px, 1fr) 40px 70px 50px 64px; gap: 6px; font-size: 12px; padding: 6px 0; border-bottom: 1px solid #1E2925"><span style="color: #A2B4AC">{{l.time}}</span><span>{{l.act}}</span><span>{{l.qty}}</span><span>{{l.strike}}</span><span>{{l.type}}</span><span style="text-align: right">{{l.px}}</span></div></template>
 </div>
 <div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
-<div style="background: #151F1C; border: 1px solid #25332E; border-radius: 6px; padding: 12px 14px; flex: 1"><div style="font-size: 12px; font-weight: 600; margin-bottom: 4px">Note</div><p style="margin: 0; color: #CFDAD5">{{r.note}}</p></div>
-<div style="display: flex; flex-wrap: wrap; gap: 6px"><button type="button" style="min-height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid #3A4E47; background: rgba(25, 36, 32, 0.92); color: #EFF5F2; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer">Edit note</button><button type="button" style="min-height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid #3A4E47; background: rgba(25, 36, 32, 0.92); color: #EFF5F2; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer">Edit tags</button><button type="button" style="min-height: 34px; padding: 0 12px; border-radius: 6px; border: none; background: {{accent}}; color: #0C1110; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Share trade card</button></div>
+<div style="background: #151F1C; border: 1px solid #25332E; border-radius: 6px; padding: 12px 14px; flex: 1">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px"><span style="font-size: 12px; font-weight: 600">Note</span><span style="font-size: 11px; color: #8A9C95">{{r.noteMeta}}</span></div>
+<template data-scif value="{{r.showNote}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; color: {{r.noteColor}}; white-space: pre-wrap">{{r.noteText}}</p></template>
+<template data-scif value="{{r.editNote}}" hint-placeholder-val="{{ false }}"><label><span class="sr">Note for this trade</span><textarea value="{{draft}}" onChange="{{setDraft}}" maxlength="2000" rows="5" placeholder="Why you took it, how you managed it, what you’d do differently…" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #3A4E47; border-radius: 6px; background: #111A17; color: #EFF5F2; font: inherit; font-size: 13px; line-height: 1.5; resize: vertical"></textarea></label><div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px"><span style="font-size: 11px; color: #8A9C95">{{draftCount}}</span><span style="display: flex; gap: 6px"><button type="button" onClick="{{cancelEdit}}" style="min-height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid #3A4E47; background: rgba(25, 36, 32, 0.92); color: #EFF5F2; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer">Cancel</button><button type="button" onClick="{{saveEdit}}" disabled="{{saving}}" style="min-height: 34px; padding: 0 14px; border-radius: 6px; border: none; background: {{accent}}; color: #0C1110; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{saveLabel}}</button></span></div></template>
+<template data-scif value="{{r.editTags}}" hint-placeholder-val="{{ false }}"><div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #25332E"><div style="font-size: 12px; font-weight: 600; margin-bottom: 6px">Tags</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><template data-scfor list="{{tagChips}}" as="g" hint-placeholder-count="2"><span style="display: inline-flex; align-items: center; gap: 4px; padding: 3px 4px 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; color: {{g.color}}; background: {{g.bg}}">{{g.text}}<button type="button" onClick="{{g.remove}}" aria-label="{{g.removeLabel}}" style="width: 20px; height: 20px; border: none; border-radius: 50%; background: transparent; color: inherit; font: inherit; font-size: 14px; line-height: 1; cursor: pointer">×</button></span></template><template data-scif value="{{noTags}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #8A9C95">No tags yet.</span></template></div>
+<div style="display: flex; gap: 6px; margin-top: 8px"><label style="flex: 1; min-width: 0"><span class="sr">Add a tag</span><input type="text" value="{{tagInput}}" onChange="{{setTagInput}}" onKeyDown="{{tagKey}}" maxlength="24" placeholder="Type a tag and press Enter" style="width: 100%; box-sizing: border-box; min-height: 34px; padding: 0 10px; border: 1px solid #3A4E47; border-radius: 6px; background: #111A17; color: #EFF5F2; font: inherit; font-size: 13px"></label><button type="button" onClick="{{addTagBtn}}" style="min-height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid #3A4E47; background: rgba(25, 36, 32, 0.92); color: #EFF5F2; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer">Add</button></div>
+<div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px"><template data-scfor list="{{tagSugg}}" as="g" hint-placeholder-count="6"><button type="button" onClick="{{g.add}}" style="min-height: 26px; padding: 0 9px; border-radius: 999px; border: 1px solid #2B3B36; background: transparent; color: #B8C6C0; font: inherit; font-size: 11px; cursor: pointer">+ {{g.text}}</button></template></div>
+<div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 10px"><button type="button" onClick="{{cancelEdit}}" style="min-height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid #3A4E47; background: rgba(25, 36, 32, 0.92); color: #EFF5F2; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer">Cancel</button><button type="button" onClick="{{saveEdit}}" disabled="{{saving}}" style="min-height: 34px; padding: 0 14px; border-radius: 6px; border: none; background: {{accent}}; color: #0C1110; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{saveLabel}}</button></div></div></template>
+<template data-scif value="{{r.hasMsg}}" hint-placeholder-val="{{ false }}"><p role="status" style="margin: 8px 0 0; font-size: 12px; color: {{r.msgColor}}">{{r.msg}}</p></template>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><button type="button" onClick="{{r.startNote}}" style="min-height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid #3A4E47; background: rgba(25, 36, 32, 0.92); color: #EFF5F2; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer">{{r.noteBtn}}</button><button type="button" onClick="{{r.startTags}}" style="min-height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid #3A4E47; background: rgba(25, 36, 32, 0.92); color: #EFF5F2; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer">{{r.tagBtn}}</button><button type="button" style="min-height: 34px; padding: 0 12px; border-radius: 6px; border: none; background: {{accent}}; color: #0C1110; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Share trade card</button></div>
 </div>
 </div>
 </template>
@@ -279,7 +289,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #38BDF8 !important;outlin
 class Component extends DCLogic {
   constructor(...args) {
     super(...args);
-    this.state = { open: { 1: true }, result: 'all', sel: [], ddOpen: false, ddQuery: '' };
+    this.state = { open: { 1: true }, result: 'all', sel: [], ddOpen: false, ddQuery: '', edits: {}, editing: null, draft: '', tags: [], tagInput: '', saving: false, msg: null };
   }
   renderVals() {
     const gain = this.props.gain ?? '#4FD1B5', loss = this.props.loss ?? '#F0607A', accent = this.props.accent ?? '#D8B25A';
@@ -292,6 +302,12 @@ class Component extends DCLogic {
     CAT.forEach((g) => g.items.forEach((o) => { colors[o.k] = o.color; names[o.k] = o.name; if (REAL) o.count = DATA.filter((t) => t.k === o.k).length; }));
     const st = this.state;
     const tagColor = (k) => k === 'gain' ? gain : (k === 'loss' ? loss : accent);
+    const GOOD = ['followed plan', 'a+ setup', 'managed early', 'patient entry', 'good exit'], BAD = ['fomo', 'revenge', 'broke a rule', 'size creep', 'early entry', 'chased', 'news day', 'overtraded'];
+    const tone = (t) => { const x = String(t).toLowerCase(); return GOOD.indexOf(x) >= 0 ? 'gain' : BAD.indexOf(x) >= 0 ? 'loss' : 'accent'; };
+    const SUGG = ['Followed plan', 'A+ setup', 'Managed early', 'FOMO', 'Revenge', 'Broke a rule', 'Size creep', 'Early entry', 'News day', 'Chased'];
+    const ed = st.editing;
+    const curNote = (t) => (st.edits[t.id] && st.edits[t.id].note != null ? st.edits[t.id].note : (t.note === 'No note yet.' ? '' : t.note || ''));
+    const curTags = (t) => (st.edits[t.id] && st.edits[t.id].tags ? st.edits[t.id].tags : (t.tags || []).map((g) => g[0]));
     const list = DATA.filter((t) => (st.result === 'all' || (st.result === 'win' ? t.pnl > 0 : t.pnl < 0)) && (st.sel.length === 0 || st.sel.indexOf(t.k) >= 0));
     const rows = list.map((t) => {
       const open = !!st.open[t.id];
@@ -300,10 +316,31 @@ class Component extends DCLogic {
         chev: open ? 'rotate(180deg)' : 'none', detailLabel: open ? 'Hide details' : 'Show fills and note', rowBg: open ? '#1C2824' : 'transparent',
         pnlText: (t.pnl > 0 ? '+$' : '−$') + Math.abs(t.pnl).toLocaleString('en-US'),
         pnlColor: t.pnl > 0 ? gain : loss,
-        tags: t.tags.map((g) => ({ text: g[0], color: tagColor(g[1]), bg: 'color-mix(in srgb, ' + tagColor(g[1]) + ' 15%, transparent)' })),
+        tags: curTags(t).map((g) => ({ text: g, color: tagColor(tone(g)), bg: 'color-mix(in srgb, ' + tagColor(tone(g)) + ' 15%, transparent)' })),
+        noteText: curNote(t) || 'No note yet. Add one to remember why you took this trade.', noteColor: curNote(t) ? '#CFDAD5' : '#8A9C95', noteMeta: (st.edits[t.id] && st.edits[t.id].savedAt) ? 'Saved' : '',
+        showNote: !(ed && ed.id === t.id && ed.mode === 'note'), editNote: !!(ed && ed.id === t.id && ed.mode === 'note'), editTags: !!(ed && ed.id === t.id && ed.mode === 'tags'),
+        noteBtn: curNote(t) ? 'Edit note' : 'Add note', tagBtn: curTags(t).length ? 'Edit tags' : 'Add tags',
+        startNote: () => this.setState({ editing: { id: t.id, dbid: t.dbid, mode: 'note' }, draft: curNote(t), msg: null }),
+        startTags: () => this.setState({ editing: { id: t.id, dbid: t.dbid, mode: 'tags' }, tags: curTags(t).slice(), tagInput: '', msg: null }),
+        hasMsg: !!(st.msg && st.msg.id === t.id), msg: st.msg && st.msg.id === t.id ? st.msg.text : '', msgColor: st.msg && st.msg.err ? loss : gain,
         toggle: () => { const o = Object.assign({}, this.state.open); o[t.id] = !o[t.id]; this.setState({ open: o }); }
       });
     });
+    const addTag = (raw) => { const v = String(raw || '').trim().replace(/\s+/g, ' ').slice(0, 24); if (!v) return; const cur = this.state.tags; if (cur.some((x) => x.toLowerCase() === v.toLowerCase()) || cur.length >= 8) { this.setState({ tagInput: '' }); return; } this.setState({ tags: cur.concat([v]), tagInput: '' }); };
+    const saveEdit = () => {
+      const e2 = this.state.editing; if (!e2) return;
+      const patch = e2.mode === 'note' ? { note: this.state.draft.trim() } : { tags: this.state.tags.slice() };
+      const done = (err) => { if (err) { this.setState({ saving: false, msg: { id: e2.id, err: true, text: 'Couldn’t save. Check your connection and try again.' } }); return; }
+        const ed2 = Object.assign({}, this.state.edits); ed2[e2.id] = Object.assign({}, ed2[e2.id] || {}, patch, { savedAt: Date.now() });
+        this.setState({ edits: ed2, editing: null, saving: false, msg: { id: e2.id, err: false, text: e2.mode === 'note' ? 'Note saved.' : 'Tags saved.' } }); };
+      if (REAL && window.tj && e2.dbid) { this.setState({ saving: true }); window.tj.from('trades').update(e2.mode === 'note' ? { note: patch.note || null } : { tags: patch.tags }).eq('id', e2.dbid).then((r) => done(r && r.error), () => done(true)); }
+      else done(false);
+    };
+    const editTagsSt = st.tags || [];
+    const tagChips = editTagsSt.map((g) => ({ text: g, color: tagColor(tone(g)), bg: 'color-mix(in srgb, ' + tagColor(tone(g)) + ' 15%, transparent)', removeLabel: 'Remove tag ' + g, remove: () => this.setState({ tags: this.state.tags.filter((x) => x !== g) }) }));
+    const tagSugg = SUGG.filter((g) => !editTagsSt.some((x) => x.toLowerCase() === g.toLowerCase())).map((g) => ({ text: g, add: () => addTag(g) }));
+    const editVals = { draft: st.draft, setDraft: (ev) => this.setState({ draft: ev.target.value }), draftCount: (st.draft || '').length + ' / 2000', cancelEdit: () => this.setState({ editing: null, msg: null }), saveEdit: saveEdit, saving: !!st.saving, saveLabel: st.saving ? 'Saving…' : 'Save',
+      tagChips, noTags: !tagChips.length, tagSugg, tagInput: st.tagInput, setTagInput: (ev) => this.setState({ tagInput: ev.target.value }), tagKey: (ev) => { if (ev.key === 'Enter' || ev.key === ',') { ev.preventDefault(); addTag(this.state.tagInput); } }, addTagBtn: () => addTag(this.state.tagInput) };
     const net = list.reduce((a, t) => a + t.pnl, 0);
     const wins = list.filter((t) => t.pnl > 0).length;
     const results = [['all', 'All'], ['win', 'Winners'], ['loss', 'Losers']].map((r) => ({ label: r[1], on: st.result === r[0], bg: 'transparent', ac: st.result === r[0] ? accent : 'transparent', fg: st.result === r[0] ? '#FFFFFF' : '#A2B4AC', pick: () => this.setState({ result: r[0] }) }));
@@ -317,7 +354,7 @@ class Component extends DCLogic {
     }) })).filter((g) => g.items.length);
     const selChips = st.sel.map((k) => ({ name: byK[k].name, color: byK[k].color, remove: () => toggleK(k) }));
     const ddLabel = st.sel.length === 0 ? 'All' : (st.sel.length === 1 ? byK[st.sel[0]].name : st.sel.length + ' selected');
-    return { gain, loss, accent, rows, results, count: list.length, isSample: !REAL,
+    return { ...editVals, gain, loss, accent, rows, results, count: list.length, isSample: !REAL,
       ddOpen: st.ddOpen, ddQuery: st.ddQuery, ddGroups, ddEmpty: ddGroups.length === 0, selChips, ddLabel,
       ddBd: st.ddOpen || st.sel.length ? '#D8B25A' : '#3A4E47', ddChev: st.ddOpen ? 'rotate(180deg)' : 'none',
       ddFoot: st.sel.length ? st.sel.length + ' selected · ' + list.length + ' trades match' : 'Showing every strategy',
