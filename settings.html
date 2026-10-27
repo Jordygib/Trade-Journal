@@ -221,9 +221,14 @@ class Component extends DCLogic {
         if (REAL && /^[a-z0-9_]{3,20}$/.test(val) && val !== this._orig) this._ut = setTimeout(() => sb.rpc('username_available', { name: val }).then((r) => { if (!r.error && this.state.uname === val) this.setState({ unameOk: !!r.data }); }), 350); },
       setDname: (ev) => this.setState({ dname: ev.target.value.slice(0, 40) }),
       saveProfile: () => { if (this.demo('profMsg')) return; if (!/^[a-z0-9_]{3,20}$/.test(st.uname)) { this.say('profMsg', 'Usernames need 3–20 lowercase letters, numbers, or _.', true); return; }
-        this.setState({ busy: true }); sb.from('profiles').update({ username: st.uname, display_name: st.dname.trim() || null }).eq('id', window.TJ_SESSION.user.id).then((r) => {
-          if (r.error) this.say('profMsg', /duplicate|unique/i.test(r.error.message) ? '@' + st.uname + ' is already taken.' : 'Couldn’t save your profile. Please try again.', true);
-          else { this._orig = st.uname; this.say('profMsg', 'Profile saved. Your new username shows after you refresh.'); } }); },
+        this.setState({ busy: true }); const uid = window.TJ_SESSION.user.id, row = { username: st.uname, display_name: st.dname.trim() || null };
+        const fail = (e) => this.say('profMsg', e && /duplicate|unique/i.test(e.message || '') ? '@' + st.uname + ' is already taken.' : 'Couldn’t save your profile' + (e && e.message ? ': ' + e.message : '.'), true);
+        sb.from('profiles').update(row).eq('id', uid).select('id').then((r) => {
+          if (r.error) { fail(r.error); return; }
+          const finish = () => { this._orig = st.uname; this.say('profMsg', 'Profile saved. Updating your account menu…'); setTimeout(() => location.reload(), 900); };
+          if (r.data && r.data.length) { finish(); return; }
+          sb.from('profiles').insert(Object.assign({ id: uid }, row)).select('id').then((r2) => { if (r2.error || !r2.data || !r2.data.length) fail(r2.error || { message: 'your profile couldn’t be created. Run fix-profiles.sql in Supabase.' }); else finish(); }, fail);
+        }, fail); },
       setNewEmail: (ev) => this.setState({ newEmail: ev.target.value.trim() }),
       saveEmail: () => { if (this.demo('emailMsg')) return; if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.newEmail)) { this.say('emailMsg', 'Enter a valid email address.', true); return; }
         this.setState({ busy: true }); const base = location.href.split('?')[0].split('#')[0].replace(/[^/]*$/, '');
