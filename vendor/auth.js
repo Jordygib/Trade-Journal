@@ -17,12 +17,12 @@
         return;
       }
       if (!session) { resolve(); return; }
-      sb.from('profiles').select('username, display_name, avatar_url, plan, broker_verified').eq('id', session.user.id).maybeSingle().then(function (p) {
+      sb.from('profiles').select('username, display_name, avatar_url, plan, broker_verified, created_at, bio, share_stats, share_trades, show_on_leaderboard').eq('id', session.user.id).maybeSingle().then(function (p) {
         var prof = (p && p.data) || {};
         prof.email = session.user.email;
         prof.handle = clean(prof.username) || clean((session.user.email || '').split('@')[0]) || 'trader';
         window.TJ_PROFILE = prof;
-        var DATA_PAGES = ['dashboard.html', 'trades.html', 'my-rules.html', 'insights.html'];
+        var DATA_PAGES = ['dashboard.html', 'trades.html', 'my-rules.html', 'insights.html', 'profile.html'];
         if (DATA_PAGES.indexOf(page) < 0 || !window.TJImport) { resolve(); return; }
         var needRules = page === 'dashboard.html' || page === 'my-rules.html' || page === 'insights.html';
         var pRules = needRules ? sb.from('rules').select('id, kind, params, active, created_at').order('created_at', { ascending: true }).then(function (r) { window.TJ_RULES = (r && r.data) || []; }, function () { window.TJ_RULES = []; }) : Promise.resolve();
