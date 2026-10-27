@@ -38,7 +38,8 @@
             window.TJ_LITE = window.TJImport.toLite(trades, fills);
           }, function () { window.TJ_TRADES = window.TJImport.toView(trades, []); window.TJ_LITE = window.TJImport.toLite(trades, []); });
         }, function () {});
-        Promise.all([pRules, pTrades]).then(function () { resolve(); }, function () { resolve(); });
+        var pFb = page === 'insights.html' ? sb.from('insight_feedback').select('card, helpful').then(function (r) { var m = {}; ((r && r.data) || []).forEach(function (x) { m[x.card] = x.helpful; }); window.TJ_FEEDBACK = m; }, function () {}) : Promise.resolve();
+        Promise.all([pRules, pTrades, pFb]).then(function () { resolve(); }, function () { resolve(); });
       }, function () { resolve(); });
     }, function () { resolve(); });
   });
