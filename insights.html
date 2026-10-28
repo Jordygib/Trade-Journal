@@ -112,11 +112,6 @@ main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view()
 @media (prefers-reduced-motion: reduce){.calc,.tip{transition:none !important}}
 main section{box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 1px 2px rgba(0,0,0,.18)}
 .kpi{transition:background-color .2s ease}.kpi:hover{background:rgba(32,45,40,.96) !important}
-.cal .calc{position:relative}.cal .cd{position:absolute;left:6px;top:4px;font-size:10px;font-weight:600;color:rgba(239,245,242,.7)}.cal .cv{position:absolute;left:6px;bottom:4px;font-size:12px;font-weight:700;color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-@media (max-width: 1100px){.cal .cd,.cal .cv{display:none}}
-.calsec:fullscreen{background:#111A17 !important;padding:24px !important;overflow:auto;border-radius:0 !important}.calsec::backdrop{background:#111A17}.calsec:fullscreen .cal .calc{aspect-ratio:auto !important;height:calc((100vh - 300px) / 5);min-height:60px}.calsec:fullscreen .cal .cv{font-size:15px}.calsec:fullscreen .cal .cd{font-size:12px}
-.calz{background:#1E2925}.calz:hover,.calz:focus-visible{filter:brightness(1.6)}
-.daypanel{animation:dayIn .28s cubic-bezier(.2,.8,.2,1)}@keyframes dayIn{from{opacity:0;transform:translateY(-6px)}}
 /* neon-glow */:root{--neon:#38BDF8}
 .bgfx::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(760px 360px at 6% -8%,rgba(56,189,248,.30),transparent 70%),radial-gradient(660px 420px at 106% 22%,rgba(56,189,248,.22),transparent 70%),radial-gradient(900px 340px at 50% 112%,rgba(56,189,248,.24),transparent 72%),radial-gradient(520px 300px at 72% 58%,rgba(56,189,248,.07),transparent 70%);animation:neonPulse 6s ease-in-out infinite alternate}
 @keyframes neonPulse{from{opacity:.72}to{opacity:1}}
@@ -376,7 +371,7 @@ class Component extends DCLogic {
       sorted.forEach((t) => { const k = dayKey(t.o); per[k] = (per[k] || 0) + 1; idx.set(t, per[k]); });
       const res = {}, broken = new Map(), checked = new Set();
       act.forEach((ru) => {
-        const st = { canCheck: !!CHECKABLE[ru.kind], checked: 0, breaks: 0, folSum: 0, folN: 0, brkSum: 0, brkN: 0 };
+        const st = { canCheck: !!CHECKABLE[ru.kind] || (ru.kind === 'custom' && !!ru.tag), checked: 0, breaks: 0, folSum: 0, folN: 0, brkSum: 0, brkN: 0 };
         if (st.canCheck) sorted.forEach((t) => {
           let b = null; const v = Number(ru.val);
           if (ru.kind === 'max_loss') { if (t.c) b = t.pnl < -Math.abs(v); }
@@ -384,8 +379,9 @@ class Component extends DCLogic {
           else if (ru.kind === 'max_trades') b = idx.get(t) > v;
           else if (ru.kind === 'max_size') b = (t.qty || 1) > v;
           else if (ru.kind === 'cool_off') { if (t.tk) b = sorted.some((p) => p !== t && p.tk && p.c && p.pnl < 0 && p.c <= t.o && t.o - p.c < v * 60000); }
+          else if (ru.kind === 'custom') { if (t.c) { const tg = String(ru.tag || '').toLowerCase(); b = (t.tags || []).some((g) => String(g).toLowerCase() === tg); } }
           else if (ru.kind === 'loss_streak') { const dk = dayKey(t.o); b = sorted.filter((p) => p !== t && p.c && p.pnl < 0 && dayKey(p.c) === dk && p.c <= t.o).length >= v; }
-          if (b === null || isNaN(v) && ru.kind !== 'no_before') return;
+          if (b === null || (isNaN(v) && ru.kind !== 'no_before' && ru.kind !== 'custom')) return;
           st.checked++; checked.add(t);
           if (b) { st.breaks++; st.brkSum += t.pnl; st.brkN++; if (!broken.has(t)) broken.set(t, []); broken.get(t).push(ru); }
           else { st.folSum += t.pnl; st.folN++; }
@@ -670,7 +666,7 @@ class Component extends DCLogic {
     const cur = ws ? ws + (ws === 1 ? ' win' : ' wins') : ls ? ls + (ls === 1 ? ' loss' : ' losses') : '—';
     set('bStreak', [{ k: 'Longest winning streak', v: pl(bw, 'trade'), c: gain, s: 'In a row' }, { k: 'Longest losing streak', v: pl(bl, 'trade'), c: bl >= 3 ? loss : '#FFFFFF', s: 'In a row' }, { k: 'Current streak', v: cur, c: ws ? gain : ls ? loss : '#FFFFFF', s: 'As of your last trade' }]);
     out.bStreakNote = bl >= 3 ? 'Your longest losing streak was ' + bl + ' trades. Looking at what happened during that stretch can show a shared cause.' : 'No long losing streaks so far.';
-    const rules = Array.isArray(window.TJ_RULES) ? window.TJ_RULES.filter((r) => r.active).map((r) => ({ id: r.id, kind: r.kind, on: true, val: r.params && r.params.val != null ? r.params.val : null })) : [];
+    const rules = Array.isArray(window.TJ_RULES) ? window.TJ_RULES.filter((r) => r.active).map((r) => ({ id: r.id, kind: r.kind, on: true, val: r.params && r.params.val != null ? r.params.val : null, tag: r.params ? r.params.tag : null })) : [];
     if (REAL && rules.length) { const evr = X.evaluate(rules, C); out.bRules = evr.pct == null ? 'Your rules couldn’t be checked against these trades yet.' : evr.pct + '% of your trades followed every rule you set. ' + (evr.folAvg != null && evr.brkAvg != null ? 'Trades that followed them averaged ' + money(evr.folAvg) + ', and trades that broke one averaged ' + money(evr.brkAvg) + '.' : ''); out.bRulesCta = 'Manage my rules →'; }
     else { const ni = X.ideas(C, []).length; out.bRules = REAL ? 'You haven’t set any rules yet.' + (ni ? ' We spotted ' + pl(ni, 'pattern') + ' in your trades that a rule could help with.' : '') : 'Rules you set are checked against every trade, so you can see whether following them pays off.'; out.bRulesCta = REAL && ni ? 'See rule ideas →' : 'Set up rules →'; }
     const tagMap = {}; C.forEach((t) => (t.tags || []).forEach((g) => { (tagMap[g] = tagMap[g] || []).push(t); }));
