@@ -46,7 +46,29 @@
       }, function () { resolve(); });
     }, function () { resolve(); });
   });
+  function dateText(html) {
+    var MF = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var MS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var now = new Date(), y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
+    var last = new Date(y, m + 1, 0).getDate(), left = last - d, nm = (m + 1) % 12, pm = (m + 11) % 12;
+    var q = Math.floor(m / 3) + 1, qEndM = q * 3 - 1, qEndD = new Date(y, qEndM + 1, 0).getDate();
+    var pq = q === 1 ? 4 : q - 1, pqY = q === 1 ? y - 1 : y, pmY = m === 0 ? y - 1 : y;
+    var yLeft = Math.round((new Date(y, 11, 31) - new Date(y, m, d)) / 86400000);
+    var leftTxt = left === 0 ? 'Last day' : left === 1 ? '1 day left' : left + ' days left';
+    var R = [
+      ['October awards', MF[m] + ' awards'], ['11 days left', leftTxt], ['Oct 31', MS[m] + ' ' + last],
+      ['October challenge', MF[m] + ' challenge'], ['Picked Nov 1 by', 'Picked ' + MS[nm] + ' 1 by'],
+      ['Season ends Dec 31 · 72 days left', 'Season ends Dec 31 · ' + (yLeft === 1 ? '1 day left' : yLeft + ' days left')],
+      ['September 2026 and Q3 and Q3 · ', MF[pm] + ' ' + pmY + ' and Q' + pq + ' ' + pqY + ' · '],
+      ['chooses November’s challenge', 'chooses ' + MF[nm] + '’s challenge'], ['Used in October', 'Used in ' + MF[m]],
+      ['Winners announced Nov 1', 'Winners announced ' + MS[nm] + ' 1'], ['October trading days', MF[m] + ' trading days'],
+      ['for Q4, ending Dec 31', 'for Q' + q + ', ending ' + MS[qEndM] + ' ' + qEndD]
+    ];
+    R.forEach(function (r) { html = html.split(r[0]).join(r[1]); });
+    return html;
+  }
   window.TJ_TRANSFORM = function (html) {
+    if (page === 'awards.html' || page === 'leaderboard.html') html = dateText(html);
     var s = window.TJ_SESSION, p = window.TJ_PROFILE;
     if (s && (page === '' || page === 'index.html')) {
       html = html.split('href="login.html?mode=signup"').join('href="dashboard.html"');
