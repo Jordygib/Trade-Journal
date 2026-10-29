@@ -177,7 +177,8 @@ button:focus-visible,a:focus-visible{outline:2px solid #38BDF8 !important;outlin
 <main class="pg" style="padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; width: 100%; max-width: 1360px; margin: 0 auto">
 <template data-scif value="{{isDemo}}" hint-placeholder-val="{{ true }}"><div role="note" style="padding: 12px 16px; border-radius: 6px; border: 1px solid rgba(56,189,248,.35); background: rgba(56,189,248,.07); font-size: 14px">Sample profile. Sign in to see your own.</div></template>
 <section aria-label="Profile" style="background: rgba(25, 36, 32, 0.92); border: 1px solid #2B3B36; border-radius: 6px; padding: 16px; box-sizing: border-box; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 18px 24px; padding: 22px">
-<div aria-hidden="true" style="flex: none; width: 84px; height: 84px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #7DD3FC, #1E6FA8 60%, #0B2233); display: flex; align-items: center; justify-content: center; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 32px; font-weight: 700; color: #FFFFFF; box-shadow: 0 0 0 2px rgba(56,189,248,.6), 0 0 30px rgba(56,189,248,.45)">{{initials}}</div>
+<div style="flex: none; display: flex; flex-direction: column; align-items: center; gap: 8px"><div style="position: relative; width: 96px; height: 96px; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 30% 25%, #7DD3FC, #1E6FA8 60%, #0B2233); display: flex; align-items: center; justify-content: center; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 34px; font-weight: 700; color: #FFFFFF; box-shadow: 0 0 0 2px rgba(56,189,248,.6), 0 0 30px rgba(56,189,248,.45)"><template data-scif value="{{hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{photo}}" alt="Your profile photo" style="width: 100%; height: 100%; object-fit: cover; display: block"></template><template data-scif value="{{noPhoto}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true">{{initials}}</span></template><template data-scif value="{{uploading}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(5,9,12,.7); font-size: 12px; font-family: Barlow, sans-serif">Saving…</span></template></div>
+<div style="display: flex; gap: 6px"><label style="display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid rgba(56,189,248,.5); color: #BAE6FD; font-size: 12px; font-weight: 700; cursor: pointer">{{photoBtn}}<input type="file" accept="image/png,image/jpeg,image/webp" onChange="{{pickPhoto}}" class="sr"></label><template data-scif value="{{hasPhoto}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{removePhoto}}" style="min-height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid #3A4E47; background: transparent; color: #B8C6C0; font: inherit; font-size: 12px; cursor: pointer">Remove</button></template></div></div>
 <div style="flex: 1 1 320px; min-width: 0">
 <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px"><h2 style="margin: 0; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 30px; font-weight: 700; line-height: 1.1">{{displayName}}</h2><template data-scif value="{{showHandle}}" hint-placeholder-val="{{ true }}"><span style="font-size: 15px; color: #B8C6C0">@{{handle}}</span></template></div>
 <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px"><span style="padding: 3px 9px; border-radius: 999px; border: 1px solid #3A4E47; color: #CFDAD5">Joined {{joined}}</span><span style="padding: 3px 9px; border-radius: 999px; border: 1px solid #3A4E47; color: #CFDAD5">{{plan}} plan</span><span title="Verification comes with broker connections" style="padding: 3px 9px; border-radius: 999px; border: 1px dashed #3A4E47; color: #8A9C95">Not broker-verified yet</span></div>
@@ -202,7 +203,7 @@ class Component extends DCLogic {
     super(...args);
     this.REAL = !!(window.tj && window.TJ_SESSION);
     const P = window.TJ_PROFILE || {};
-    this.state = { bio: P.bio || '', bioDraft: '', editingBio: false, msg: null, share_stats: !!P.share_stats, share_trades: !!P.share_trades, show_on_leaderboard: !!P.show_on_leaderboard };
+    this.state = { photo: P.avatar_url || '', uploading: false, bio: P.bio || '', bioDraft: '', editingBio: false, msg: null, share_stats: !!P.share_stats, share_trades: !!P.share_trades, show_on_leaderboard: !!P.show_on_leaderboard };
   }
 
   tjx() {
@@ -309,7 +310,30 @@ class Component extends DCLogic {
     const jd = P.created_at ? new Date(P.created_at) : new Date(2026, 6, 1);
     const save = (patch, okText) => { if (!REAL) { this.setState({ msg: { text: 'Sample profile. Sign in to save changes.', err: true } }); return Promise.resolve(false); }
       return window.tj.from('profiles').update(patch).eq('id', window.TJ_SESSION.user.id).select('id').then((r) => { const ok = !r.error && r.data && r.data.length; this.setState({ msg: { text: ok ? okText : 'Couldn’t save. Please try again.', err: !ok } }); return ok; }, () => { this.setState({ msg: { text: 'Couldn’t save. Please try again.', err: true } }); return false; }); };
-    const v = { gain, loss, accent, isDemo: !REAL, handle, displayName: dn, showHandle: !REAL || !!P.display_name, initials, joined: MN[jd.getMonth()] + ' ' + jd.getFullYear(),
+    const photoVals = { photo: st.photo || '', hasPhoto: !!st.photo, noPhoto: !st.photo, uploading: !!st.uploading, photoBtn: st.photo ? 'Change photo' : 'Upload photo',
+      removePhoto: () => { if (!REAL) { this.setState({ photo: '' }); return; } save({ avatar_url: null }, 'Photo removed.').then((ok) => { if (ok) this.setState({ photo: '' }); }); },
+      pickPhoto: (ev) => {
+        const f = ev.target.files && ev.target.files[0]; try { ev.target.value = ''; } catch (e) {} if (!f) return;
+        if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { this.setState({ msg: { text: 'Please choose a PNG, JPG, or WebP image.', err: true } }); return; }
+        if (f.size > 10 * 1024 * 1024) { this.setState({ msg: { text: 'That image is over 10 MB. Try a smaller one.', err: true } }); return; }
+        const url = URL.createObjectURL(f), img = new Image();
+        img.onload = () => {
+          const S = 320, c = document.createElement('canvas'); c.width = S; c.height = S; const s = Math.min(img.width, img.height);
+          c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, S, S); URL.revokeObjectURL(url);
+          if (!REAL) { this.setState({ photo: c.toDataURL('image/jpeg', 0.88), msg: { text: 'Sample profile. Sign in to save your photo.', err: false } }); return; }
+          this.setState({ uploading: true, msg: null });
+          c.toBlob((blob) => {
+            const uid = window.TJ_SESSION.user.id, path = uid + '/avatar-' + Date.now() + '.jpg', sb = window.tj;
+            sb.storage.from('avatars').upload(path, blob, { contentType: 'image/jpeg', upsert: true }).then((u) => {
+              if (u.error) throw u.error; const pub = sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+              return save({ avatar_url: pub }, 'Photo saved. It shows in the top-right menu after you refresh.').then((ok) => this.setState({ uploading: false, photo: ok ? pub : this.state.photo }));
+            }).catch((e) => this.setState({ uploading: false, msg: { text: 'Couldn’t upload your photo' + (e && e.message ? ': ' + e.message : '.') + ' Run avatars.sql if this is the first upload.', err: true } }));
+          }, 'image/jpeg', 0.88);
+        };
+        img.onerror = () => this.setState({ msg: { text: 'Couldn’t read that image. Try another file.', err: true } });
+        img.src = url;
+      } };
+    const v = { ...photoVals, gain, loss, accent, isDemo: !REAL, handle, displayName: dn, showHandle: !REAL || !!P.display_name, initials, joined: MN[jd.getMonth()] + ' ' + jd.getFullYear(),
       plan: P.plan === 'pro' ? 'Pro' : P.plan === 'bundle' ? 'Pro + Unlimited' : 'Free',
       showBio: !st.editingBio, editingBio: st.editingBio, bioText: st.bio || (REAL ? 'No bio yet.' : '0DTE SPX iron condors, mostly after 11:00. Journaling every trade.'), bioColor: st.bio || !REAL ? '#CFDAD5' : '#8A9C95',
       bioBtn: st.bio ? 'Edit bio' : 'Add bio', bioEdit: () => this.setState({ editingBio: true, bioDraft: this.state.bio, msg: null }), bioCancel: () => this.setState({ editingBio: false }),

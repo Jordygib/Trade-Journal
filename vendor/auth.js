@@ -86,6 +86,9 @@
       html = html.split('@thetaflow').join('@' + p.handle);
       html = html.split('Broker-verified · tastytrade · Free plan').join((p.broker_verified ? 'Broker-verified' : 'Not verified yet') + ' · ' + plan + ' plan');
       html = html.split('#8 · 2,450 trophy pts').join(plan + ' plan');
+      if (p.avatar_url && /^https:\/\/[^"'<>\s]+$/.test(p.avatar_url)) {
+        html = html.replace(/(<span style="width: 34px; height: 34px; border-radius: 6px; background: #D8B25A;[^"]*)">TF<\/span>/, '$1; overflow: hidden; padding: 0"><img src="' + p.avatar_url + '" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></span>');
+      }
       html = html.split('>TF<').join('>' + initials(p.handle) + '<');
     }
     return html;
