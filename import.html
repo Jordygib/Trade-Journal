@@ -235,7 +235,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #38BDF8 !important;outlin
 </div>
 <template data-scif value="{{hasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin: 10px 0 0; font-size: 13px; color: {{loss}}">{{err}}</p></template>
 <template data-scif value="{{hasParseErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin: 12px 0 0; font-size: 13px; color: {{loss}}">{{parseErr}}</p></template>
-<template data-scif value="{{unknownFmt}}" hint-placeholder-val="{{ false }}"><p style="margin: 12px 0 0; font-size: 13px; color: #E0AF68">We don’t recognize this format yet, so you can match the columns below. tastytrade order history and transaction exports import automatically.</p></template>
+<template data-scif value="{{unknownFmt}}" hint-placeholder-val="{{ false }}"><p style="margin: 12px 0 0; font-size: 13px; color: #E0AF68">We don’t recognize this format yet, so you can match the columns below. Files from tastytrade, Schwab, thinkorswim, Robinhood, and Webull import automatically.</p></template>
 <template data-scif value="{{hasParsed}}" hint-placeholder-val="{{ false }}">
 <div style="margin-top: 16px; padding: 14px 16px; border-radius: 4px; border: 1px solid color-mix(in srgb, #4FD1B5 40%, #2B3B36); background: color-mix(in srgb, #4FD1B5 7%, #151F1C)">
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px"><span style="font-weight: 700">✓ Recognized: {{parsedLabel}}</span><span style="font-size: 12px; color: #B8C6C0">{{pOrders}} filled orders · {{pFills}} legs</span></div>
@@ -311,7 +311,7 @@ class Component extends DCLogic {
     const rows = lines.slice(1, 6).map((l) => this.parseLine(l));
     let parsed = null;
     try { if (window.TJImport) parsed = window.TJImport.parse(text, new Date()); } catch (e) { parsed = { ok: false, error: 'We couldn’t read this file. Try exporting it again.' }; }
-    this.setState({ file: { name: name, headers: headers, rows: rows, count: lines.length - 1 }, map: this.guess(headers), err: '', imported: false, parsed: parsed, saving: false, saved: null, saveErr: '', broker: parsed && parsed.ok ? 'tasty' : this.state.broker, path: 'csv' });
+    this.setState({ file: { name: name, headers: headers, rows: rows, count: lines.length - 1 }, map: this.guess(headers), err: '', imported: false, parsed: parsed, saving: false, saved: null, saveErr: '', broker: parsed && parsed.ok ? ({ tastytrade: 'tasty', schwab: 'schwab', thinkorswim: 'schwab', robinhood: 'robinhood', webull: 'webull' }[parsed.broker] || this.state.broker) : this.state.broker, path: 'csv' });
   }
   doSave() {
     const pr = this.state.parsed; if (!pr || !pr.ok) return;
@@ -322,7 +322,7 @@ class Component extends DCLogic {
   renderVals() {
     const gain = this.props.gain ?? '#4FD1B5', loss = this.props.loss ?? '#F0607A', accent = this.props.accent ?? '#D8B25A';
     const st = this.state;
-    const BROKERS = [["tasty", "tastytrade", "auto"], ["schwab", "Schwab / thinkorswim", "auto"], ["ibkr", "Interactive Brokers", "auto"], ["webull", "Webull", "auto"], ["fidelity", "Fidelity", "auto"], ["etrade", "E*TRADE", "auto"], ["tradestation", "TradeStation", "auto"], ["robinhood", "Robinhood", "map"], ["other", "Another broker", "map"]];
+    const BROKERS = [["tasty", "tastytrade", "auto", "Desktop app: History → Transactions → CSV, or Trading → Activity export."], ["schwab", "Schwab / thinkorswim", "auto", "Schwab.com: Accounts → History → Transactions → Export. thinkorswim: Monitor → Account Statement → Export (CSV)."], ["robinhood", "Robinhood", "auto", "Account → Reports and statements → Reports → Account activity → CSV (it can take a few hours to arrive)."], ["webull", "Webull", "auto", "Webull desktop: Orders → Order History → Options → Export to CSV."], ["ibkr", "Interactive Brokers", "map", "Reports → Flex Queries → Trades as CSV, then match the columns."], ["fidelity", "Fidelity", "map", "Accounts → Activity & Orders → Download, then match the columns."], ["etrade", "E*TRADE", "map", "Accounts → Transactions → Download, then match the columns."], ["tradestation", "TradeStation", "map", "Trade history report as CSV, then match the columns."], ["other", "Another broker", "map", "Any trade history CSV works with column matching."]];
     const FIELDS = [["date", "Date and time", true, ["date", "time", "executed", "datetime"]], ["symbol", "Symbol", true, ["symbol", "instrument", "contract"]], ["action", "Action", true, ["action", "side", "buy/sell", "transaction"]], ["qty", "Quantity", true, ["quantity", "qty", "contracts", "shares"]], ["price", "Price", true, ["average price", "avg price", "fill price", "price"]], ["fees", "Fees", false, ["fees", "fee", "commission"]], ["expiry", "Expiration", false, ["expiration", "expiry", "exp date"]], ["strike", "Strike", false, ["strike"]], ["cp", "Call or put", false, ["call or put", "put/call", "call/put", "option type"]]];
     const br = BROKERS.find((b) => b[0] === st.broker) || BROKERS[0];
     const conn = st.path === 'connect';
@@ -361,7 +361,7 @@ class Component extends DCLogic {
       notConnected: !st.connected, connected: st.connected, connecting: st.connecting || !canConnect,
       connectLabel: !canConnect ? 'Connection not available yet. Use a CSV' : (st.connecting ? 'Connecting…' : 'Connect ' + br[1]),
       doConnect: () => { if (!canConnect || this.state.connecting) return; this.setState({ connecting: true }); this._t = setTimeout(() => this.setState({ connecting: false, connected: true }), 1300); },
-      exportTip: br[2] === 'auto' ? 'Export your full trade history from ' + br[1] + ' as CSV' : 'Export any trade or transaction history as CSV',
+      exportTip: br[3] || (br[2] === 'auto' ? 'Export your full trade history from ' + br[1] + ' as CSV' : 'Export any trade or transaction history as CSV'),
       dropTitle: f ? f.name : 'Drop your CSV here or click to choose',
       dropSub: f ? f.count.toLocaleString('en-US') + ' rows · ' + f.headers.length + ' columns' : 'Trade or transaction history export',
       dropBd: f ? gain : '#3A4E47',

@@ -58,7 +58,7 @@
       var unit = legs.reduce(function (g, l) { return gcd(g, l.qty); }, 0);
       orders.push({ id: String(r[iO] || '').replace('#', '').trim(), when: w.date, hasTime: w.hasTime, underlying: legs[0].underlying, net: net, unit: unit, cash: net * unit * 100, legs: legs });
     });
-    return { orders: orders, warnings: warn, feesKnown: false, label: 'tastytrade order history' };
+    return { orders: orders, warnings: warn, feesKnown: false, label: 'tastytrade order history', prefix: 'tt', broker: 'tastytrade' };
   }
   /* ---------- tastytrade transactions (Date, Type, Action, Symbol, Value, Quantity, Average Price, Commissions, Fees, ...) */
   function fromTransactions(rows, head, today) {
@@ -84,7 +84,98 @@
       o.cash += cash; o.fees += fee; o.legs.push(leg);
     });
     list.forEach(function (o) { if (o.expiration) return; o.unit = o.legs.reduce(function (g, l) { return gcd(g, l.qty); }, 0); o.net = o.cash / (o.unit * 100); });
-    return { orders: list, warnings: warn, feesKnown: true, label: 'tastytrade transactions' };
+    return { orders: list, warnings: warn, feesKnown: true, label: 'tastytrade transactions', prefix: 'tt', broker: 'tastytrade' };
+  }
+
+  /* ---------- shared helpers for other brokers */
+  var ROOTS = { SPXW: 'SPX', SPXPM: 'SPX', NDXP: 'NDX', RUTW: 'RUT', XSPW: 'XSP', VIXW: 'VIX' };
+  function root(u) { u = String(u || '').trim().toUpperCase().replace(/^\./, ''); return ROOTS[u] || u; }
+  function num(x) { var t = String(x == null ? '' : x).trim(); var neg = /^\(.*\)$/.test(t) || /^-/.test(t); var v = parseFloat(t.replace(/[^0-9.]/g, '')); return isNaN(v) ? 0 : (neg ? -v : v); }
+  function mdy(s) { var m = String(s || '').match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/); if (!m) return null; var y = +m[3]; if (y < 100) y += 2000; return new Date(y, +m[1] - 1, +m[2]); }
+  function withTime(d, s) { var m = String(s || '').match(/(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AP]M)?/i); if (!d) return null; var r = new Date(d.getTime()); if (m) { var h = +m[1]; if (m[4]) h = h % 12 + (/p/i.test(m[4]) ? 12 : 0); r.setHours(h, +m[2], +(m[3] || 0), 0); } else r.setHours(12, 0, 0, 0); return r; }
+  function exp16(d) { var e = new Date(d.getTime()); e.setHours(16, 0, 0, 0); return e; }
+  function occ(sym) { var m = String(sym || '').replace(/\s+/g, '').match(/^([A-Z.]{1,6})(\d{2})(\d{2})(\d{2})([CP])(\d{8})$/); if (!m) return null; return { underlying: root(m[1]), expiration: new Date(2000 + +m[2], +m[3] - 1, +m[4], 16), strike: +m[6] / 1000, type: m[5] === 'C' ? 'call' : 'put' }; }
+  function groupRows(rows, keyFn) { var by = {}, out = []; rows.forEach(function (r) { var k = keyFn(r); if (!by[k]) { by[k] = { id: k, when: r.when, hasTime: r.hasTime, underlying: r.leg.underlying, cash: 0, fees: 0, legs: [] }; out.push(by[k]); } var o = by[k]; o.cash += r.cash; o.fees += r.fees || 0; o.legs.push(r.leg); }); out.forEach(function (o) { var real = o.legs.filter(function (l) { return l.action !== 'EXP'; }); o.unit = real.length ? real.reduce(function (g, l) { return gcd(g, l.qty); }, 0) : 1; o.net = o.cash / (o.unit * 100); }); return out; }
+  function hashStr(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return h.toString(36); }
+  /* ---------- Schwab (schwab.com transaction history) */
+  function fromSchwab(rows, head, today) {
+    var ix = function (n) { return head.indexOf(n); };
+    var I = { date: ix('Date'), action: ix('Action'), sym: ix('Symbol'), desc: ix('Description'), qty: ix('Quantity'), price: ix('Price'), fees: ix('Fees & Comm'), amt: ix('Amount') };
+    var out = [], warn = [];
+    rows.forEach(function (r) {
+      var a = String(r[I.action] || '').trim().toLowerCase(); var sym = String(r[I.sym] || '').trim();
+      var m = sym.match(/^([A-Z.]{1,6})\s+(\d{1,2}\/\d{1,2}\/\d{2,4})\s+([\d.]+)\s+([CP])$/) || null; var leg0 = null;
+      if (m) leg0 = { underlying: root(m[1]), expiration: exp16(mdy(m[2])), strike: +m[3], type: m[4] === 'C' ? 'call' : 'put' };
+      else { var o2 = occ(sym); if (o2) leg0 = o2; }
+      if (!leg0) return;
+      var d = mdy(String(r[I.date] || '').split(' as of')[0]); if (!d) return;
+      var q = Math.abs(num(r[I.qty])) || 1, code = /buy to open/.test(a) ? 'BTO' : /sell to open/.test(a) ? 'STO' : /buy to close/.test(a) ? 'BTC' : /sell to close/.test(a) ? 'STC' : /expire|assign|exercise/.test(a) ? 'EXP' : null;
+      if (!code) return; if (code === 'EXP' && /assign|exercise/.test(a)) warn.push('An assignment or exercise on ' + sym + ' was treated as closing the option at $0. Any stock you got is not tracked.');
+      var fees = Math.abs(num(r[I.fees])), amt = num(r[I.amt]);
+      out.push({ when: withTime(d, null), hasTime: false, cash: code === 'EXP' ? 0 : amt + fees, fees: fees, leg: Object.assign({}, leg0, { qty: (code === 'BTO' || code === 'BTC') ? q : (code === 'EXP' ? q : -q), action: code }) });
+    });
+    var orders = groupRows(out, function (r) { return 'sw|' + ymd(r.when) + '|' + r.leg.underlying + '|' + (r.leg.action === 'EXP' ? 'x' : (r.leg.action.slice(2) === 'O' ? 'o' : 'c')); });
+    orders.forEach(function (o) { o.id = 'sw' + hashStr(o.id + o.legs.map(function (l) { return l.strike + l.type + l.qty; }).join(',')); });
+    return { orders: orders, warnings: warn, feesKnown: true, label: 'Schwab transaction history', prefix: 'sw', broker: 'schwab' };
+  }
+  /* ---------- thinkorswim account statement (Account Trade History section) */
+  function fromToS(all, today) {
+    var hi = -1; for (var i = 0; i < all.length; i++) { if (all[i].indexOf('Exec Time') >= 0 && all[i].indexOf('Pos Effect') >= 0) { hi = i; break; } }
+    if (hi < 0) return null;
+    var head = all[hi].map(function (h) { return h.trim(); }), ix = function (n) { return head.indexOf(n); };
+    var I = { t: ix('Exec Time'), side: ix('Side'), qty: ix('Qty'), pe: ix('Pos Effect'), sym: ix('Symbol'), exp: ix('Exp'), strike: ix('Strike'), type: ix('Type'), price: ix('Price') };
+    var MON = { JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5, JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11 };
+    var rows = [], cur = null, n = 0;
+    for (var k = hi + 1; k < all.length; k++) {
+      var r = all[k]; if (!r || r.join('').trim() === '') break;
+      var ts = String(r[I.t] || '').trim();
+      if (ts) { var dd = mdy(ts); cur = { when: withTime(dd, ts.split(' ')[1]), id: 'tos' + (++n) }; }
+      if (!cur || !cur.when) continue;
+      var tp = String(r[I.type] || '').trim().toUpperCase(); if (tp !== 'CALL' && tp !== 'PUT') continue;
+      var ex = String(r[I.exp] || '').trim().toUpperCase(), em = ex.match(/^(\d{1,2})\s+([A-Z]{3})\s+(\d{2,4})/), ed = em ? new Date((+em[3] < 100 ? 2000 + +em[3] : +em[3]), MON[em[2]], +em[1]) : mdy(ex); if (!ed) continue;
+      var q = num(r[I.qty]), side = String(r[I.side] || '').toUpperCase(); if (side === 'SELL' && q > 0) q = -q; if (side === 'BUY' && q < 0) q = -q;
+      var open = /OPEN/i.test(String(r[I.pe] || '')), price = Math.abs(num(r[I.price]));
+      rows.push({ when: cur.when, hasTime: true, cash: -q * price * 100, fees: 0, oid: cur.id, leg: { underlying: root(r[I.sym]), expiration: exp16(ed), strike: num(r[I.strike]), type: tp === 'CALL' ? 'call' : 'put', qty: q, action: q > 0 ? (open ? 'BTO' : 'BTC') : (open ? 'STO' : 'STC') } });
+    }
+    var orders = groupRows(rows, function (r) { return r.oid; });
+    orders.forEach(function (o) { o.id = 'tos' + hashStr(o.when.toISOString() + o.legs.map(function (l) { return l.strike + l.type + l.qty; }).join(',')); });
+    return { orders: orders, warnings: [], feesKnown: false, label: 'thinkorswim account statement', prefix: 'tos', broker: 'thinkorswim' };
+  }
+  /* ---------- Robinhood account activity report */
+  function fromRobinhood(rows, head, today) {
+    var ix = function (n) { return head.indexOf(n); };
+    var I = { d: ix('Activity Date'), inst: ix('Instrument'), desc: ix('Description'), code: ix('Trans Code'), qty: ix('Quantity'), price: ix('Price'), amt: ix('Amount') };
+    var out = [];
+    rows.forEach(function (r) {
+      var code = String(r[I.code] || '').trim().toUpperCase(); if (['BTO', 'STO', 'BTC', 'STC', 'OEXP', 'OASGN', 'OEXCS'].indexOf(code) < 0) return;
+      var m = String(r[I.desc] || '').match(/([A-Z.]{1,6})\s+(\d{1,2}\/\d{1,2}\/\d{2,4})\s+(Call|Put)\s+\$?([\d,.]+)/i); if (!m) return;
+      var d = mdy(r[I.d]); if (!d) return;
+      var q = Math.abs(num(r[I.qty])) || 1, act = code.length === 3 ? code : 'EXP';
+      out.push({ when: withTime(d, null), hasTime: false, cash: act === 'EXP' ? 0 : num(r[I.amt]), fees: 0, leg: { underlying: root(m[1]), expiration: exp16(mdy(m[2])), strike: num(m[4]), type: /call/i.test(m[3]) ? 'call' : 'put', qty: (act === 'BTO' || act === 'BTC' || act === 'EXP') ? q : -q, action: act } });
+    });
+    var orders = groupRows(out, function (r) { return 'rh|' + ymd(r.when) + '|' + r.leg.underlying + '|' + (r.leg.action === 'EXP' ? 'x' : (r.leg.action.slice(2) === 'O' ? 'o' : 'c')); });
+    orders.forEach(function (o) { o.id = 'rh' + hashStr(o.id + o.legs.map(function (l) { return l.strike + l.type + l.qty; }).join(',')); });
+    return { orders: orders, warnings: [], feesKnown: true, label: 'Robinhood account activity', prefix: 'rh', broker: 'robinhood' };
+  }
+  /* ---------- Webull options order history */
+  function fromWebull(rows, head, today) {
+    var ix = function (n) { return head.indexOf(n); };
+    var I = { sym: ix('Symbol'), side: ix('Side'), st: ix('Status'), filled: ix('Filled'), avg: ix('Avg Price'), ft: ix('Filled Time'), name: ix('Name') };
+    var raw = [];
+    rows.forEach(function (r) {
+      if (!/fill/i.test(String(r[I.st] || ''))) return;
+      var leg = occ(r[I.sym]); if (!leg) return;
+      var t = String(r[I.ft] || ''); var d = mdy(t); if (!d) return;
+      raw.push({ when: withTime(d, t.replace(/^\S+\s*/, '')), side: String(r[I.side] || '').toLowerCase(), q: Math.abs(num(r[I.filled])) || 1, px: Math.abs(num(r[I.avg])), leg: leg, tkey: t.trim() });
+    });
+    raw.sort(function (a, b) { return a.when - b.when; });
+    var pos = {}, out = [];
+    raw.forEach(function (x) { var k = x.leg.underlying + '|' + ymd(x.leg.expiration) + '|' + x.leg.strike + '|' + x.leg.type; var p = pos[k] || 0; var buy = /buy/.test(x.side); var q = buy ? x.q : -x.q;
+      var act = buy ? (p < 0 ? 'BTC' : 'BTO') : (p > 0 ? 'STC' : 'STO'); pos[k] = p + q;
+      out.push({ when: x.when, hasTime: true, cash: -q * x.px * 100, fees: 0, tkey: x.tkey, leg: Object.assign({}, x.leg, { qty: q, action: act }) }); });
+    var orders = groupRows(out, function (r) { return 'wb|' + r.tkey + '|' + r.leg.underlying; });
+    orders.forEach(function (o) { o.id = 'wb' + hashStr(o.id + o.legs.map(function (l) { return l.strike + l.type + l.qty; }).join(',')); });
+    return { orders: orders, warnings: [], feesKnown: false, label: 'Webull options orders', prefix: 'wb', broker: 'webull' };
   }
   function classify(legs, openNet) {
     var calls = legs.filter(function (l) { return l.type === 'call'; }), puts = legs.filter(function (l) { return l.type === 'put'; });
@@ -121,16 +212,18 @@
     return legs.length + (legs.length === 1 ? ' leg' : ' legs') + ' · ' + uniq.join('/') + ' · ' + exps.join(' & ');
   }
   function group(orders, today, feesKnown) {
-    orders.sort(function (a, b) { return a.when - b.when || (a.id < b.id ? -1 : 1); });
+    var rank = function (o) { return o.legs.every(function (l) { return l.action === 'EXP'; }) ? 2 : (o.legs.some(function (l) { return /O$/.test(l.action); }) ? 0 : 1); };
+    orders.sort(function (a, b) { return a.when - b.when || rank(a) - rank(b) || (a.id < b.id ? -1 : 1); });
     var open = {}, trades = [], n = 0;
     orders.forEach(function (o) {
       var touched = [];
       o.legs.forEach(function (l) { var k = key(l); if (open[k] && open[k].qty !== 0 && touched.indexOf(open[k].trade) < 0) touched.push(open[k].trade); });
       var t = touched[0];
+      if (!t && o.legs.every(function (l) { return l.action === 'EXP'; })) return;
       if (!t) { t = { n: ++n, orders: [], contracts: {}, underlying: o.underlying }; trades.push(t); }
       for (var j = 1; j < touched.length; j++) { var x = touched[j]; x.orders.forEach(function (oo) { t.orders.push(oo); }); Object.keys(x.contracts).forEach(function (k) { t.contracts[k] = x.contracts[k]; open[k].trade = t; }); trades.splice(trades.indexOf(x), 1); }
       t.orders.push(o);
-      o.legs.forEach(function (l) { var k = key(l); if (!open[k]) open[k] = { qty: 0, trade: t, leg: l }; open[k].trade = t; open[k].qty += l.qty; t.contracts[k] = open[k]; });
+      o.legs.forEach(function (l) { var k = key(l); if (l.action === 'EXP') { if (!open[k] || !open[k].qty) return; var cq = open[k].qty; l.qty = -Math.sign(cq) * Math.min(Math.abs(l.qty) || Math.abs(cq), Math.abs(cq)); } if (!open[k]) open[k] = { qty: 0, trade: t, leg: l }; open[k].trade = t; open[k].qty += l.qty; t.contracts[k] = open[k]; });
       if (Object.keys(t.contracts).every(function (k) { return Math.abs(t.contracts[k].qty) < 1e-9; })) t.closedAt = o.when;
     });
     return trades.map(function (t) {
@@ -142,10 +235,11 @@
         if (maxExp < today.getTime()) { status = 'closed'; t.closedAt = new Date(maxExp); expiredAssumed = !feesKnown; exitLabel = 'Expired'; }
       }
       var closeOrders = t.orders.slice(1);
+      if (!exitLabel && closeOrders.length && closeOrders.every(function (o) { return o.legs.every(function (l) { return l.action === 'EXP'; }); })) exitLabel = 'Expired';
       if (!exitLabel) exitLabel = status === 'open' ? 'Still open' : (closeOrders.length ? 'Closed ' + px(closeOrders.reduce(function (s, o) { return s + (o.net || 0) * (o.unit || 1); }, 0) / (first.unit || 1)) : 'Closed');
       var strat = classify(first.legs, first.net || 0);
       return {
-        source_key: 'tt:' + first.id, underlying: t.underlying, strategy: strat, strategy_name: NAMES[strat] || 'Other', structure: structure(first.legs),
+        source_key: (first.prefix || 'tt') + ':' + first.id, underlying: t.underlying, strategy: strat, strategy_name: NAMES[strat] || 'Other', structure: structure(first.legs),
         opened_at: first.when, opened_has_time: first.hasTime, closed_at: t.closedAt || null, entry_price: first.net || 0, exit_label: exitLabel,
         quantity: first.unit || 1, pnl: Math.round((cash - fees) * 100) / 100, gross: Math.round(cash * 100) / 100, fees: Math.round(fees * 100) / 100,
         status: status, expired_assumed: expiredAssumed, orders: t.orders
@@ -155,15 +249,24 @@
   function parse(text, today) {
     today = today || new Date();
     var rows = parseCSV(text); if (!rows.length) return { ok: false, error: 'That file looks empty.' };
+    var hIdx = 0;
+    for (var hi2 = 0; hi2 < Math.min(rows.length, 12); hi2++) { var hr = rows[hi2].map(function (h) { return String(h).trim(); });
+      if (hr.indexOf('MarketOrFill') >= 0 || hr.indexOf('Trans Code') >= 0 || hr.indexOf('Filled Time') >= 0 || (hr.indexOf('Action') >= 0 && (hr.indexOf('Amount') >= 0 || hr.indexOf('Value') >= 0))) { hIdx = hi2; break; } }
+    if (hIdx) rows = rows.slice(hIdx);
     var head = rows[0].map(function (h) { return h.trim(); });
     var out;
     if (head.indexOf('MarketOrFill') >= 0 && head.indexOf('Description') >= 0) out = fromActivity(rows.slice(1), head, today);
     else if (head.indexOf('Call or Put') >= 0 && head.indexOf('Action') >= 0 && head.indexOf('Value') >= 0) out = fromTransactions(rows.slice(1), head, today);
+    else if (head.indexOf('Trans Code') >= 0 && head.indexOf('Description') >= 0) out = fromRobinhood(rows.slice(1), head, today);
+    else if (head.indexOf('Fees & Comm') >= 0 && head.indexOf('Action') >= 0 && head.indexOf('Amount') >= 0) out = fromSchwab(rows.slice(1), head, today);
+    else if (head.indexOf('Filled Time') >= 0 && head.indexOf('Side') >= 0 && head.indexOf('Avg Price') >= 0) out = fromWebull(rows.slice(1), head, today);
+    else if (rows.some(function (r) { return r.indexOf('Exec Time') >= 0 && r.indexOf('Pos Effect') >= 0; })) out = fromToS(rows, today);
     else return { ok: false, unknown: true, error: 'We don’t recognize this file’s format yet.', headers: head, rows: rows.length - 1 };
-    if (!out.orders.length) return { ok: false, error: 'No filled option orders were found in this file.', label: out.label };
+    if (!out.orders.length) return { ok: false, error: 'No option trades were found in this file. Make sure it includes the date range you traded in.', label: out.label };
+    out.orders.forEach(function (o) { o.prefix = out.prefix || 'tt'; });
     var trades = group(out.orders, today, out.feesKnown);
     var fills = 0; trades.forEach(function (t) { t.orders.forEach(function (o) { fills += o.legs.length; }); });
-    return { ok: true, label: out.label, feesKnown: out.feesKnown, warnings: out.warnings, orders: out.orders.length, fills: fills, trades: trades,
+    return { ok: true, broker: out.broker || 'tastytrade', label: out.label, feesKnown: out.feesKnown, warnings: out.warnings, orders: out.orders.length, fills: fills, trades: trades,
       net: trades.reduce(function (s, t) { return s + t.pnl; }, 0), closed: trades.filter(function (t) { return t.status === 'closed'; }).length };
   }
   function fmtDate(d) { return MN[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
@@ -179,7 +282,7 @@
   function save(sb, result, fileName) {
     return sb.auth.getUser().then(function (u) {
       var user = u && u.data ? u.data.user : null; if (!user) throw new Error('Please sign in again, then retry the import.');
-      return sb.from('imports').insert({ user_id: user.id, source: 'csv', broker: 'tastytrade', file_name: fileName || null, row_count: result.orders }).select('id').single().then(function (imp) {
+      return sb.from('imports').insert({ user_id: user.id, source: 'csv', broker: result.broker || 'tastytrade', file_name: fileName || null, row_count: result.orders }).select('id').single().then(function (imp) {
         if (imp.error) throw imp.error;
         var tradeRows = result.trades.map(function (t) {
           return { user_id: user.id, source_key: t.source_key, underlying: t.underlying, strategy: t.strategy, structure: t.structure, opened_at: t.opened_at.toISOString(), closed_at: t.closed_at ? t.closed_at.toISOString() : null,
@@ -193,7 +296,7 @@
             t.orders.forEach(function (o) {
               o.legs.forEach(function (l, i) {
                 fillRows.push({ user_id: user.id, import_id: imp.data.id, trade_id: idBy[t.source_key], executed_at: o.when.toISOString(), action: l.action, symbol: l.underlying + ' ' + ymd(l.expiration) + ' ' + l.strike + (l.type === 'call' ? 'C' : 'P'),
-                  underlying: l.underlying, expiration: ymd(l.expiration), strike: l.strike, option_type: l.type, quantity: l.qty, price: o.net || 0, fees: i === 0 ? (o.fees || 0) : 0, dedupe_key: 'tt:' + o.id + ':' + i,
+                  underlying: l.underlying, expiration: ymd(l.expiration), strike: l.strike, option_type: l.type, quantity: l.qty, price: o.net || 0, fees: i === 0 ? (o.fees || 0) : 0, dedupe_key: (o.prefix || 'tt') + ':' + o.id + ':' + i,
                   raw: { order: o.id, unit: o.unit, net: o.net } });
               });
             });
