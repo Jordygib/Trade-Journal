@@ -220,7 +220,7 @@ main section:has(.kfmark){border-color:rgba(56,189,248,.5) !important;box-shadow
 <button type="button" onClick="{{r.toggle}}" aria-pressed="{{r.on}}" aria-label="{{r.toggleLabel}}" style="position: relative; flex: none; width: 46px; height: 26px; border: none; border-radius: 999px; background: {{r.swBg}}; cursor: pointer; padding: 0; transition: background-color .2s ease"><span style="position: absolute; top: 3px; left: {{r.knob}}; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; transition: left .2s ease; box-shadow: 0 1px 3px rgba(0,0,0,.4)"></span></button>
 <div style="flex: 1 1 260px; min-width: 0">
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px"><span style="font-weight: 700; font-size: 15px">{{r.label}}</span><template data-scif value="{{r.hasVal}}" hint-placeholder-val="{{ true }}"><label style="display: inline-flex; align-items: center; gap: 4px; padding: 0 8px; min-height: 30px; border: 1px solid #3A4E47; border-radius: 6px; background: #151F1C; font-size: 13px"><span class="sr">{{r.label}} value</span><span style="color: #A2B4AC">{{r.pre}}</span><input type="{{r.inType}}" value="{{r.val}}" onChange="{{r.setVal}}" style="width: {{r.inW}}; background: transparent; border: none; outline: none; color: #F7DC92; font: inherit; font-weight: 700"><span style="color: #A2B4AC">{{r.unit}}</span></label></template><span style="padding: 1px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; color: {{r.color}}; background: color-mix(in srgb, {{r.color}} 14%, transparent)">{{r.cat}}</span></div>
-<div style="margin-top: 4px; font-size: 12px; color: #A2B4AC">{{r.desc}}</div>
+<div style="margin-top: 4px; font-size: 12px; color: #A2B4AC">{{r.desc}}</div><template data-scif value="{{r.hasSince}}" hint-placeholder-val="{{ false }}"><div style="margin-top: 3px; font-size: 11px; color: #7DD3FC">{{r.sinceText}}</div></template>
 </div>
 <div style="flex: 0 1 260px; min-width: 0; display: flex; gap: 16px; font-size: 12px">
 <div><div style="color: #A2B4AC">Followed</div><div style="font-weight: 700; font-size: 15px">{{r.adh}}</div></div>
@@ -244,7 +244,7 @@ main section:has(.kfmark){border-color:rgba(56,189,248,.5) !important;box-shadow
 <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; color: #CFDAD5; font-size: 14px">
 <li><strong style="color: #EFF5F2">You choose every rule and number.</strong> Trade Journal never tells you what to trade.</li>
 <li><strong style="color: #EFF5F2">Rule ideas</strong> appear when your trades show a pattern, like weaker results right after a loss. They only cover timing, limits, and size, and you decide whether to add them.</li>
-<li><strong style="color: #EFF5F2">Every imported trade is checked</strong> against your active rules, and breaks show up here and on your dashboard.</li>
+<li><strong style="color: #EFF5F2">Rules count from the day you add them.</strong> Trades you made before that aren’t counted as breaks, though we show how many would have broken it, for reference.</li><li><strong style="color: #EFF5F2">Every new trade is checked</strong> against your active rules, and breaks show up here and on your dashboard.</li>
 <li><strong style="color: #EFF5F2">Rules we can’t check from a file</strong> (like a stop at entry) are saved for reference. We check them once broker connections arrive.</li>
 <li><strong style="color: #EFF5F2">Switching a rule off</strong> keeps its history. Deleting removes it.</li>
 <li>Rule adherence counts toward the Discipline Award and Season points.</li>
@@ -265,7 +265,7 @@ class Component extends DCLogic {
     this.TPL = T;
     this.REAL = Array.isArray(window.TJ_RULES);
     const dv = (k) => { const t = T.find((x) => x[0] === k); return t ? t[4] : null; };
-    const rules = this.REAL ? window.TJ_RULES.map((r) => { const pa = r.params || {}; return { id: r.id, kind: r.kind, on: !!r.active, alert: pa.alert || 'warn', val: pa.val != null ? pa.val : dv(r.kind), title: pa.title || '', desc: pa.desc || '', tag: pa.tag || '', cat: pa.cat || '' }; })
+    const rules = this.REAL ? window.TJ_RULES.map((r) => { const pa = r.params || {}; return { id: r.id, kind: r.kind, on: !!r.active, alert: pa.alert || 'warn', val: pa.val != null ? pa.val : dv(r.kind), title: pa.title || '', desc: pa.desc || '', tag: pa.tag || '', cat: pa.cat || '', since: r.created_at || null }; })
       : ST.map((s, i) => ({ id: 'r' + i, kind: s[0], on: s[1], alert: s[2], val: dv(s[0]) }));
     let sug = null;
     try { const q = new URLSearchParams(location.search); const k = q.get('add'); if (k && (k === 'custom' || T.some((x) => x[0] === k))) sug = { kind: k, val: q.get('val') != null ? q.get('val') : dv(k), title: (q.get('title') || '').slice(0, 80), tag: (q.get('tag') || '').slice(0, 24) }; } catch (e) {}
@@ -311,7 +311,8 @@ class Component extends DCLogic {
       sorted.forEach((t) => { const k = dayKey(t.o); per[k] = (per[k] || 0) + 1; idx.set(t, per[k]); });
       const res = {}, broken = new Map(), checked = new Set();
       act.forEach((ru) => {
-        const st = { canCheck: !!CHECKABLE[ru.kind] || (ru.kind === 'custom' && !!ru.tag), checked: 0, breaks: 0, folSum: 0, folN: 0, brkSum: 0, brkN: 0 };
+        const since = ru.since ? new Date(ru.since) : null;
+        const st = { pre: 0, since: since, canCheck: !!CHECKABLE[ru.kind] || (ru.kind === 'custom' && !!ru.tag), checked: 0, breaks: 0, folSum: 0, folN: 0, brkSum: 0, brkN: 0 };
         if (st.canCheck) sorted.forEach((t) => {
           let b = null; const v = Number(ru.val);
           if (ru.kind === 'max_loss') { if (t.c) b = t.pnl < -Math.abs(v); }
@@ -322,6 +323,7 @@ class Component extends DCLogic {
           else if (ru.kind === 'custom') { if (t.c) { const tg = String(ru.tag || '').toLowerCase(); b = (t.tags || []).some((g) => String(g).toLowerCase() === tg); } }
           else if (ru.kind === 'loss_streak') { const dk = dayKey(t.o); b = sorted.filter((p) => p !== t && p.c && p.pnl < 0 && dayKey(p.c) === dk && p.c <= t.o).length >= v; }
           if (b === null || (isNaN(v) && ru.kind !== 'no_before' && ru.kind !== 'custom')) return;
+          if (since && t.o < since) { if (b) st.pre++; return; }
           st.checked++; checked.add(t);
           if (b) { st.breaks++; st.brkSum += t.pnl; st.brkN++; if (!broken.has(t)) broken.set(t, []); broken.get(t).push(ru); }
           else { st.folSum += t.pnl; st.folN++; }
@@ -395,12 +397,12 @@ class Component extends DCLogic {
       let adh, breaks = '—', fol = '—', brk = '—';
       if (!r.on) adh = 'Off';
       else if (!canCheck) adh = 'Not checked yet';
-      else if (!s || !s.checked) adh = 'No trades yet';
+      else if (!s || !s.checked) adh = r.since ? 'No trades since added' : 'No trades yet';
       else { adh = Math.round(s.folN / s.checked * 100) + '%'; breaks = String(s.breaks); fol = s.folN ? money(s.folSum / s.folN) : '—'; brk = s.brkN ? money(s.brkSum / s.brkN) : '—'; }
       return { label: t[1], desc: r.kind === 'custom' ? ((t[6] ? t[6] + ' ' : '') + (r.tag ? 'Tracked by tagging trades “' + r.tag + '” on the Trades page.' : 'Not tracked. Add a tag when you create a custom rule to check it against your trades.')) : t[6] + (canCheck ? '' : ' We can’t check this from broker files yet, but it’s saved for your reference.'), cat: t[5], color: CAT[t[5]] || '#38BDF8', on: r.on, op: r.on ? 1 : 0.55, swBg: r.on ? accent : '#3A4E47', knob: r.on ? '23px' : '3px',
         toggleLabel: (r.on ? 'Turn off ' : 'Turn on ') + t[1],
         hasVal: hasVal, pre: t[2], unit: t[3], val: hasVal ? r.val : '', inType: isTime ? 'time' : 'number', inW: isTime ? '112px' : (String(r.val).length > 3 ? '56px' : '44px'),
-        adh: adh, breaks: breaks, brColor: breaks !== '—' && +breaks > 0 ? loss : '#EFF5F2', fol: fol, brk: brk, alert: r.alert,
+        sinceText: r.since ? 'Tracking since ' + MN[new Date(r.since).getMonth()] + ' ' + new Date(r.since).getDate() + ', ' + new Date(r.since).getFullYear() + (s && s.pre ? ' · for reference, ' + s.pre + (s.pre === 1 ? ' earlier trade' : ' earlier trades') + ' would have broken it' : '') : '', hasSince: !!r.since, adh: adh, breaks: breaks, brColor: breaks !== '—' && +breaks > 0 ? loss : '#EFF5F2', fol: fol, brk: brk, alert: r.alert,
         toggle: () => upd(r, { on: !r.on }, t[1] + (r.on ? ' is off. Its history is kept.' : ' is on.'), true),
         setVal: (ev2) => upd(r, { val: isTime ? ev2.target.value : ev2.target.value.replace(/[^0-9.]/g, '') }),
         setAlert: (ev2) => upd(r, { alert: ev2.target.value }, '', true),
@@ -408,13 +410,13 @@ class Component extends DCLogic {
     });
     const used = st.rules.map((r) => r.kind);
     const tpl = T.map((t) => { const u = used.indexOf(t[0]) >= 0; return { label: t[1], desc: t[6], cat: t[5], color: CAT[t[5]], used: u, cursor: u ? 'default' : 'pointer', op: u ? 0.45 : 1, cta: u ? 'Already in your rules' : '+ Add this rule',
-      add: () => { if (u) return; this._n++; const nr = { id: 'new' + this._n, kind: t[0], on: true, alert: 'warn', val: t[4] };
+      add: () => { if (u) return; this._n++; const nr = { id: 'new' + this._n, kind: t[0], on: true, alert: 'warn', val: t[4], since: new Date().toISOString() };
         this.setState({ rules: this.state.rules.concat([nr]), adding: false, msg: t[1] + ' was added and is on. Set your number below.', undoRule: null });
         this.persist('insert', nr).then((d) => { if (!d || !d.id) return; const cur = this.state.rules.find((x) => x.id === nr.id); this.setState({ rules: this.state.rules.map((x) => x.id === nr.id ? Object.assign({}, x, { id: d.id }) : x) }); if (cur && (cur.val !== nr.val || cur.on !== nr.on || cur.alert !== nr.alert)) this.persist('update', Object.assign({}, cur, { id: d.id })).catch(() => {}); }).catch(() => {}); } }; });
     const addCustom = () => {
       const title = this.state.cTitle.trim(), tag = this.state.cTag.trim().replace(/\s+/g, ' ').slice(0, 24);
       if (title.length < 3) { this.setState({ cErr: 'Give your rule a short name, like “No trading on Fed days.”' }); return; }
-      this._n++; const nr = { id: 'new' + this._n, kind: 'custom', on: true, alert: 'warn', val: null, title: title.slice(0, 80), desc: this.state.cDesc.trim().slice(0, 200), tag: tag, cat: this.state.cCat || 'Custom' };
+      this._n++; const nr = { id: 'new' + this._n, since: new Date().toISOString(), kind: 'custom', on: true, alert: 'warn', val: null, title: title.slice(0, 80), desc: this.state.cDesc.trim().slice(0, 200), tag: tag, cat: this.state.cCat || 'Custom' };
       this.setState({ rules: this.state.rules.concat([nr]), adding: false, cTitle: '', cDesc: '', cTag: '', cErr: '', msg: '“' + nr.title + '” was added' + (tag ? '. Tag trades “' + tag + '” when you break it.' : '.'), undoRule: null });
       this.persist('insert', nr).then((d) => { if (d && d.id) this.setState({ rules: this.state.rules.map((x) => x.id === nr.id ? Object.assign({}, x, { id: d.id }) : x) }); }).catch(() => {});
     };
@@ -431,13 +433,13 @@ class Component extends DCLogic {
         sAdd: () => { clearQ();
           const ex = this.state.rules.find((r) => r.kind === sg.kind && sg.kind !== 'custom');
           if (ex) { const nr = Object.assign({}, ex, { val: sg.val, on: true }); this.setState({ suggest: null, rules: this.state.rules.map((r) => r.id === ex.id ? nr : r), msg: t0[1] + ' was updated and is on.' }); this.persist('update', nr).catch(() => {}); return; }
-          this._n++; const nr = { id: 'new' + this._n, kind: sg.kind, on: true, alert: 'warn', val: sg.kind === 'custom' ? null : sg.val, title: sg.title, desc: '', tag: sg.tag, cat: 'Discipline' };
+          this._n++; const nr = { id: 'new' + this._n, since: new Date().toISOString(), kind: sg.kind, on: true, alert: 'warn', val: sg.kind === 'custom' ? null : sg.val, title: sg.title, desc: '', tag: sg.tag, cat: 'Discipline' };
           this.setState({ suggest: null, rules: this.state.rules.concat([nr]), msg: t0[1] + ' was added and is on.' });
           this.persist('insert', nr).then((d) => { if (d && d.id) this.setState({ rules: this.state.rules.map((x) => x.id === nr.id ? Object.assign({}, x, { id: d.id }) : x) }); }).catch(() => {}); } }; }
     const filters = [['all', 'All'], ['on', 'On'], ['off', 'Off']].map((f) => ({ label: f[1], on: st.filter === f[0], fg: st.filter === f[0] ? '#FFFFFF' : '#B8C6C0', ac: st.filter === f[0] ? accent : 'transparent', pick: () => this.setState({ filter: f[0] }) }));
     const have = st.rules.map((r) => r.kind).concat(st.skipped || []);
     const ideaRows = X.ideas(L, have).map((i) => { const t = tOf(i.kind); return { title: i.title, why: i.why, cat: t[5], color: CAT[t[5]] || '#A2B4AC',
-      add: () => { this._n++; const nr = { id: 'new' + this._n, kind: i.kind, on: true, alert: 'warn', val: i.val };
+      add: () => { this._n++; const nr = { id: 'new' + this._n, kind: i.kind, on: true, alert: 'warn', val: i.val, since: new Date().toISOString() };
         this.setState({ rules: this.state.rules.concat([nr]), msg: t[1] + ' was added and is on. You can change the number anytime.', undoRule: null });
         this.persist('insert', nr).then((d) => { if (!d || !d.id) return; const cur = this.state.rules.find((x) => x.id === nr.id); this.setState({ rules: this.state.rules.map((x) => x.id === nr.id ? Object.assign({}, x, { id: d.id }) : x) }); if (cur && (cur.val !== nr.val || cur.on !== nr.on || cur.alert !== nr.alert)) this.persist('update', Object.assign({}, cur, { id: d.id })).catch(() => {}); }).catch(() => {}); },
       skip: () => this.setState({ skipped: (this.state.skipped || []).concat([i.kind]) }) }; });
