@@ -111,6 +111,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none !im
 button:focus-visible,a:focus-visible{outline:2px solid #38BDF8 !important;outline-offset:2px;box-shadow:0 0 16px rgba(56,189,248,.6)}
 .lp header{box-shadow:0 1px 0 rgba(56,189,248,.7),0 14px 44px -12px rgba(56,189,248,.75)}.lp h1{text-shadow:0 0 40px rgba(56,189,248,.45)}.lp .btn-p:hover{box-shadow:0 10px 26px rgba(216,178,90,.35),0 0 30px rgba(56,189,248,.45)}
 @media (prefers-reduced-motion: reduce){.bgfx::after{animation:none}}
+main section:has(.kfmark){border-color:rgba(56,189,248,.5) !important;box-shadow:0 0 0 1px rgba(56,189,248,.22),0 0 40px rgba(56,189,248,.2) !important;background-image:linear-gradient(180deg,rgba(56,189,248,.07),rgba(255,255,255,0) 160px) !important}
 @media (max-width: 760px){
 .hdr{display:grid !important;grid-template-columns:minmax(0,1fr) auto;padding:0 12px !important;column-gap:8px}
 .hdr-left{display:contents !important}
@@ -181,6 +182,11 @@ button:focus-visible,a:focus-visible{outline:2px solid #38BDF8 !important;outlin
 <div class="kpi" style="background: rgba(25, 36, 32, 0.92); padding: 14px 16px; box-sizing: border-box; min-width: 0; flex: 1 1 170px"><div style="font-size: 12px; color: #A2B4AC">Rule breaks</div><div style="font-family: 'Barlow Semi Condensed', sans-serif; font-size: 28px; font-weight: 700; color: {{loss}}">{{sumBreaks}}</div><div style="font-size: 12px; color: #B8C6C0">{{sumBreaksSub}}</div></div>
 <div class="kpi" style="background: rgba(25, 36, 32, 0.92); padding: 14px 16px; box-sizing: border-box; min-width: 0; flex: 1.3 1 220px"><div style="font-size: 12px; color: #A2B4AC">Average result per trade</div><div style="font-family: 'Barlow Semi Condensed', sans-serif; font-size: 22px; font-weight: 700; margin-top: 4px"><span style="color: {{gain}}">{{folAvg}}</span> <span style="font-size: 13px; color: #A2B4AC; font-weight: 500">followed</span> · <span style="color: {{loss}}">{{brkAvg}}</span> <span style="font-size: 13px; color: #A2B4AC; font-weight: 500">broke one</span></div></div>
 </section>
+<template data-scif value="{{hasSuggest}}" hint-placeholder-val="{{ false }}"><section aria-label="Suggested rule" style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; padding: 18px 20px; border-radius: 10px; border: 1px solid rgba(56,189,248,.6); background: linear-gradient(90deg, rgba(56,189,248,.14), rgba(56,189,248,.04)); box-shadow: 0 0 34px rgba(56,189,248,.25)">
+<span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #38BDF8, #D8B25A); display: flex; align-items: center; justify-content: center; color: #05090C; font-size: 18px; box-shadow: 0 0 18px rgba(56,189,248,.7)">★</span>
+<div style="flex: 1 1 280px; min-width: 0"><div style="font-size: 12px; font-weight: 700; letter-spacing: .06em; color: #7DD3FC">FROM YOUR INSIGHTS</div><div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px"><strong style="font-size: 18px">{{sLabel}}</strong><template data-scif value="{{sHasVal}}" hint-placeholder-val="{{ true }}"><label style="display: inline-flex; align-items: center; gap: 4px; padding: 0 10px; min-height: 36px; border: 1px solid #38BDF8; border-radius: 6px; background: #0F1714; font-size: 15px"><span class="sr">{{sLabel}} value</span><span style="color: #A2B4AC">{{sPre}}</span><input type="{{sInType}}" value="{{sVal}}" onChange="{{sSetVal}}" style="width: 90px; background: transparent; border: none; outline: none; color: #F7DC92; font: inherit; font-weight: 700"><span style="color: #A2B4AC">{{sUnit}}</span></label></template></div><p style="margin: 6px 0 0; font-size: 13px; color: #CFDAD5">{{sNote}} {{sDesc}}</p></div>
+<div style="display: flex; gap: 8px"><button type="button" onClick="{{sDismiss}}" style="min-height: 40px; padding: 0 14px; border: 1px solid #3A4E47; border-radius: 6px; background: transparent; color: #CFDAD5; font: inherit; font-size: 13px; cursor: pointer">Not now</button><button type="button" onClick="{{sAdd}}" style="min-height: 40px; padding: 0 18px; border: none; border-radius: 6px; background: #D8B25A; color: #0C1110; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer">Add this rule</button></div>
+</section></template>
 <template data-scif value="{{hasMsg}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border-radius: 6px; border: 1px solid #3A4E47; background: #18231F"><span style="font-size: 13px">{{msg}}</span><template data-scif value="{{canUndo}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{undo}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #D8B25A; background: transparent; color: #F7DC92; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer">Undo</button></template></div></template>
 <template data-scif value="{{adding}}" hint-placeholder-val="{{ false }}">
 <section aria-labelledby="addh" style="background: rgba(25, 36, 32, 0.92); border: 1px solid #2B3B36; border-radius: 6px; padding: 16px; box-sizing: border-box; min-width: 0; border-color: color-mix(in srgb, #D8B25A 40%, #2B3B36)">
@@ -261,7 +267,9 @@ class Component extends DCLogic {
     const dv = (k) => { const t = T.find((x) => x[0] === k); return t ? t[4] : null; };
     const rules = this.REAL ? window.TJ_RULES.map((r) => { const pa = r.params || {}; return { id: r.id, kind: r.kind, on: !!r.active, alert: pa.alert || 'warn', val: pa.val != null ? pa.val : dv(r.kind), title: pa.title || '', desc: pa.desc || '', tag: pa.tag || '', cat: pa.cat || '' }; })
       : ST.map((s, i) => ({ id: 'r' + i, kind: s[0], on: s[1], alert: s[2], val: dv(s[0]) }));
-    this.state = { adding: false, filter: 'all', msg: '', undoRule: null, rules: rules, cTitle: '', cDesc: '', cTag: '', cCat: 'Discipline', cErr: '' };
+    let sug = null;
+    try { const q = new URLSearchParams(location.search); const k = q.get('add'); if (k && (k === 'custom' || T.some((x) => x[0] === k))) sug = { kind: k, val: q.get('val') != null ? q.get('val') : dv(k), title: (q.get('title') || '').slice(0, 80), tag: (q.get('tag') || '').slice(0, 24) }; } catch (e) {}
+    this.state = { suggest: sug, adding: false, filter: 'all', msg: '', undoRule: null, rules: rules, cTitle: '', cDesc: '', cTag: '', cCat: 'Discipline', cErr: '' };
     this._n = rules.length; this._timers = {};
   }
 
@@ -413,6 +421,19 @@ class Component extends DCLogic {
     const custom = { cTitle: st.cTitle, cDesc: st.cDesc, cTag: st.cTag, cCat: st.cCat, cErr: st.cErr, hasCErr: !!st.cErr, addCustom: addCustom,
       setCTitle: (ev) => this.setState({ cTitle: ev.target.value.slice(0, 80), cErr: '' }), setCDesc: (ev) => this.setState({ cDesc: ev.target.value.slice(0, 200) }), setCTag: (ev) => this.setState({ cTag: ev.target.value.slice(0, 24) }), setCCat: (ev) => this.setState({ cCat: ev.target.value }),
       tagSugg: ['Broke: Fed day', 'Broke: no plan', 'Broke: chased'].map((g) => ({ text: g, pick: () => this.setState({ cTag: g }) })) };
+    const sg = st.suggest; let suggestV = { hasSuggest: false };
+    if (sg) { const t0 = tOf(sg.kind, { title: sg.title, cat: 'Discipline', desc: '' }); const exists = sg.kind !== 'custom' && st.rules.some((r) => r.kind === sg.kind);
+      const clearQ = () => { try { history.replaceState(null, '', location.pathname); } catch (e) {} };
+      suggestV = { hasSuggest: true, sLabel: t0[1], sDesc: sg.kind === 'custom' ? (sg.tag ? 'Tracked by tagging trades “' + sg.tag + '”.' : '') : t0[6], sHasVal: t0[4] !== null, sPre: t0[2], sUnit: t0[3], sVal: sg.val == null ? '' : sg.val, sInType: sg.kind === 'no_before' ? 'time' : 'number',
+        sExists: exists, sNote: exists ? 'You already have this rule. Adding it will update your number.' : 'Suggested from your Insights. Change the number if you like.',
+        sSetVal: (ev) => this.setState({ suggest: Object.assign({}, this.state.suggest, { val: ev.target.value }) }),
+        sDismiss: () => { clearQ(); this.setState({ suggest: null }); },
+        sAdd: () => { clearQ();
+          const ex = this.state.rules.find((r) => r.kind === sg.kind && sg.kind !== 'custom');
+          if (ex) { const nr = Object.assign({}, ex, { val: sg.val, on: true }); this.setState({ suggest: null, rules: this.state.rules.map((r) => r.id === ex.id ? nr : r), msg: t0[1] + ' was updated and is on.' }); this.persist('update', nr).catch(() => {}); return; }
+          this._n++; const nr = { id: 'new' + this._n, kind: sg.kind, on: true, alert: 'warn', val: sg.kind === 'custom' ? null : sg.val, title: sg.title, desc: '', tag: sg.tag, cat: 'Discipline' };
+          this.setState({ suggest: null, rules: this.state.rules.concat([nr]), msg: t0[1] + ' was added and is on.' });
+          this.persist('insert', nr).then((d) => { if (d && d.id) this.setState({ rules: this.state.rules.map((x) => x.id === nr.id ? Object.assign({}, x, { id: d.id }) : x) }); }).catch(() => {}); } }; }
     const filters = [['all', 'All'], ['on', 'On'], ['off', 'Off']].map((f) => ({ label: f[1], on: st.filter === f[0], fg: st.filter === f[0] ? '#FFFFFF' : '#B8C6C0', ac: st.filter === f[0] ? accent : 'transparent', pick: () => this.setState({ filter: f[0] }) }));
     const have = st.rules.map((r) => r.kind).concat(st.skipped || []);
     const ideaRows = X.ideas(L, have).map((i) => { const t = tOf(i.kind); return { title: i.title, why: i.why, cat: t[5], color: CAT[t[5]] || '#A2B4AC',
@@ -421,7 +442,7 @@ class Component extends DCLogic {
         this.persist('insert', nr).then((d) => { if (!d || !d.id) return; const cur = this.state.rules.find((x) => x.id === nr.id); this.setState({ rules: this.state.rules.map((x) => x.id === nr.id ? Object.assign({}, x, { id: d.id }) : x) }); if (cur && (cur.val !== nr.val || cur.on !== nr.on || cur.alert !== nr.alert)) this.persist('update', Object.assign({}, cur, { id: d.id })).catch(() => {}); }).catch(() => {}); },
       skip: () => this.setState({ skipped: (this.state.skipped || []).concat([i.kind]) }) }; });
     const breakRows = ev.list.slice(0, 8).map((b) => ({ when: MN[b.t.o.getMonth()] + ' ' + b.t.o.getDate() + (b.t.tk ? ' · ' + String(b.t.o.getHours()).padStart(2, '0') + ':' + String(b.t.o.getMinutes()).padStart(2, '0') : ''), rule: ruleLabel(b.rule), trade: b.t.sym + ' ' + b.t.name.toLowerCase(), pnl: b.t.c ? money(b.t.pnl) : 'Open', pc: b.t.pnl >= 0 ? gain : loss }));
-    return { ...custom, gain, loss, accent, rows, tpl, filters, ideaRows, hasIdeas: ideaRows.length > 0, empty: rows.length === 0, isSample: !this.REAL,
+    return { ...custom, ...suggestV, gain, loss, accent, rows, tpl, filters, ideaRows, hasIdeas: ideaRows.length > 0, empty: rows.length === 0, isSample: !this.REAL,
       activeCount: st.rules.filter((r) => r.on).length, ruleCount: st.rules.length,
       sumPct: ev.pct == null ? '—' : ev.pct + '%', sumPctColor: ev.pct == null ? '#EFF5F2' : gain, sumPctSub: ev.checked ? 'of ' + ev.checked + ' trades checked' : 'No trades checked yet',
       sumBreaks: String(ev.breaks), sumBreaksSub: ev.brokenTrades ? 'across ' + ev.brokenTrades + (ev.brokenTrades === 1 ? ' trade' : ' trades') : 'Nothing broken',
