@@ -214,7 +214,7 @@
       var o = new Date(t.opened_at), c = t.closed_at ? new Date(t.closed_at) : null;
       var fl = (byTrade[t.id] || []).sort(function (a, b) { return new Date(a.executed_at) - new Date(b.executed_at); });
       var pnl = Number(t.pnl || 0);
-      return { id: i + 1, dbid: t.id, date: MN[o.getMonth()] + ' ' + o.getDate(), time: t.time_known === false ? '' : fmtTime(o), k: KMAP[t.strategy] || 'other', structure: t.structure || '', entry: px(Number(t.entry_price || 0)),
+      return { id: i + 1, dbid: t.id, sym: t.underlying || '', date: MN[o.getMonth()] + ' ' + o.getDate(), time: t.time_known === false ? '' : fmtTime(o), k: KMAP[t.strategy] || 'other', structure: t.structure || '', entry: px(Number(t.entry_price || 0)),
         exit: t.status === 'open' ? 'Still open' : (c ? 'Closed ' + MN[c.getMonth()] + ' ' + c.getDate() : 'Closed'), hold: holdText(o, c, t.time_known), pnl: Math.round(pnl), ror: '—',
         tags: (t.tags || []).map(function (g) { return [g, 'accent']; }), note: t.note || 'No note yet.',
         legs: fl.map(function (f) { var d = new Date(f.executed_at); return { time: MN[d.getMonth()] + ' ' + d.getDate() + ' ' + fmtTime(d), act: ACT[f.action] || f.action, qty: Math.abs(Number(f.quantity)), strike: String(f.strike), type: f.option_type === 'call' ? 'Call' : 'Put', px: px(Number(f.price || 0)) + ' net' }; }),

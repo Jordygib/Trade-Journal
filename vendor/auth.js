@@ -1,7 +1,7 @@
 /* Session handling for every page: sign-in gate, header details, sign out. */
 (function () {
   var cfg = window.TJ_CONFIG;
-  var PUBLIC = ['', 'index.html', 'login.html', 'pricing.html', 'rules.html'];
+  var PUBLIC = ['', 'index.html', 'login.html', 'pricing.html', 'rules.html', 'privacy.html', 'terms.html'];
   var page = location.pathname.split('/').pop();
   function initials(name) { var n = String(name || '').replace(/[^a-z0-9]/gi, ''); return (n.slice(0, 2) || 'TJ').toUpperCase(); }
   function clean(s) { return String(s || '').replace(/[^a-z0-9_]/gi, '').slice(0, 20); }
@@ -17,7 +17,10 @@
         return;
       }
       if (!session) { resolve(); return; }
-      sb.from('profiles').select('username, display_name, avatar_url, plan, broker_verified, created_at, bio, share_stats, share_trades, show_on_leaderboard').eq('id', session.user.id).maybeSingle().then(function (p) {
+      var FULL = 'username, display_name, avatar_url, plan, broker_verified, created_at, bio, share_stats, share_trades, show_on_leaderboard';
+      sb.from('profiles').select(FULL + ', is_admin').eq('id', session.user.id).maybeSingle().then(function (p0) {
+        return p0 && p0.error ? sb.from('profiles').select(FULL).eq('id', session.user.id).maybeSingle() : p0;
+      }).then(function (p) {
         var prof = (p && p.data) || {};
         prof.email = session.user.email;
         prof.handle = clean(prof.username) || clean((session.user.email || '').split('@')[0]) || 'trader';
