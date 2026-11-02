@@ -62,7 +62,8 @@
       ['September 2026 and Q3 and Q3 · ', MF[pm] + ' ' + pmY + ' and Q' + pq + ' ' + pqY + ' · '],
       ['chooses November’s challenge', 'chooses ' + MF[nm] + '’s challenge'], ['Used in October', 'Used in ' + MF[m]],
       ['Winners announced Nov 1', 'Winners announced ' + MS[nm] + ' 1'], ['October trading days', MF[m] + ' trading days'],
-      ['for Q4, ending Dec 31', 'for Q' + q + ', ending ' + MS[qEndM] + ' ' + qEndD]
+      ['for Q4, ending Dec 31', 'for Q' + q + ', ending ' + MS[qEndM] + ' ' + qEndD],
+      ['<div class="gx" style="height: 8px; width: 65%; background: #D8B25A">', '<div class="gx" style="height: 8px; width: ' + Math.max(3, Math.round(d / last * 100)) + '%; background: #D8B25A">'], ['<span>Oct 1</span>', '<span>' + MS[m] + ' 1</span>']
     ];
     R.forEach(function (r) { html = html.split(r[0]).join(r[1]); });
     return html;
@@ -82,10 +83,10 @@
       html = html.split('Showing the 12 most recent of 186 trades').join(n ? 'Showing all ' + n + (n === 1 ? ' trade' : ' trades') : 'These are sample trades. Your own appear here after you import.');
     }
     if (p) {
-      var plan = p.plan === 'pro' ? 'Pro' : p.plan === 'bundle' ? 'Pro + Unlimited' : 'Free';
+      var plan = p.plan === 'pro' ? 'Pro plan' : p.plan === 'bundle' ? 'Pro + Unlimited' : 'Early access';
       html = html.split('@thetaflow').join('@' + p.handle);
-      html = html.split('Broker-verified · tastytrade · Free plan').join((p.broker_verified ? 'Broker-verified' : 'Not verified yet') + ' · ' + plan + ' plan');
-      html = html.split('#8 · 2,450 trophy pts').join(plan + ' plan');
+      html = html.split('Broker-verified · tastytrade · Free plan').join((p.broker_verified ? 'Broker-verified' : 'Not verified yet') + ' · ' + plan);
+      html = html.split('#8 · 2,450 trophy pts').join(plan);
       if (p.avatar_url && /^https:\/\/[^"'<>\s]+$/.test(p.avatar_url)) {
         html = html.replace(/(<span style="width: 34px; height: 34px; border-radius: 6px; background: #D8B25A;[^"]*)">TF<\/span>/, '$1; overflow: hidden; padding: 0"><img src="' + p.avatar_url + '" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></span>');
       }
