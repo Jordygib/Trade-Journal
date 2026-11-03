@@ -1,6 +1,6 @@
-# Trade Journal (prototype)
+# Quillstrike
 
-A clickable prototype of the Trade Journal site with sample data.
+The Quillstrike options trading journal.
 
 ## Pages
 - `index.html`: Dashboard
