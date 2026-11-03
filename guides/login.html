@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign in · Quillstrike</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html{-webkit-font-smoothing:antialiased}
+body{margin:0;min-height:100vh;background:#111A17;background-image:linear-gradient(rgba(216,178,90,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(216,178,90,.03) 1px,transparent 1px);background-size:32px 32px;color:#EFF5F2;font-family:'Barlow',system-ui,sans-serif;font-size:15px;display:flex;flex-direction:column}
+a{color:#D8B25A}
+.top{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #25332E}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:20px}
+.mark{width:30px;height:30px;border-radius:4px;background:#D8B25A;display:flex;align-items:center;justify-content:center}
+.wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 16px}
+.card{width:100%;max-width:440px;background:rgba(25, 36, 32, 0.94);border:1px solid #2B3B36;border-radius:8px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+h1{margin:0;font-family:'Barlow Semi Condensed',sans-serif;font-size:32px;line-height:1.1}
+.sub{margin:6px 0 0;color:#B8C6C0}
+.tabs{display:flex;margin:22px 0 18px;border-bottom:1px solid #2B3B36}
+.tabs button{flex:1;min-height:44px;border:none;background:transparent;color:#B8C6C0;font:inherit;font-weight:700;cursor:pointer;box-shadow:inset 0 -2px 0 transparent}
+.tabs button[aria-selected="true"]{color:#fff;box-shadow:inset 0 -2px 0 #D8B25A}
+label.f{display:block;margin-top:14px;font-size:13px;font-weight:600;color:#CFDAD5}
+input.t{display:block;width:100%;margin-top:6px;min-height:46px;padding:0 12px;border:1px solid #3A4E47;border-radius:4px;background:#151F1C;color:#EFF5F2;font:inherit;font-size:15px}
+input.t:focus{outline:2px solid #D8B25A;outline-offset:1px;border-color:transparent}
+.hint{margin-top:5px;font-size:12px;color:#8A9C95}
+.ok{color:#4FD1B5}.bad{color:#F0607A}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;color:#CFDAD5;cursor:pointer}
+.check input{width:18px;height:18px;margin:2px 0 0;accent-color:#D8B25A;flex:none}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin-top:20px;border:none;border-radius:4px;background:#D8B25A;color:#0C1110;font:inherit;font-weight:700;font-size:16px;cursor:pointer}
+.btn:disabled{opacity:.6;cursor:default}
+.link{background:none;border:none;padding:0;color:#D8B25A;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.msg{margin-top:16px;padding:12px 14px;border-radius:4px;font-size:14px;line-height:1.45}
+.msg.err{background:rgba(240,96,122,.1);border:1px solid rgba(240,96,122,.4);color:#F7B3C0}
+.msg.info{background:rgba(79,209,181,.08);border:1px solid rgba(79,209,181,.35);color:#BFEFE3}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.foot{margin-top:18px;font-size:12px;color:#8A9C95;line-height:1.5}
+[hidden]{display:none !important}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(760px 360px at 8% -8%,rgba(56,189,248,.3),transparent 70%),radial-gradient(660px 420px at 104% 92%,rgba(56,189,248,.24),transparent 70%)}
+body{background-image:linear-gradient(rgba(56,189,248,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.035) 1px,transparent 1px) !important}
+.top{box-shadow:0 1px 0 rgba(56,189,248,.7),0 14px 44px -12px rgba(56,189,248,.75)}
+.card{position:relative;border-color:rgba(56,189,248,.3) !important;background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0) 160px);box-shadow:0 0 0 1px rgba(56,189,248,.35),0 0 90px rgba(56,189,248,.25),0 30px 80px rgba(0,0,0,.45) !important}
+.card::before{content:"";position:absolute;left:12%;right:12%;top:-1px;height:1px;background:linear-gradient(90deg,transparent,#38BDF8 30%,#BAE6FD 50%,#38BDF8 70%,transparent);box-shadow:0 0 14px 2px rgba(56,189,248,.7)}
+.tabs button[aria-selected="true"]{box-shadow:inset 0 -2px 0 #38BDF8,0 10px 18px -12px rgba(56,189,248,1) !important}
+input.t:focus{outline:none;border-color:transparent;box-shadow:0 0 0 2px rgba(56,189,248,.75),0 0 18px rgba(56,189,248,.45)}
+/* neon */
+.pwwrap{position:relative}.pwwrap input.t{padding-right:84px}
+.pwtog{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border:none;border-radius:6px;background:transparent;color:#7DD3FC;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.pwtog:hover{background:rgba(56,189,248,.12);color:#BAE6FD}.pwtog:focus-visible{outline:2px solid #38BDF8;outline-offset:1px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="vendor/config.js"></script>
+</head>
+<body>
+<header class="top"><a class="logo" href="index.html"><span class="mark" aria-hidden="true" style="background: none; width: auto; height: auto"><svg width="32" height="32" viewBox="0 0 64 64" aria-hidden="true" style="flex: none; display: block"><defs><linearGradient id="lgq" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FCE7A8"></stop><stop offset="0.55" stop-color="#D8B25A"></stop><stop offset="1" stop-color="#8A6420"></stop></linearGradient></defs><rect x="2" y="2" width="60" height="60" rx="15" fill="#0F1A16" stroke="#38BDF8" stroke-opacity="0.6" stroke-width="1.5"></rect><path d="M9 35H55" stroke="#38BDF8" stroke-width="2" stroke-dasharray="3.5 3" stroke-linecap="round"></path><path d="M17 49C23 34 35 20 53 10C50 26 41 38 23 46Z" fill="url(#lgq)"></path><path d="M27 41.5L33 38M32 36.5L38.5 33M37 31L43.5 27.5M42 25L48 21.5" stroke="#0F1A16" stroke-width="1.6" stroke-linecap="round"></path><path d="M14 52L47 17" stroke="#FFF6D6" stroke-width="1.6" stroke-linecap="round"></path><path d="M14 52L10.5 55.5" stroke="#F7DC92" stroke-width="2.6" stroke-linecap="round"></path><circle cx="30" cy="35" r="2.6" fill="#38BDF8"></circle></svg></span><span>Quill<span style="color: #D8B25A">strike</span></span></a><a href="index.html" style="font-size:14px;font-weight:600;text-decoration:none;color:#CFDAD5">← Back to home</a></header>
+<main class="wrap">
+<div class="card">
+<div id="authView">
+<h1 id="title">Welcome back</h1>
+<p class="sub" id="subtitle">Sign in to your trading journal.</p>
+<div class="tabs" role="tablist" aria-label="Account">
+<button type="button" role="tab" id="tabIn" aria-selected="true">Sign in</button>
+<button type="button" role="tab" id="tabUp" aria-selected="false">Create account</button>
+</div>
+<form id="form" novalidate>
+<div id="userWrap" hidden>
+<label class="f" for="username">Username</label>
+<input class="t" id="username" name="username" autocomplete="username" maxlength="20" placeholder="e.g. thetaflow">
+<div class="hint" id="userHint">3–20 characters: lowercase letters, numbers, or _</div>
+</div>
+<label class="f" for="email">Email</label>
+<input class="t" id="email" name="email" type="email" autocomplete="email" required>
+<div id="pwWrap">
+<label class="f" for="password">Password</label>
+<input class="t" id="password" name="password" type="password" autocomplete="current-password" required minlength="8">
+<div class="hint" id="pwHint" hidden>At least 8 characters.</div>
+</div>
+<div id="upChecks" hidden>
+<label class="check"><input type="checkbox" id="adult"> <span>I confirm I’m 18 or older.</span></label>
+<label class="check"><input type="checkbox" id="terms"> <span>I agree to the <a href="terms.html" target="_blank">Terms</a> and <a href="privacy.html" target="_blank">Privacy Policy</a>, and I understand Quillstrike is not investment advice.</span></label>
+</div>
+<div class="row" id="forgotRow"><span></span><button type="button" class="link" id="forgot">Forgot password?</button></div>
+<button class="btn" id="submit" type="submit">Sign in</button>
+<div id="msg" class="msg" role="alert" hidden></div>
+</form>
+<p class="foot" id="foot">Free during early access. No credit card needed.</p>
+</div>
+<div id="resetView" hidden>
+<h1>Set a new password</h1>
+<p class="sub">Choose a new password for your account.</p>
+<form id="resetForm" novalidate>
+<label class="f" for="newpw">New password</label>
+<input class="t" id="newpw" type="password" autocomplete="new-password" minlength="8">
+<div class="hint">At least 8 characters.</div>
+<button class="btn" id="resetBtn" type="submit">Save new password</button>
+<div id="resetMsg" class="msg" role="alert" hidden></div>
+</form>
+</div>
+</div>
+</main>
+<script src="vendor/login.js"></script>
+<script>
+(function () {
+  var EYE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  var OFF = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7a10 10 0 0 0 4.4-1"></path><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg>';
+  document.querySelectorAll('input[type="password"]').forEach(function (inp) {
+    var wrap = document.createElement('div'); wrap.className = 'pwwrap';
+    inp.parentNode.insertBefore(wrap, inp); wrap.appendChild(inp);
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'pwtog';
+    var set = function (show) { inp.type = show ? 'text' : 'password'; b.innerHTML = (show ? OFF : EYE) + '<span>' + (show ? 'Hide' : 'Show') + '</span>'; b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); b.setAttribute('aria-pressed', show ? 'true' : 'false'); };
+    b.addEventListener('click', function () { var pos = inp.selectionStart; set(inp.type === 'password'); inp.focus(); try { inp.setSelectionRange(pos, pos); } catch (e) {} });
+    set(false); wrap.appendChild(b);
+  });
+})();
+</script>
+</body>
+</html>
