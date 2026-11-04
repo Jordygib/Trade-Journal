@@ -65,6 +65,18 @@
       ['for Q4, ending Dec 31', 'for Q' + q + ', ending ' + MS[qEndM] + ' ' + qEndD],
       ['<div class="gx" style="height: 8px; width: 65%; background: #D8B25A">', '<div class="gx" style="height: 8px; width: ' + Math.max(3, Math.round(d / last * 100)) + '%; background: #D8B25A">'], ['<span>Oct 1</span>', '<span>' + MS[m] + ' 1</span>']
     ];
+    var START = new Date(2027, 0, 1);
+    if (now < START) {
+      var toGo = Math.ceil((START - new Date(y, m, d)) / 86400000), from = new Date(2026, 10, 1);
+      var pct = Math.max(3, Math.min(97, Math.round((now - from) / (START - from) * 100)));
+      R = [
+        ['October awards', 'Awards start January 1'], ['11 days left', toGo === 1 ? '1 day to go' : toGo + ' days to go'], ['Oct 31', 'Jan 1'], ['<span>Oct 1</span>', '<span>Today</span>'],
+        ['October challenge', 'January challenge'], ['Picked Nov 1 by', 'Picked Jan 1 by'], ['Season ends Dec 31 · 72 days left', 'The 2027 season starts January 1'],
+        ['chooses November’s challenge', 'chooses February’s challenge'], ['Used in October', 'Starts in January'], ['Winners announced Nov 1', 'First winners announced Feb 1'],
+        ['October trading days', 'January trading days'], ['for Q4, ending Dec 31', 'for Q1 2027, starting January 1'],
+        ['<div class="gx" style="height: 8px; width: 65%; background: #D8B25A">', '<div class="gx" style="height: 8px; width: ' + pct + '%; background: #D8B25A">']
+      ];
+    }
     R.forEach(function (r) { html = html.split(r[0]).join(r[1]); });
     return html;
   }
@@ -83,7 +95,7 @@
       html = html.split('Showing the 12 most recent of 186 trades').join(n ? 'Showing all ' + n + (n === 1 ? ' trade' : ' trades') : 'These are sample trades. Your own appear here after you import.');
     }
     if (p) {
-      var plan = p.plan === 'pro' ? 'Pro plan' : p.plan === 'bundle' ? 'Pro + Unlimited' : 'Early access';
+      var plan = p.plan === 'pro' ? 'Pro plan' : p.plan === 'bundle' ? 'Pro + Unlimited' : 'Beta access';
       html = html.split('@thetaflow').join('@' + p.handle);
       html = html.split('Broker-verified · tastytrade · Free plan').join((p.broker_verified ? 'Broker-verified' : 'Not verified yet') + ' · ' + plan);
       html = html.split('#8 · 2,450 trophy pts').join(plan);
