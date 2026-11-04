@@ -12,7 +12,7 @@
     '.qse-seg button,.qse-z button{min-height:30px;min-width:34px;padding:0 9px;border:none;border-radius:6px;background:transparent;color:#B8C6C0;font:600 12px Barlow,system-ui,sans-serif;cursor:pointer}' +
     '.qse-seg button[aria-pressed="true"]{background:rgba(56,189,248,.18);color:#fff}.qse-seg button:hover,.qse-z button:hover{color:#fff}' +
     '.qse-z{display:flex;align-items:center;gap:2px;padding:3px;border-radius:8px;background:#0F1714;border:1px solid #22302B}' +
-    '.qse-wrap{position:relative;outline:none;border-radius:6px;touch-action:none;cursor:crosshair}.qse-wrap:focus-visible{box-shadow:0 0 0 2px rgba(56,189,248,.7)}' +
+    '.qse-wrap{position:relative;outline:none;border-radius:6px;touch-action:none;cursor:grab}.qse-wrap.sel{cursor:crosshair}.qse-wrap.grabbing{cursor:grabbing}.qse-wrap:focus-visible{box-shadow:0 0 0 2px rgba(56,189,248,.7)}' +
     '.qse svg{display:block;width:100%;overflow:visible}' +
     '.qse-tip{position:absolute;top:8px;pointer-events:none;min-width:170px;padding:10px 12px;border-radius:8px;border:1px solid rgba(56,189,248,.5);background:rgba(10,18,15,.96);box-shadow:0 8px 28px rgba(0,0,0,.45),0 0 20px rgba(56,189,248,.18);font-size:12px;line-height:1.45;z-index:3}' +
     '.qse-tip b{font-size:16px;font-family:"Barlow Semi Condensed",Barlow,sans-serif}.qse-tip .m{color:#A8B8B1}' +
@@ -23,19 +23,33 @@
   function injectCss() { if (document.getElementById('qse-css')) return; var s = document.createElement('style'); s.id = 'qse-css'; s.textContent = CSS; document.head.appendChild(s); }
 
   function Chart(el) {
-    this.el = el; this.sel = null; this.hover = null; this.view = null; this.range = el.getAttribute('data-range') || 'all';
-    el.innerHTML = '<div class="qse"><div class="qse-bar"><div class="qse-seg" role="group" aria-label="Time range"></div><div class="qse-z" role="group" aria-label="Zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="reset">Reset</button></div></div>' +
+    this.el = el; this.sel = null; this.hover = null; this.view = null; this.mode = 'pan'; this.range = el.getAttribute('data-range') || 'all';
+    el.innerHTML = '<div class="qse"><div class="qse-bar"><div class="qse-seg" role="group" aria-label="Time range"></div><div style="display:flex;flex-wrap:wrap;gap:8px"><div class="qse-seg qse-mode" role="group" aria-label="Drag mode"><button type="button" data-m="pan" title="Drag to move around the chart">✋ Move</button><button type="button" data-m="sel" title="Drag to measure a stretch">📏 Measure</button></div><div class="qse-z" role="group" aria-label="Zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="reset">Reset</button></div></div></div>' +
       '<div class="qse-wrap" tabindex="0" role="img" aria-label="Interactive equity curve"><svg></svg><div class="qse-tip" hidden></div></div><div class="qse-selwrap"></div>' +
-      '<div class="qse-help">Hover for details · Drag across the chart to measure a stretch · Scroll or pinch to zoom · Shift-drag to pan · Double-click to reset</div></div>';
+      '<div class="qse-help"><span class="qse-hint"></span></div></div>';
     this.svg = el.querySelector('svg'); this.wrap = el.querySelector('.qse-wrap'); this.tip = el.querySelector('.qse-tip'); this.selBox = el.querySelector('.qse-selwrap'); this.seg = el.querySelector('.qse-seg');
     var self = this;
     [['1w', '1W'], ['1m', '1M'], ['3m', '3M'], ['ytd', 'YTD'], ['1y', '1Y'], ['all', 'All']].forEach(function (r) {
       var b = document.createElement('button'); b.type = 'button'; b.textContent = r[1]; b.setAttribute('data-r', r[0]);
       b.onclick = function () { self.setRange(r[0]); }; self.seg.appendChild(b); });
+    el.querySelectorAll('[data-m]').forEach(function (b) { b.onclick = function () { self.setMode(b.getAttribute('data-m')); }; });
+    this.hint = el.querySelector('.qse-hint');
     el.querySelectorAll('[data-z]').forEach(function (b) { b.onclick = function () { var z = b.getAttribute('data-z'); if (z === 'reset') self.setRange(self.range); else self.zoom(z === 'in' ? 0.6 : 1.6, 0.5); }; });
-    this.bind(); this.load();
+    this.bind(); this.setMode('pan'); this.load();
     if (window.ResizeObserver) new ResizeObserver(function () { self.draw(); }).observe(this.wrap);
   }
+  Chart.prototype.setMode = function (m) {
+    this.mode = m; this.wrap.classList.toggle('sel', m === 'sel');
+    this.el.querySelectorAll('[data-m]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-m') === m)); });
+    this.hint.textContent = m === 'pan' ? 'Drag to move around · Scroll or pinch to zoom · Hover for details · Hold Shift and drag to measure · Double-click to reset' : 'Drag across the chart to measure a stretch · Hold Shift and drag to move · Scroll or pinch to zoom · Double-click to reset';
+  };
+  Chart.prototype.clamp = function () {
+    var p = this.pts; if (!p.length || !this.view) return;
+    var t0 = p[0].t, t1 = Math.max(p[p.length - 1].t, Date.now()), span = this.view[1] - this.view[0], full = t1 - t0;
+    if (span > full * 1.3) { var c = (t0 + t1) / 2; span = full * 1.3; this.view = [c - span / 2, c + span / 2]; }
+    var lo = t0 - span * 0.15, hi = t1 + span * 0.15;
+    if (this.view[0] < lo) this.view = [lo, lo + span]; if (this.view[1] > hi) this.view = [hi - span, hi];
+  };
   Chart.prototype.load = function () {
     var raw = []; try { raw = JSON.parse(this.el.getAttribute('data-eq') || '[]'); } catch (e) {}
     raw.sort(function (a, b) { return a.t - b.t; });
@@ -54,13 +68,13 @@
   };
   Chart.prototype.setRange = function (r, keepSel) {
     this.range = r; this.view = this.bounds(r); if (!keepSel) this.sel = null;
-    this.seg.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-r') === r)); });
+    this.seg.querySelectorAll('[data-r]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-r') === r)); });
     this.draw();
   };
   Chart.prototype.zoom = function (f, at) {
     var v = this.view, span = v[1] - v[0], c = v[0] + span * at, ns = Math.max(DAY / 2, span * f);
     var all = this.bounds('all'), full = all[1] - all[0] + DAY * 2; ns = Math.min(ns, full * 1.2);
-    var a = c - ns * at, b = a + ns; this.view = [a, b]; this.seg.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); this.draw();
+    var a = c - ns * at, b = a + ns; this.view = [a, b]; this.clamp(); this.seg.querySelectorAll('[data-r]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); this.draw();
   };
   Chart.prototype.pan = function (dt) { this.view = [this.view[0] + dt, this.view[1] + dt]; this.draw(); };
   Chart.prototype.geom = function () {
@@ -75,6 +89,7 @@
     return { W: W, H: H, L: L, R: R, T: T, B: B, lo: lo, hi: hi, x: x, y: y, tx: tx, vis: vis, before: before, after: after };
   };
   Chart.prototype.draw = function () {
+    if (this.view && this.range === null) this.clamp();
     var g = this.geom(), svg = this.svg, self = this; this.g = g;
     svg.setAttribute('viewBox', '0 0 ' + g.W + ' ' + g.H); svg.setAttribute('height', g.H);
     if (!this.pts.length) { svg.innerHTML = ''; this.selBox.innerHTML = '<div class="qse-empty">No closed trades yet. Import a CSV to see your equity curve.</div>'; return; }
@@ -129,7 +144,7 @@
       '<div><div class="k">Deepest dip</div><div class="v" style="color:' + (mdd < 0 ? LOSS : '#EEF4F1') + '">' + (mdd < 0 ? esc(money(mdd)) : '$0') + '</div></div>' +
       (best ? '<div><div class="k">Best / worst trade</div><div style="font-size:13px;font-weight:700"><span style="color:' + GAIN + '">' + esc(money(best.p)) + '</span> / <span style="color:' + (worst.p < 0 ? LOSS : GAIN) + '">' + esc(money(worst.p)) + '</span></div></div>' : '') +
       '<div style="margin-left:auto;display:flex;gap:6px"><button type="button" data-a="zoom">Zoom to selection</button><button type="button" data-a="clear">Clear</button></div></div>';
-    box.querySelector('[data-a="zoom"]').onclick = function () { var pad = (b - a) * 0.04; self.view = [a - pad, b + pad]; self.seg.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); self.draw(); };
+    box.querySelector('[data-a="zoom"]').onclick = function () { var pad = (b - a) * 0.04; self.view = [a - pad, b + pad]; self.seg.querySelectorAll('[data-r]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); self.draw(); };
     box.querySelector('[data-a="clear"]').onclick = function () { self.sel = null; self.draw(); };
   };
   Chart.prototype.bind = function () {
@@ -140,7 +155,7 @@
       pointers[e.pointerId] = e; w.setPointerCapture(e.pointerId);
       var ids = Object.keys(pointers);
       if (ids.length === 2) { var a = pointers[ids[0]], b = pointers[ids[1]]; pinch = { d: Math.abs(a.clientX - b.clientX) || 1, view: self.view.slice(), mid: (frac(a) + frac(b)) / 2 }; drag = null; return; }
-      drag = { pan: e.shiftKey, t0: tAt(e), x0: e.clientX, view: self.view.slice(), moved: false };
+      drag = { pan: (self.mode === 'pan') !== !!e.shiftKey, t0: tAt(e), x0: e.clientX, view: self.view.slice(), moved: false }; if (drag.pan) w.classList.add('grabbing');
     });
     w.addEventListener('pointermove', function (e) {
       if (pointers[e.pointerId]) pointers[e.pointerId] = e;
@@ -148,19 +163,20 @@
       if (pinch && ids.length === 2) { var a = pointers[ids[0]], b = pointers[ids[1]], d = Math.abs(a.clientX - b.clientX) || 1, f = pinch.d / d, sp = (pinch.view[1] - pinch.view[0]) * f, c = pinch.view[0] + (pinch.view[1] - pinch.view[0]) * pinch.mid; self.view = [c - sp * pinch.mid, c - sp * pinch.mid + Math.max(DAY / 2, sp)]; self.draw(); return; }
       if (drag) {
         if (Math.abs(e.clientX - drag.x0) > 3) drag.moved = true;
-        if (drag.pan) { var r = w.getBoundingClientRect(), dt = -(e.clientX - drag.x0) / r.width * (drag.view[1] - drag.view[0]) * (self.g.W / (self.g.W - self.g.L - self.g.R)); self.view = [drag.view[0] + dt, drag.view[1] + dt]; self.hover = null; self.draw(); return; }
+        if (drag.pan) { var r = w.getBoundingClientRect(), dt = -(e.clientX - drag.x0) / r.width * (drag.view[1] - drag.view[0]) * (self.g.W / (self.g.W - self.g.L - self.g.R)); self.view = [drag.view[0] + dt, drag.view[1] + dt]; self.clamp(); if (drag.moved) { self.range = null; self.seg.querySelectorAll('[data-r]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); } self.hover = self.nearest(tAt(e)); self.draw(); return; }
         if (drag.moved) { self.sel = [drag.t0, tAt(e)]; }
       }
       self.hover = self.nearest(tAt(e)); self.draw();
     });
-    var end = function (e) { delete pointers[e.pointerId]; if (Object.keys(pointers).length < 2) pinch = null; if (drag && !drag.moved && !drag.pan && e.type === 'pointerup' && e.pointerType !== 'mouse') { self.hover = self.nearest(tAt(e)); self.draw(); } drag = null; };
+    var end = function (e) { w.classList.remove('grabbing'); delete pointers[e.pointerId]; if (Object.keys(pointers).length < 2) pinch = null; if (drag && !drag.moved && e.type === 'pointerup' && e.pointerType !== 'mouse') { self.hover = self.nearest(tAt(e)); self.draw(); } drag = null; };
     w.addEventListener('pointerup', end); w.addEventListener('pointercancel', end);
     w.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse' && !drag) { self.hover = null; self.draw(); } });
     w.addEventListener('wheel', function (e) { e.preventDefault(); self.zoom(e.deltaY > 0 ? 1.25 : 0.8, frac(e)); }, { passive: false });
     w.addEventListener('dblclick', function () { self.sel = null; self.setRange(self.range); });
     w.addEventListener('keydown', function (e) {
       var pts = self.pts, i = self.hover ? pts.indexOf(self.hover) : -1;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); i = Math.max(0, Math.min(pts.length - 1, i + (e.key === 'ArrowRight' ? 1 : -1))); self.hover = pts[i]; self.draw(); }
+      if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && e.shiftKey) { e.preventDefault(); var sp = self.view[1] - self.view[0]; self.view = [self.view[0] + (e.key === 'ArrowRight' ? 1 : -1) * sp * 0.15, self.view[1] + (e.key === 'ArrowRight' ? 1 : -1) * sp * 0.15]; self.clamp(); self.draw(); }
+      else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); i = Math.max(0, Math.min(pts.length - 1, i + (e.key === 'ArrowRight' ? 1 : -1))); self.hover = pts[i]; self.draw(); }
       else if (e.key === '+' || e.key === '=') { self.zoom(0.7, 0.5); } else if (e.key === '-') { self.zoom(1.4, 0.5); } else if (e.key === 'Escape') { self.sel = null; self.hover = null; self.draw(); }
     });
     w.addEventListener('blur', function () { self.hover = null; self.draw(); });
