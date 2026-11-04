@@ -1,0 +1,95 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · Quillstrike</title><meta name="robots" content="noindex"><link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;background:#0B1210;color:#EEF4F1;font:15px/1.55 Barlow,system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(800px 360px at 10% -10%,rgba(56,189,248,.18),transparent 70%)}
+a{color:#7DD3FC}.top{position:sticky;top:0;z-index:5;background:rgba(11,18,16,.92);border-bottom:1px solid rgba(56,189,248,.5);box-shadow:0 10px 36px -16px rgba(56,189,248,.6)}
+.top .in{max-width:1240px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:flex;align-items:center;gap:10px;color:#F2F6F4;text-decoration:none;font:700 22px "Barlow Semi Condensed",sans-serif}
+.tag{padding:3px 10px;border-radius:999px;background:linear-gradient(135deg,#38BDF8,#D8B25A);color:#05090C;font-size:11px;font-weight:800;letter-spacing:.08em}
+.wrap{position:relative;max-width:1240px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:18px}
+h1{margin:0;font:700 34px "Barlow Semi Condensed",sans-serif}h2{margin:0;font:700 22px "Barlow Semi Condensed",sans-serif}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.stat{padding:16px 18px;border-radius:12px;border:1px solid #22302B;background:#121C18}.stat .k{font-size:13px;color:#A8B8B1}.stat .v{font:700 34px "Barlow Semi Condensed",sans-serif}
+.card{border-radius:14px;border:1px solid #22302B;background:#121C18;padding:18px}.card.glow{border-color:rgba(56,189,248,.5);box-shadow:0 0 34px rgba(56,189,248,.15)}
+.hd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px}
+.item{display:flex;gap:12px;padding:14px 0;border-top:1px solid #1F2C27}.item:first-child{border-top:none}
+.chip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.c-bug{background:rgba(240,96,122,.16);color:#F7A8B8}.c-idea{background:rgba(79,209,181,.16);color:#4FD1B5}.c-confusing{background:rgba(216,178,90,.16);color:#F7DC92}.c-other{background:rgba(56,189,248,.14);color:#7DD3FC}
+.msg{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;color:#DCE6E1}.sub{font-size:12px;color:#8FA39B}
+.btn{display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid #3A4E47;background:transparent;color:#EEF4F1;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:#38BDF8}.btn.gold{background:#D8B25A;border-color:#D8B25A;color:#0B1210}.btn.red{border-color:rgba(240,96,122,.6);color:#F7A8B8}
+.seg{display:flex;gap:4px;padding:3px;border-radius:8px;background:#0F1814;border:1px solid #22302B}.seg button{min-height:30px;padding:0 12px;border:none;border-radius:6px;background:transparent;color:#C9D6D0;font:inherit;font-size:13px;font-weight:600;cursor:pointer}.seg button[aria-pressed="true"]{background:rgba(56,189,248,.18);color:#fff}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid #1F2C27;font-size:14px}th{font-size:12px;color:#A8B8B1}
+.empty{padding:16px 0;color:#A8B8B1}.note{padding:24px;border-radius:12px;border:1px solid #22302B;background:#121C18;text-align:center}
+@media (max-width:600px){.grid2{grid-template-columns:1fr}}</style></head><body>
+<header class="top"><div class="in"><a class="logo" href="index.html"><svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true" style="flex: none; display: block"><defs><linearGradient id="gq" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FCE7A8"></stop><stop offset="0.55" stop-color="#D8B25A"></stop><stop offset="1" stop-color="#8A6420"></stop></linearGradient></defs><rect x="2" y="2" width="60" height="60" rx="15" fill="#0F1A16" stroke="#38BDF8" stroke-opacity="0.6" stroke-width="1.5"></rect><path d="M9 35H55" stroke="#38BDF8" stroke-width="2" stroke-dasharray="3.5 3" stroke-linecap="round"></path><path d="M17 49C23 34 35 20 53 10C50 26 41 38 23 46Z" fill="url(#gq)"></path><path d="M27 41.5L33 38M32 36.5L38.5 33M37 31L43.5 27.5M42 25L48 21.5" stroke="#0F1A16" stroke-width="1.6" stroke-linecap="round"></path><path d="M14 52L47 17" stroke="#FFF6D6" stroke-width="1.6" stroke-linecap="round"></path><path d="M14 52L10.5 55.5" stroke="#F7DC92" stroke-width="2.6" stroke-linecap="round"></path><circle cx="30" cy="35" r="2.6" fill="#38BDF8"></circle></svg><span>Quill<span style="color:#D8B25A">strike</span></span></a><div style="display:flex;align-items:center;gap:12px"><span class="tag">ADMIN</span><a class="btn" href="dashboard.html" style="text-decoration:none">Open my journal</a></div></div></header>
+<main class="wrap" id="app"><p class="empty">Loading…</p></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="vendor/config.js"></script>
+<script>
+(function () {
+  var app = document.getElementById('app');
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var when = function (iso) { var d = new Date(iso); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); };
+  if (!window.supabase || !window.TJ_CONFIG) { app.innerHTML = '<div class="note">Couldn’t load. Refresh the page.</div>'; return; }
+  var sb = window.supabase.createClient(TJ_CONFIG.url, TJ_CONFIG.key, { auth: { persistSession: true, autoRefreshToken: true } });
+  var S = { fbFilter: 'open', feedback: [], reports: [], posts: {}, profiles: [], total: 0, week: 0, votes: [] };
+  sb.auth.getSession().then(function (r) {
+    var s = r.data && r.data.session;
+    if (!s) { app.innerHTML = '<div class="note"><h1>Admin</h1><p>Sign in with your admin account to see this page.</p><a class="btn gold" style="text-decoration:none" href="login.html">Sign in</a></div>'; return; }
+    sb.from('profiles').select('is_admin').eq('id', s.user.id).maybeSingle().then(function (p) {
+      if (!p.data || !p.data.is_admin) { app.innerHTML = '<div class="note"><h1>Admin</h1><p>This page is only for the site owner.</p><a class="btn" style="text-decoration:none" href="dashboard.html">Back to my journal</a></div>'; return; }
+      load();
+    });
+  });
+  function load() {
+    var weekAgo = new Date(Date.now() - 7 * 864e5).toISOString();
+    Promise.all([
+      sb.from('feedback').select('*').order('created_at', { ascending: false }).limit(300),
+      sb.from('reports').select('*').order('created_at', { ascending: false }).limit(300),
+      sb.from('profiles').select('id, username, display_name, created_at').order('created_at', { ascending: false }).limit(20),
+      sb.from('profiles').select('id', { count: 'exact', head: true }),
+      sb.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', weekAgo),
+      sb.from('insight_feedback').select('card, helpful')
+    ]).then(function (r) {
+      var err = r.find(function (x) { return x && x.error; });
+      if (err) { app.innerHTML = '<div class="note"><h1>Almost there</h1><p>Run <strong>admin-dashboard.sql</strong> in Supabase, then refresh this page.</p><p class="sub">' + esc(err.error.message) + '</p></div>'; return; }
+      S.feedback = r[0].data || []; S.reports = r[1].data || []; S.profiles = r[2].data || []; S.total = r[3].count || 0; S.week = r[4].count || 0; S.votes = r[5].data || [];
+      var names = {}; S.profiles.forEach(function (p) { names[p.id] = p.username; }); S.names = names;
+      var pids = S.reports.filter(function (x) { return x.post_id; }).map(function (x) { return x.post_id; });
+      var rids = S.reports.filter(function (x) { return x.reply_id; }).map(function (x) { return x.reply_id; });
+      Promise.all([pids.length ? sb.from('posts').select('id, author, body, created_at').in('id', pids) : Promise.resolve({ data: [] }), rids.length ? sb.from('replies').select('id, author, body, created_at').in('id', rids) : Promise.resolve({ data: [] })]).then(function (pr) {
+        S.posts = {}; (pr[0].data || []).forEach(function (x) { S.posts['p' + x.id] = x; }); (pr[1].data || []).forEach(function (x) { S.posts['r' + x.id] = x; });
+        render();
+      });
+    });
+  }
+  function render() {
+    var open = S.feedback.filter(function (f) { return !f.resolved; });
+    var list = S.fbFilter === 'open' ? open : S.feedback;
+    var groups = {}; S.reports.forEach(function (x) { var k = x.post_id ? 'p' + x.post_id : 'r' + x.reply_id; (groups[k] = groups[k] || []).push(x); });
+    var gk = Object.keys(groups);
+    var vt = {}; S.votes.forEach(function (v) { var x = vt[v.card] || (vt[v.card] = { y: 0, n: 0 }); v.helpful ? x.y++ : x.n++; });
+    var vrows = Object.keys(vt).sort(function (a, b) { return (vt[b].y + vt[b].n) - (vt[a].y + vt[a].n); });
+    var h = '<div><h1>Admin dashboard</h1><p class="sub">Only you can see this page.</p></div>';
+    h += '<section class="stats" aria-label="Summary"><div class="stat"><div class="k">Members</div><div class="v">' + S.total + '</div></div><div class="stat"><div class="k">New this week</div><div class="v" style="color:#4FD1B5">' + S.week + '</div></div><div class="stat"><div class="k">Open feedback</div><div class="v" style="color:#F7DC92">' + open.length + '</div></div><div class="stat"><div class="k">Reported posts</div><div class="v" style="color:' + (gk.length ? '#F7A8B8' : '#EEF4F1') + '">' + gk.length + '</div></div></section>';
+    h += '<section class="card glow" aria-labelledby="fbh"><div class="hd"><h2 id="fbh">Feedback</h2><div class="seg" role="group" aria-label="Show"><button type="button" data-f="open" aria-pressed="' + (S.fbFilter === 'open') + '">Open (' + open.length + ')</button><button type="button" data-f="all" aria-pressed="' + (S.fbFilter === 'all') + '">All (' + S.feedback.length + ')</button></div></div>';
+    h += list.length ? list.map(function (f) { var c = ['bug', 'idea', 'confusing'].indexOf(f.category) >= 0 ? f.category : 'other';
+      return '<div class="item" style="opacity:' + (f.resolved ? 0.55 : 1) + '"><div style="flex:1;min-width:0"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span class="chip c-' + c + '">' + esc(f.category || 'other') + '</span><span class="sub">' + esc(when(f.created_at)) + ' · ' + esc(f.page || '') + ' · ' + esc(f.user_id ? (S.names[f.user_id] ? '@' + S.names[f.user_id] : 'signed-in member') : 'visitor') + '</span></div><p class="msg">' + esc(f.message) + '</p></div><div><button type="button" class="btn" data-done="' + esc(f.id) + '" data-v="' + (!f.resolved) + '">' + (f.resolved ? 'Reopen' : 'Mark done') + '</button></div></div>'; }).join('') : '<p class="empty">' + (S.fbFilter === 'open' ? 'No open feedback. Nice.' : 'No feedback yet.') + '</p>';
+    h += '</section><div class="grid2">';
+    h += '<section class="card" aria-labelledby="rph"><div class="hd"><h2 id="rph">Reported posts</h2></div>' + (gk.length ? gk.map(function (k) { var p = S.posts[k], rs = groups[k], reasons = {}; rs.forEach(function (x) { reasons[x.reason] = (reasons[x.reason] || 0) + 1; });
+      return '<div class="item"><div style="flex:1;min-width:0"><div class="sub">' + (p ? '@' + esc(p.author) + ' · ' + esc(when(p.created_at)) : 'Already deleted') + ' · ' + (k[0] === 'p' ? 'post' : 'reply') + '</div><p class="msg">' + esc(p ? (p.body.length > 280 ? p.body.slice(0, 280) + '…' : p.body) : '') + '</p><div class="sub" style="margin-top:6px">⚑ ' + Object.keys(reasons).map(function (r) { return esc(r) + ' × ' + reasons[r]; }).join(', ') + '</div></div><div style="display:flex;flex-direction:column;gap:6px">' + (p ? '<button type="button" class="btn red" data-rm="' + esc(k) + '">Remove</button>' : '') + '<button type="button" class="btn" data-keep="' + esc(k) + '">Keep</button></div></div>'; }).join('') : '<p class="empty">Nothing reported.</p>') + '</section>';
+    h += '<section class="card" aria-labelledby="nmh"><div class="hd"><h2 id="nmh">Newest members</h2></div>' + (S.profiles.length ? '<table><thead><tr><th>Member</th><th>Joined</th></tr></thead><tbody>' + S.profiles.map(function (p) { return '<tr><td>@' + esc(p.username || 'no username') + (p.display_name ? ' <span class="sub">' + esc(p.display_name) + '</span>' : '') + '</td><td class="sub">' + esc(when(p.created_at)) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="empty">No members yet.</p>') + '</section>';
+    h += '</div><section class="card" aria-labelledby="ivh"><div class="hd"><h2 id="ivh">Insights votes</h2><span class="sub">👍 / 👎 on each Insights card</span></div>' + (vrows.length ? '<table><thead><tr><th>Card</th><th>👍 Yes</th><th>👎 No</th></tr></thead><tbody>' + vrows.map(function (c) { return '<tr><td>' + esc(c.replace(/_/g, ' ')) + '</td><td style="color:#4FD1B5;font-weight:700">' + vt[c].y + '</td><td style="color:#F7A8B8;font-weight:700">' + vt[c].n + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="empty">No votes yet.</p>') + '</section>';
+    app.innerHTML = h;
+    app.querySelectorAll('[data-f]').forEach(function (b) { b.onclick = function () { S.fbFilter = b.getAttribute('data-f'); render(); }; });
+    app.querySelectorAll('[data-done]').forEach(function (b) { b.onclick = function () { var id = b.getAttribute('data-done'), v = b.getAttribute('data-v') === 'true'; b.disabled = true;
+      sb.from('feedback').update({ resolved: v }).eq('id', id).then(function (r) { if (r.error) { alert('Couldn’t update: ' + r.error.message); b.disabled = false; return; } S.feedback.forEach(function (f) { if (f.id === id) f.resolved = v; }); render(); }); }; });
+    app.querySelectorAll('[data-rm]').forEach(function (b) { b.onclick = function () { var k = b.getAttribute('data-rm'); if (!confirm('Remove this ' + (k[0] === 'p' ? 'post' : 'reply') + ' for everyone?')) return;
+      sb.from(k[0] === 'p' ? 'posts' : 'replies').delete().eq('id', k.slice(1)).then(function (r) { if (r.error) { alert('Couldn’t remove: ' + r.error.message); return; } S.reports = S.reports.filter(function (x) { return (x.post_id ? 'p' + x.post_id : 'r' + x.reply_id) !== k; }); delete S.posts[k]; render(); }); }; });
+    app.querySelectorAll('[data-keep]').forEach(function (b) { b.onclick = function () { var k = b.getAttribute('data-keep'), col = k[0] === 'p' ? 'post_id' : 'reply_id';
+      sb.from('reports').delete().eq(col, k.slice(1)).then(function (r) { if (r.error) { alert('Couldn’t clear: ' + r.error.message); return; } S.reports = S.reports.filter(function (x) { return (x.post_id ? 'p' + x.post_id : 'r' + x.reply_id) !== k; }); render(); }); }; });
+  }
+})();
+</script></body></html>
