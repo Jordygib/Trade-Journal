@@ -177,6 +177,82 @@
     orders.forEach(function (o) { o.id = 'wb' + hashStr(o.id + o.legs.map(function (l) { return l.strike + l.type + l.qty; }).join(',')); });
     return { orders: orders, warnings: [], feesKnown: false, label: 'Webull options orders', prefix: 'wb', broker: 'webull' };
   }
+
+  /* ---------- Interactive Brokers (Activity Statement "Trades" section, or a Flex Query trades CSV) */
+  var MON3 = { JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5, JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11 };
+  function ibDate(s) { var t = String(s || '').trim(), m = t.match(/(\d{4})-?(\d{2})-?(\d{2})[,;\s]*(\d{1,2}):?(\d{2}):?(\d{2})?/); if (m) return new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0));
+    m = t.match(/(\d{4})-?(\d{2})-?(\d{2})/); if (m) return new Date(+m[1], +m[2] - 1, +m[3], 12); var d = mdy(t); return d ? withTime(d, t.split(/[,;\s]+/)[1]) : null; }
+  function ibLeg(sym) { var m = String(sym || '').trim().toUpperCase().match(/^([A-Z.]{1,6})\s+(\d{1,2})([A-Z]{3})(\d{2})\s+([\d.]+)\s+([CP])$/); if (!m || MON3[m[3]] == null) return null;
+    return { underlying: root(m[1]), expiration: new Date(2000 + +m[4], MON3[m[3]], +m[2], 16), strike: +m[5], type: m[6] === 'C' ? 'call' : 'put' }; }
+  function fromIBKR(all) {
+    var hi = -1, flex = false;
+    for (var i = 0; i < all.length; i++) { var r0 = all[i]; if (r0[0] === 'Trades' && r0[1] === 'Header' && r0.indexOf('T. Price') >= 0) { hi = i; break; } if (r0.indexOf('Open/CloseIndicator') >= 0 || (r0.indexOf('IBCommission') >= 0 && r0.indexOf('Quantity') >= 0)) { hi = i; flex = true; break; } }
+    if (hi < 0) return null;
+    var head = all[hi].map(function (h) { return String(h).trim(); }), ix = function (n) { return head.indexOf(n); }, rows = [], warn = [];
+    for (var k = hi + 1; k < all.length; k++) {
+      var r = all[k]; if (!r || !r.length) continue;
+      var leg = null, when, q, cash, fees, code, oid;
+      if (!flex) {
+        if (r[0] !== 'Trades') continue; if (r[1] === 'Header') { head = r.map(function (h) { return String(h).trim(); }); continue; }
+        if (r[1] !== 'Data' || String(r[ix('DataDiscriminator')] || '').trim() !== 'Order') continue;
+        if (!/option/i.test(String(r[ix('Asset Category')] || ''))) continue;
+        leg = ibLeg(r[ix('Symbol')]); when = ibDate(r[ix('Date/Time')]); q = num(r[ix('Quantity')]); cash = num(r[ix('Proceeds')]); fees = Math.abs(num(r[ix('Comm/Fee')])); code = String(r[ix('Code')] || ''); oid = '';
+      } else {
+        var ac = String(r[ix('AssetClass')] || r[ix('Asset Class')] || ''); if (ac && !/^OPT|FOP/i.test(ac)) continue;
+        var und = r[ix('UnderlyingSymbol')] || '', pc = String(r[ix('Put/Call')] || '').toUpperCase(), ex = String(r[ix('Expiry')] || '');
+        if (und && pc && ex) { var em = ex.match(/(\d{4})-?(\d{2})-?(\d{2})/); if (em) leg = { underlying: root(und), expiration: new Date(+em[1], +em[2] - 1, +em[3], 16), strike: num(r[ix('Strike')]), type: pc[0] === 'C' ? 'call' : 'put' }; }
+        if (!leg) leg = ibLeg(r[ix('Symbol')]);
+        when = ibDate(r[ix('DateTime')] >= 0 ? r[ix('DateTime')] : (r[ix('TradeDate')] || '') + ' ' + (r[ix('TradeTime')] || ''));
+        q = num(r[ix('Quantity')]); cash = num(r[ix('Proceeds')]); fees = Math.abs(num(r[ix('IBCommission')])); code = String(r[ix('Open/CloseIndicator')] || '') + ';' + String(r[ix('Notes/Codes')] || ''); oid = String(r[ix('IBOrderID')] || r[ix('OrderID')] || '');
+      }
+      if (!leg || !when || !q) continue;
+      var exp = /(^|;)\s*(Ep|A|Ex)\b/.test(code) || /\bEp\b/.test(code), open = /(^|;)\s*O\b/.test(code) || /\bO\b/.test(code.split(';')[0]);
+      if (/\b(A|Ex)\b/.test(code)) warn.push('An assignment or exercise on ' + leg.underlying + ' was treated as closing the option. Any stock you got is not tracked.');
+      var act = exp ? 'EXP' : q > 0 ? (open ? 'BTO' : 'BTC') : (open ? 'STO' : 'STC');
+      rows.push({ when: when, hasTime: when.getHours() !== 12 || when.getMinutes() !== 0, cash: exp ? 0 : cash, fees: fees, oid: oid, leg: Object.assign({}, leg, { qty: q, action: act }) });
+    }
+    var orders = groupRows(rows, function (x) { return 'ib|' + (x.oid || x.when.toISOString()) + '|' + x.leg.underlying + '|' + (x.leg.action === 'EXP' ? 'x' : ''); });
+    orders.forEach(function (o) { o.id = 'ib' + hashStr(o.id + o.legs.map(function (l) { return l.strike + l.type + l.qty; }).join(',')); });
+    return { orders: orders, warnings: warn, feesKnown: true, label: flex ? 'Interactive Brokers Flex Query' : 'Interactive Brokers activity statement', prefix: 'ib', broker: 'ibkr' };
+  }
+  /* ---------- Fidelity (Accounts > Activity & Orders > History download) */
+  function fromFidelity(rows, head) {
+    var ix = function (n) { for (var i = 0; i < head.length; i++) if (head[i].indexOf(n) === 0) return i; return -1; };
+    var I = { d: ix('Run Date'), act: ix('Action'), sym: ix('Symbol'), qty: ix('Quantity'), com: ix('Commission'), fee: ix('Fees'), amt: ix('Amount') }, out = [], warn = [];
+    rows.forEach(function (r) {
+      var a = String(r[I.act] || '').toUpperCase(), sm = String(r[I.sym] || '').trim().replace(/^-/, '').match(/^([A-Z.]{1,6})(\d{2})(\d{2})(\d{2})([CP])([\d.]+)$/);
+      if (!sm) return; var d = mdy(r[I.d]); if (!d) return;
+      var leg0 = { underlying: root(sm[1]), expiration: new Date(2000 + +sm[2], +sm[3] - 1, +sm[4], 16), strike: +sm[6], type: sm[5] === 'C' ? 'call' : 'put' };
+      var q = Math.abs(num(r[I.qty])) || 1, buy = /YOU BOUGHT|BOUGHT/.test(a), sell = /YOU SOLD|SOLD/.test(a), open = /OPENING/.test(a), close = /CLOSING/.test(a), exp = /EXPIRED|ASSIGNED|EXERCISED/.test(a);
+      if (!exp && !buy && !sell) return; if (/ASSIGNED|EXERCISED/.test(a)) warn.push('An assignment or exercise on ' + leg0.underlying + ' was treated as closing the option. Any stock you got is not tracked.');
+      var act = exp ? 'EXP' : buy ? (close ? 'BTC' : 'BTO') : (close ? 'STC' : 'STO'); if (!exp && !open && !close) act = buy ? 'BTO' : 'STO';
+      var fees = Math.abs(num(r[I.com])) + Math.abs(num(r[I.fee])), amt = num(r[I.amt]);
+      out.push({ when: withTime(d, null), hasTime: false, cash: exp ? 0 : amt + fees, fees: exp ? 0 : fees, leg: Object.assign({}, leg0, { qty: (act === 'BTO' || act === 'BTC' || act === 'EXP') ? q : -q, action: act }) });
+    });
+    var orders = groupRows(out, function (x) { return 'fd|' + ymd(x.when) + '|' + x.leg.underlying + '|' + (x.leg.action === 'EXP' ? 'x' : (x.leg.action.slice(2) === 'O' ? 'o' : 'c')); });
+    orders.forEach(function (o) { o.id = 'fd' + hashStr(o.id + o.legs.map(function (l) { return l.strike + l.type + l.qty; }).join(',')); });
+    return { orders: orders, warnings: warn, feesKnown: true, label: 'Fidelity account history', prefix: 'fd', broker: 'fidelity' };
+  }
+  /* ---------- E*TRADE (Accounts > Transactions download) */
+  function fromEtrade(rows, head) {
+    var ix = function (n) { return head.indexOf(n); };
+    var I = { d: ix('TransactionDate'), ty: ix('TransactionType'), st: ix('SecurityType'), sym: ix('Symbol'), qty: ix('Quantity'), amt: ix('Amount'), com: ix('Commission'), desc: ix('Description') }, out = [], warn = [];
+    var MONS = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+    rows.forEach(function (r) {
+      var st = String(r[I.st] || ''), ty = String(r[I.ty] || '').toLowerCase(), txt = String(r[I.sym] || '') + ' ' + String(r[I.desc] || '');
+      if (st && !/OPT/i.test(st)) return;
+      var m = txt.match(/([A-Z.]{1,6})\s+([A-Z][a-z]{2})\s+(\d{1,2})\s+'?(\d{2,4})\s+\$?([\d.]+)\s+(Call|Put)/i); if (!m || MONS[m[2]] == null) return;
+      var y = +m[4]; if (y < 100) y += 2000; var d = mdy(r[I.d]); if (!d) return;
+      var leg0 = { underlying: root(m[1]), expiration: new Date(y, MONS[m[2]], +m[3], 16), strike: +m[5], type: /call/i.test(m[6]) ? 'call' : 'put' };
+      var act = /bought to open/.test(ty) ? 'BTO' : /sold short|sold to open/.test(ty) ? 'STO' : /bought to cover|bought to close/.test(ty) ? 'BTC' : /sold to close/.test(ty) ? 'STC' : /expir|assign|exercis/.test(ty) ? 'EXP' : null;
+      if (!act) return; if (/assign|exercis/.test(ty)) warn.push('An assignment or exercise on ' + leg0.underlying + ' was treated as closing the option. Any stock you got is not tracked.');
+      var q = Math.abs(num(r[I.qty])) || 1, fees = Math.abs(num(r[I.com])), amt = num(r[I.amt]);
+      out.push({ when: withTime(d, null), hasTime: false, cash: act === 'EXP' ? 0 : amt + fees, fees: act === 'EXP' ? 0 : fees, leg: Object.assign({}, leg0, { qty: (act === 'BTO' || act === 'BTC' || act === 'EXP') ? q : -q, action: act }) });
+    });
+    var orders = groupRows(out, function (x) { return 'et|' + ymd(x.when) + '|' + x.leg.underlying + '|' + (x.leg.action === 'EXP' ? 'x' : (x.leg.action.slice(2) === 'O' ? 'o' : 'c')); });
+    orders.forEach(function (o) { o.id = 'et' + hashStr(o.id + o.legs.map(function (l) { return l.strike + l.type + l.qty; }).join(',')); });
+    return { orders: orders, warnings: warn, feesKnown: true, label: 'E*TRADE transactions', prefix: 'et', broker: 'etrade' };
+  }
   function classify(legs, openNet) {
     var calls = legs.filter(function (l) { return l.type === 'call'; }), puts = legs.filter(function (l) { return l.type === 'put'; });
     var exps = {}; legs.forEach(function (l) { exps[ymd(l.expiration)] = 1; }); var nExp = Object.keys(exps).length;
@@ -251,7 +327,7 @@
     var rows = parseCSV(text); if (!rows.length) return { ok: false, error: 'That file looks empty.' };
     var hIdx = 0;
     for (var hi2 = 0; hi2 < Math.min(rows.length, 12); hi2++) { var hr = rows[hi2].map(function (h) { return String(h).trim(); });
-      if (hr.indexOf('MarketOrFill') >= 0 || hr.indexOf('Trans Code') >= 0 || hr.indexOf('Filled Time') >= 0 || (hr.indexOf('Action') >= 0 && (hr.indexOf('Amount') >= 0 || hr.indexOf('Value') >= 0))) { hIdx = hi2; break; } }
+      if (hr.indexOf('MarketOrFill') >= 0 || hr.indexOf('Trans Code') >= 0 || hr.indexOf('Filled Time') >= 0 || hr.indexOf('Run Date') >= 0 || hr.indexOf('TransactionType') >= 0 || (hr.indexOf('Action') >= 0 && (hr.indexOf('Amount') >= 0 || hr.indexOf('Value') >= 0))) { hIdx = hi2; break; } }
     if (hIdx) rows = rows.slice(hIdx);
     var head = rows[0].map(function (h) { return h.trim(); });
     var out;
@@ -261,6 +337,9 @@
     else if (head.indexOf('Fees & Comm') >= 0 && head.indexOf('Action') >= 0 && head.indexOf('Amount') >= 0) out = fromSchwab(rows.slice(1), head, today);
     else if (head.indexOf('Filled Time') >= 0 && head.indexOf('Side') >= 0 && head.indexOf('Avg Price') >= 0) out = fromWebull(rows.slice(1), head, today);
     else if (rows.some(function (r) { return r.indexOf('Exec Time') >= 0 && r.indexOf('Pos Effect') >= 0; })) out = fromToS(rows, today);
+    else if (head.indexOf('Run Date') >= 0 && head.indexOf('Action') >= 0) out = fromFidelity(rows.slice(1), head);
+    else if (head.indexOf('TransactionType') >= 0 && head.indexOf('TransactionDate') >= 0) out = fromEtrade(rows.slice(1), head);
+    else if (rows.some(function (r) { return (r[0] === 'Trades' && r[1] === 'Header') || r.indexOf('Open/CloseIndicator') >= 0 || r.indexOf('IBCommission') >= 0; })) out = fromIBKR(rows);
     else return { ok: false, unknown: true, error: 'We don’t recognize this file’s format yet.', headers: head, rows: rows.length - 1 };
     if (!out.orders.length) return { ok: false, error: 'No option trades were found in this file. Make sure it includes the date range you traded in.', label: out.label };
     out.orders.forEach(function (o) { o.prefix = out.prefix || 'tt'; });
