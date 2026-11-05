@@ -34,7 +34,7 @@
           window.TJ_TRADE_COUNT = trades.length;
           if (!trades.length) { window.TJ_TRADES = []; window.TJ_LITE = []; return; }
           var ids = trades.map(function (t) { return t.id; });
-          return sb.from('fills').select('trade_id, executed_at, action, strike, option_type, quantity, price').in('trade_id', ids).limit(20000).then(function (fr) {
+          return sb.from('fills').select('trade_id, executed_at, action, strike, option_type, quantity, price, expiration').in('trade_id', ids).limit(20000).then(function (fr) {
             var fills = (fr && fr.data) || [];
             window.TJ_FILL_COUNT = fills.length;
             window.TJ_TRADES = window.TJImport.toView(trades, fills);

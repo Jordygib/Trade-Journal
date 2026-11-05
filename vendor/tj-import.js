@@ -405,9 +405,14 @@
   }
   function toLite(trades, fills) {
     var closedBy = {}; (fills || []).forEach(function (f) { if (f.action === 'BTC' || f.action === 'STC') closedBy[f.trade_id] = true; });
+    var expBy = {}; (fills || []).forEach(function (f) { if (!f.expiration || (f.action !== 'BTO' && f.action !== 'STO')) return; var m = String(f.expiration).match(/(\d{4})-(\d{2})-(\d{2})/); if (!m) return; var e = new Date(+m[1], +m[2] - 1, +m[3]).getTime(); if (!expBy[f.trade_id] || e < expBy[f.trade_id]) expBy[f.trade_id] = e; });
+    var MON = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+    var dteOf = function (t) { var o = new Date(t.opened_at), od = new Date(o.getFullYear(), o.getMonth(), o.getDate()).getTime(), e = expBy[t.id];
+      if (!e) { var m = String(t.structure || '').match(/·\s*([A-Z][a-z]{2})\s+(\d{1,2})(?:\s|$|&)/); if (m && MON[m[1]] != null) { var y = o.getFullYear(), d = new Date(y, MON[m[1]], +m[2]).getTime(); if (d < od - 864e5) d = new Date(y + 1, MON[m[1]], +m[2]).getTime(); e = d; } }
+      return e ? Math.max(0, Math.round((e - od) / 864e5)) : null; };
     return trades.map(function (t) {
       return { id: t.id, sym: t.underlying, k: t.strategy, name: NAMES[t.strategy] || 'Other', o: new Date(t.opened_at), c: t.closed_at ? new Date(t.closed_at) : null, pnl: Number(t.pnl || 0), tk: t.time_known !== false,
-        qty: Number(t.quantity || 1), expired: t.status === 'closed' ? (fills && fills.length ? !closedBy[t.id] : null) : false, structure: t.structure || '', entry: Number(t.entry_price || 0), tags: t.tags || [] };
+        qty: Number(t.quantity || 1), expired: t.status === 'closed' ? (fills && fills.length ? !closedBy[t.id] : null) : false, structure: t.structure || '', entry: Number(t.entry_price || 0), tags: t.tags || [], dte: dteOf(t) };
     });
   }
   window.TJImport = { toLite: toLite, parse: parse, save: save, toView: toView, NAMES: NAMES, money: money, px: px, fmtDate: fmtDate, holdText: holdText };
