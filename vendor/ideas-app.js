@@ -92,7 +92,7 @@
     var self = this;
     this.root.innerHTML = '<div class="qi"><div class="qi-main"><div class="qi-top">' +
       '<div class="qi-sym"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8A9C95" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.5"></circle><path d="M10.5 10.5l4 4"></path></svg><input type="text" aria-label="Symbol" spellcheck="false" autocomplete="off"><div class="qi-dd" hidden role="listbox"></div></div>' +
-      '<span class="qi-hint" style="font-size:12px;color:#A8B8B1">Search a symbol to load its chart and community ideas</span>' +
+      '<span class="qi-cur" style="display:inline-flex;align-items:center;font-size:14px;font-weight:600"></span>' +
       '<button type="button" class="qi-btn" data-fs title="Full screen">⛶</button><span class="qi-note">Chart and data by TradingView · US stock prices are delayed</span></div>' +
       '<div class="qi-chart qi-tv" style="cursor:default"></div></div>' +
       '<aside class="qi-panel" aria-label="Side panel"></aside>' +
@@ -127,7 +127,7 @@
     var show = function () {
       var q = self.inp.value.trim().toUpperCase(); list = Object.keys(CAT).filter(function (k) { return !q || k.indexOf(q) === 0 || CAT[k][0].toUpperCase().indexOf(q) >= 0; }).slice(0, 12);
       if (q && /^[A-Z.]{1,6}$/.test(q) && list.indexOf(q) < 0) list.unshift(q); sel = 0;
-      self.dd.innerHTML = list.map(function (k, i) { return '<button type="button" role="option" data-k="' + esc(k) + '" class="' + (i === sel ? 'on' : '') + '"><b>' + esc(k) + '</b><span>' + esc(CAT[k] ? CAT[k][0] : 'Open ' + k) + '</span></button>'; }).join('');
+      self.dd.innerHTML = list.map(function (k, i) { return '<button type="button" role="option" data-k="' + esc(k) + '" class="' + (i === sel ? 'on' : '') + '"><span class="qs-logo" data-sym="' + esc(k) + '" aria-hidden="true" style="margin-right:0"></span><b>' + esc(k) + '</b><span>' + esc(CAT[k] ? CAT[k][0] : 'Open ' + k) + '</span></button>'; }).join('');
       self.dd.hidden = !list.length; self.dd.querySelectorAll('[data-k]').forEach(function (b) { b.onmousedown = function (e) { e.preventDefault(); self.setSym(b.getAttribute('data-k')); self.inp.blur(); }; });
     };
     this.inp.addEventListener('focus', function () { self.inp.select(); show(); });
@@ -143,7 +143,8 @@
     return M[s] || s;
   };
   App.prototype.load = function () {
-    this.marks(); var box = this.ch; box.innerHTML = '';
+    this.marks(); var cur = this.root.querySelector('.qi-cur'); if (cur) cur.innerHTML = '<span class="qs-logo lg" data-sym="' + esc(this.sym) + '" aria-hidden="true"></span>' + esc(CAT[this.sym] ? CAT[this.sym][0] : this.sym);
+    var box = this.ch; box.innerHTML = '';
     var wrap = document.createElement('div'); wrap.className = 'tradingview-widget-container'; wrap.style.cssText = 'height:100%;width:100%';
     var inner = document.createElement('div'); inner.className = 'tradingview-widget-container__widget'; inner.style.cssText = 'height:calc(100% - 22px);width:100%';
     var cr = document.createElement('div'); cr.className = 'tradingview-widget-copyright'; cr.style.cssText = 'height:22px;padding:2px 10px;font-size:11px;color:#8A9C95;text-align:right';
@@ -271,7 +272,7 @@
   App.prototype.paintWatch = function () {
     var self = this; if (!this.wl) { try { this.wl = JSON.parse(localStorage.getItem('qi_wl') || 'null'); } catch (e) {} if (!this.wl) this.wl = ['SPY', 'QQQ', 'SPX', 'AAPL', 'NVDA', 'TSLA', 'AMZN', 'CMG', 'COF']; }
     var rows = this.wl.map(function (s) { var n = (self.loaded[s] || []).length;
-      return '<div style="display:flex;align-items:center"><button type="button" class="qi-wl' + (s === self.sym ? ' on' : '') + '" data-go="' + esc(s) + '"><span style="flex:1;min-width:0"><b>' + esc(s) + '</b><br><span style="font-size:12px;color:#A8B8B1">' + esc(CAT[s] ? CAT[s][0] : 'Stock') + '</span></span><span style="font-size:12px;color:#A8B8B1">' + (n ? n + (n === 1 ? ' idea' : ' ideas') : '') + '</span></button><button type="button" class="qi-x" data-rm="' + esc(s) + '" aria-label="Remove ' + esc(s) + '">×</button></div>'; }).join('');
+      return '<div style="display:flex;align-items:center"><button type="button" class="qi-wl' + (s === self.sym ? ' on' : '') + '" data-go="' + esc(s) + '"><span class="qs-logo lg" data-sym="' + esc(s) + '" aria-hidden="true"></span><span style="flex:1;min-width:0"><b>' + esc(s) + '</b><br><span style="font-size:12px;color:#A8B8B1">' + esc(CAT[s] ? CAT[s][0] : 'Stock') + '</span></span><span style="font-size:12px;color:#A8B8B1">' + (n ? n + (n === 1 ? ' idea' : ' ideas') : '') + '</span></button><button type="button" class="qi-x" data-rm="' + esc(s) + '" aria-label="Remove ' + esc(s) + '">×</button></div>'; }).join('');
     this.pane.innerHTML = '<div class="qi-ph"><h2>Watchlist</h2><button type="button" class="qi-x" data-close aria-label="Close panel">×</button></div><div class="qi-pb"><form class="qi-row" style="margin:0 0 10px" data-add><input class="qi-symin" style="flex:1;width:auto;min-height:36px;border-radius:8px" placeholder="Add a symbol" aria-label="Add a symbol" maxlength="6"><button class="qi-gold" type="submit">Add</button></form>' + rows + '<p style="margin-top:12px;font-size:11px;color:#74877F">Click a symbol to open its chart and ideas.</p></div>';
     this.pane.querySelector('[data-close]').onclick = function () { self.panel = null; self.renderPanel(); setTimeout(function () { self.draw(); }, 30); };
     this.pane.querySelector('[data-add]').onsubmit = function (e) { e.preventDefault(); var v = this.querySelector('input').value.trim().toUpperCase().replace(/[^A-Z.]/g, ''); if (v && self.wl.indexOf(v) < 0) { self.wl.push(v); try { localStorage.setItem('qi_wl', JSON.stringify(self.wl)); } catch (er) {} } self.paintWatch(); };
@@ -280,7 +281,7 @@
   };
   App.prototype.paint = function () {
     if (this.panel !== 'ideas') return; var self = this, all = this.tab === 'all', key = all ? '*' : this.sym, list = this.loaded[key], me = this.me(), admin = !!(window.TJ_PROFILE && window.TJ_PROFILE.is_admin);
-    var h = '<div class="qi-ph"><h2>' + (all ? 'Community' : '$' + esc(this.sym) + ' ideas') + '</h2><button type="button" class="qi-x" data-close aria-label="Close panel">×</button></div>' +
+    var h = '<div class="qi-ph"><h2 style="display:flex;align-items:center">' + (all ? 'Community' : '<span class="qs-logo lg" data-sym="' + esc(this.sym) + '" aria-hidden="true"></span>$' + esc(this.sym) + ' ideas') + '</h2><button type="button" class="qi-x" data-close aria-label="Close panel">×</button></div>' +
       '<div class="qi-tabs" role="group" aria-label="Show posts"><button type="button" data-tab="sym" aria-pressed="' + !all + '">$' + esc(this.sym) + '</button><button type="button" data-tab="all" aria-pressed="' + all + '">All stocks</button></div><div class="qi-pb">';
     h += '<div class="qi-comp"><div class="qi-kind" role="group" aria-label="Post type"><button type="button" data-kind="idea" aria-pressed="' + (this.kind === 'idea') + '">💡 Idea</button><button type="button" data-kind="question" aria-pressed="' + (this.kind === 'question') + '">❓ Question</button>' +
       '<span style="font-size:12px;color:#8A9C95;margin-left:4px">about</span>' + (all ? '<input class="qi-symin" data-psym value="' + esc(this.postSym || this.sym) + '" maxlength="6" aria-label="Symbol for your post">' : '<span class="qi-chip" style="background:rgba(56,189,248,.14);color:#7DD3FC">$' + esc(this.sym) + '</span>') + '</div>' +
@@ -294,7 +295,7 @@
     else h += list.map(function (p) {
       var mine = p.user_id === me, canDel = mine || admin, open = !!self.openRep[p.id];
       var trade = p.trade ? '<div style="margin-top:8px;padding:10px 12px;border-radius:8px;border:1px solid #2B3B36;background:#121C18;font-size:13px"><b>' + esc((p.trade.sym || '') + ' ' + String(p.trade.name || 'trade').toLowerCase()) + '</b> <span style="float:right;font-weight:700;color:' + (Number(p.trade.pnl) >= 0 ? G : L) + '">' + (p.trade.status === 'open' ? 'Open' : money(Number(p.trade.pnl || 0))) + '</span><div style="color:#A8B8B1;font-size:12px">' + esc(p.trade.structure || '') + '</div></div>' : '';
-      return '<article class="qi-post"><div class="qi-ph2">' + av(p.author) + '<b>@' + esc(p.author || 'trader') + '</b><span class="qi-chip" style="' + (p.kind === 'question' ? 'background:rgba(224,175,104,.14);color:#E0AF68' : 'background:rgba(56,189,248,.14);color:#7DD3FC') + '">' + (p.kind === 'question' ? 'Question' : 'Idea') + '</span><button type="button" class="qi-symlink" data-sym="' + esc(p.symbol || '') + '" title="Open $' + esc(p.symbol || '') + ' on the chart">$' + esc(p.symbol || '') + '</button><span style="color:#74877F">' + esc(ago(p.created_at)) + '</span></div>' +
+      return '<article class="qi-post"><div class="qi-ph2">' + av(p.author) + '<b>@' + esc(p.author || 'trader') + '</b><span class="qi-chip" style="' + (p.kind === 'question' ? 'background:rgba(224,175,104,.14);color:#E0AF68' : 'background:rgba(56,189,248,.14);color:#7DD3FC') + '">' + (p.kind === 'question' ? 'Question' : 'Idea') + '</span><span class="qs-logo sm" data-sym="' + esc(p.symbol || '') + '" aria-hidden="true" style="margin-right:-4px"></span><button type="button" class="qi-symlink" data-sym="' + esc(p.symbol || '') + '" title="Open $' + esc(p.symbol || '') + ' on the chart">$' + esc(p.symbol || '') + '</button><span style="color:#74877F">' + esc(ago(p.created_at)) + '</span></div>' +
         '<p class="qi-body">' + esc(p.body) + '</p>' + trade + (p.image_url ? '<a href="' + esc(p.image_url) + '" target="_blank" rel="noopener"><img src="' + esc(p.image_url) + '" alt="Chart image from @' + esc(p.author) + '" loading="lazy" style="display:block;max-width:100%;margin-top:8px;border-radius:8px;border:1px solid #2B3B36"></a>' : '') +
         '<div class="qi-acts"><button type="button" class="' + (p.marked ? 'on' : '') + '" data-help="' + esc(p.id) + '" aria-pressed="' + p.marked + '"' + (mine ? ' title="You can’t mark your own post"' : '') + '>👍 Helpful ' + p.helpful + '</button><button type="button" data-open="' + esc(p.id) + '" aria-expanded="' + open + '">💬 ' + (p.replies.length ? p.replies.length + (p.replies.length === 1 ? ' reply' : ' replies') : (p.kind === 'question' ? 'Answer' : 'Reply')) + '</button>' +
         (mine ? '' : '<button type="button" class="q" data-report="' + esc(p.id) + '">⚑ Report</button>') + (canDel ? '<button type="button" class="q" data-del="' + esc(p.id) + '">' + (mine ? 'Delete' : 'Remove (admin)') + '</button>' : '') + '</div>' +
