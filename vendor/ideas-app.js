@@ -54,7 +54,7 @@
 
   /* ---------- styles */
   var CSS = '.qi{display:flex;height:calc(100vh - 150px);min-height:620px;border-top:1px solid rgba(56,189,248,.25);font-family:Barlow,system-ui,sans-serif;color:#EEF4F1;background:#0C1311}' +
-    '.qi-main{flex:1;min-width:0;display:flex;flex-direction:column}.qi-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 12px;border-bottom:1px solid #1E2A26;background:#0F1714}' +
+    '.qi-main{flex:1;min-width:0;display:flex;flex-direction:column}.qi-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:6px 12px;min-height:60px;border-bottom:1px solid #1E2A26;background:#0F1714}' +
     '.qi-sym{position:relative}.qi-sym input{width:150px;min-height:34px;padding:0 10px 0 30px;border:1px solid #2B3B36;border-radius:8px;background:#121C18;color:#fff;font:700 15px Barlow,sans-serif;text-transform:uppercase}.qi-sym input:focus{outline:none;border-color:#38BDF8;box-shadow:0 0 0 2px rgba(56,189,248,.3)}' +
     '.qi-sym svg{position:absolute;left:9px;top:10px}.qi-dd{position:absolute;top:40px;left:0;z-index:20;width:300px;max-height:340px;overflow:auto;border:1px solid #2B3B36;border-radius:10px;background:#121B18;box-shadow:0 14px 36px rgba(0,0,0,.5)}' +
     '.qi-dd button{display:flex;width:100%;gap:10px;align-items:center;padding:8px 12px;border:none;background:transparent;color:#EEF4F1;font:inherit;text-align:left;cursor:pointer}.qi-dd button:hover,.qi-dd button.on{background:rgba(56,189,248,.12)}.qi-dd b{min-width:58px}.qi-dd span{color:#A8B8B1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
@@ -92,7 +92,7 @@
     var self = this;
     this.root.innerHTML = '<div class="qi"><div class="qi-main"><div class="qi-top">' +
       '<div class="qi-sym"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8A9C95" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.5"></circle><path d="M10.5 10.5l4 4"></path></svg><input type="text" aria-label="Symbol" spellcheck="false" autocomplete="off"><div class="qi-dd" hidden role="listbox"></div></div>' +
-      '<span class="qi-cur" style="display:inline-flex;align-items:center;font-size:14px;font-weight:600"></span><div class="qi-quote" aria-label="Current price" style="width:270px;height:46px;overflow:hidden"></div>' +
+      '<span class="qi-cur" style="display:inline-flex;align-items:center;font-size:14px;font-weight:600"></span><div class="qi-quote" aria-label="Current price" style="flex:none;width:250px;height:72px;margin:-6px 0;overflow:hidden;border-left:1px solid #22302B;padding-left:6px"></div>' +
       '<button type="button" class="qi-btn" data-fs title="Full screen">⛶</button><span class="qi-note">Chart and data by TradingView · US stock prices are delayed</span></div>' +
       '<div class="qi-chart qi-tv" style="cursor:default"></div></div>' +
       '<aside class="qi-panel" aria-label="Side panel"></aside>' +
