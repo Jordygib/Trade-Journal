@@ -100,7 +100,7 @@ tbody tr{transition:background-color .15s ease}
 tbody tr:hover{background:rgba(216,178,90,.04)}
 [role="row"]:hover{background:rgba(216,178,90,.03)}
 @supports (animation-timeline: view()){
-main > *:nth-child(n+3){animation:pgReveal linear both;animation-timeline:view();animation-range:entry 0% cover 20%}
+
 @keyframes pgReveal{from{opacity:0;transform:translateY(32px) scale(.985)}}
 }
 @media (prefers-reduced-motion: reduce){main > *{animation:none !important}}
