@@ -92,7 +92,7 @@
     var self = this;
     this.root.innerHTML = '<div class="qi"><div class="qi-main"><div class="qi-top">' +
       '<div class="qi-sym"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8A9C95" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.5"></circle><path d="M10.5 10.5l4 4"></path></svg><input type="text" aria-label="Symbol" spellcheck="false" autocomplete="off"><div class="qi-dd" hidden role="listbox"></div></div>' +
-      '<span class="qi-cur" style="display:inline-flex;align-items:center;font-size:14px;font-weight:600"></span>' +
+      '<span class="qi-cur" style="display:inline-flex;align-items:center;font-size:14px;font-weight:600"></span><div class="qi-quote" aria-label="Current price" style="width:270px;height:46px;overflow:hidden"></div>' +
       '<button type="button" class="qi-btn" data-fs title="Full screen">⛶</button><span class="qi-note">Chart and data by TradingView · US stock prices are delayed</span></div>' +
       '<div class="qi-chart qi-tv" style="cursor:default"></div></div>' +
       '<aside class="qi-panel" aria-label="Side panel"></aside>' +
@@ -144,6 +144,11 @@
   };
   App.prototype.load = function () {
     this.marks(); var cur = this.root.querySelector('.qi-cur'); if (cur) cur.innerHTML = '<span class="qs-logo lg" data-sym="' + esc(this.sym) + '" aria-hidden="true"></span>' + esc(CAT[this.sym] ? CAT[this.sym][0] : this.sym);
+    var qb = this.root.querySelector('.qi-quote');
+    if (qb) { qb.innerHTML = ''; var qw = document.createElement('div'); qw.className = 'tradingview-widget-container'; var qi = document.createElement('div'); qi.className = 'tradingview-widget-container__widget'; var qs = document.createElement('script');
+      qs.type = 'text/javascript'; qs.async = true; qs.src = 'https://s3.tradingview.com/external-embedding/embed-widget-tickers.js';
+      qs.textContent = JSON.stringify({ symbols: [{ proName: this.tvSymbol(this.sym), title: this.sym }], isTransparent: true, showSymbolLogo: false, colorTheme: 'dark', locale: 'en' });
+      qw.appendChild(qi); qw.appendChild(qs); qb.appendChild(qw); }
     var box = this.ch; box.innerHTML = '';
     var wrap = document.createElement('div'); wrap.className = 'tradingview-widget-container'; wrap.style.cssText = 'height:100%;width:100%';
     var inner = document.createElement('div'); inner.className = 'tradingview-widget-container__widget'; inner.style.cssText = 'height:calc(100% - 22px);width:100%';
