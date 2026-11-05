@@ -52,6 +52,8 @@
   function ema(b, n) { var o = [], k = 2 / (n + 1), e = null; for (var i = 0; i < b.length; i++) { e = e == null ? b[i].c : b[i].c * k + e * (1 - k); o.push(i >= n - 1 ? e : null); } return o; }
   function rsi(b, n) { var o = [null], g = 0, l = 0; for (var i = 1; i < b.length; i++) { var d = b[i].c - b[i - 1].c, up = Math.max(d, 0), dn = Math.max(-d, 0); if (i <= n) { g += up / n; l += dn / n; o.push(i === n ? 100 - 100 / (1 + g / (l || 1e-9)) : null); } else { g = (g * (n - 1) + up) / n; l = (l * (n - 1) + dn) / n; o.push(100 - 100 / (1 + g / (l || 1e-9))); } } return o; }
 
+  var STUDIES = [['vol', 'Volume', null], ['MASimple@tv-basicstudies', 'Moving average (SMA)'], ['MAExp@tv-basicstudies', 'Exponential moving average (EMA)'], ['VWAP@tv-basicstudies', 'VWAP'], ['BB@tv-basicstudies', 'Bollinger Bands'],
+    ['RSI@tv-basicstudies', 'RSI'], ['MACD@tv-basicstudies', 'MACD'], ['StochasticRSI@tv-basicstudies', 'Stochastic RSI'], ['ATR@tv-basicstudies', 'Average True Range (ATR)'], ['IchimokuCloud@tv-basicstudies', 'Ichimoku Cloud'], ['ROC@tv-basicstudies', 'Rate of change (ROC)']];
   /* ---------- styles */
   var CSS = '.qi{display:flex;height:calc(100vh - 150px);min-height:620px;border-top:1px solid rgba(56,189,248,.25);font-family:Barlow,system-ui,sans-serif;color:#EEF4F1;background:#0C1311}' +
     '.qi-main{flex:1;min-width:0;display:flex;flex-direction:column}.qi-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:6px 12px;min-height:60px;border-bottom:1px solid #1E2A26;background:#0F1714}' +
@@ -85,6 +87,7 @@
     this.root = root; this.sym = (function () { try { return (new URLSearchParams(location.search).get('s') || localStorage.getItem('qi_sym') || 'SPY').toUpperCase(); } catch (e) { return 'SPY'; } })();
     this.tf = '3M'; this.type = 'candles'; this.ind = { vol: true, sma20: true, sma50: false, ema200: false, rsi: true };
     try { var si = JSON.parse(localStorage.getItem('qi_ind') || 'null'); if (si) this.ind = si; var t = localStorage.getItem('qi_tf'); if (t) this.tf = t; var ty = localStorage.getItem('qi_type'); if (ty) this.type = ty; } catch (e) {}
+    this.studies = ['vol']; try { var ss = JSON.parse(localStorage.getItem('qi_studies') || 'null'); if (Array.isArray(ss)) this.studies = ss; } catch (e) {}
     this.panel = 'ideas'; this.tab = 'sym'; this.posts = []; this.loaded = {}; this.openRep = {}; this.drafts = {}; this.kind = 'idea'; this.wl = null;
     css(); this.build(); this.load(); this.renderPanel();
   }
@@ -92,7 +95,7 @@
     var self = this;
     this.root.innerHTML = '<div class="qi"><div class="qi-main"><div class="qi-top">' +
       '<div class="qi-sym"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8A9C95" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.5"></circle><path d="M10.5 10.5l4 4"></path></svg><input type="text" aria-label="Symbol" spellcheck="false" autocomplete="off"><div class="qi-dd" hidden role="listbox"></div></div>' +
-      '<span class="qi-cur" style="display:inline-flex;align-items:center;font-size:14px;font-weight:600"></span><div class="qi-quote" aria-label="Current price" style="flex:none;width:340px;height:88px;margin:-8px 0;overflow:hidden;border-left:1px solid #22302B;padding-left:4px"></div>' +
+      '<span class="qi-cur" style="display:inline-flex;align-items:center;font-size:14px;font-weight:600"></span><div class="qi-ind"><button type="button" class="qi-btn" data-ind-btn aria-haspopup="true" aria-expanded="false">ƒx Saved indicators <span data-ind-n style="color:#F7DC92"></span></button><div class="menu" hidden style="min-width:260px"><div style="padding:6px 8px 8px;font-size:12px;color:#A8B8B1">These stay on when you switch stocks and next time you visit.</div>' + STUDIES.map(function (x) { return '<label><input type="checkbox" data-st="' + x[0] + '"> ' + x[1] + '</label>'; }).join('') + '<div style="padding:8px;font-size:11px;color:#74877F">Tip: indicators added from TradingView’s own menu inside the chart reset when you switch stocks. Use this list to keep them.</div></div></div><div class="qi-quote" aria-label="Current price" style="flex:none;width:340px;height:88px;margin:-8px 0;overflow:hidden;border-left:1px solid #22302B;padding-left:4px"></div>' +
       '<button type="button" class="qi-btn" data-fs title="Full screen">⛶</button><span class="qi-note">Chart and data by TradingView · US stock prices are delayed</span></div>' +
       '<div class="qi-chart qi-tv" style="cursor:default"></div></div>' +
       '<aside class="qi-panel" aria-label="Side panel"></aside>' +
@@ -102,7 +105,14 @@
       '<button type="button" data-p="all" title="All stocks" aria-label="Community posts about all stocks"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button></nav></div>';
     this.inp = this.root.querySelector('.qi-sym input'); this.dd = this.root.querySelector('.qi-dd'); this.ch = this.root.querySelector('.qi-chart'); this.pane = this.root.querySelector('.qi-panel');
     this.inp.value = this.sym; this.tool = 'move';
-    document.addEventListener('click', function (e) { if (!e.target.closest || !e.target.closest('.qi-sym')) self.dd.hidden = true; });
+    var ib = this.root.querySelector('[data-ind-btn]'), im = ib.parentNode.querySelector('.menu');
+    ib.onclick = function (e) { e.stopPropagation(); im.hidden = !im.hidden; ib.setAttribute('aria-expanded', String(!im.hidden)); };
+    im.addEventListener('click', function (e) { e.stopPropagation(); });
+    var syncN = function () { var n = self.studies.length; self.root.querySelector('[data-ind-n]').textContent = n ? '(' + n + ')' : ''; };
+    this.root.querySelectorAll('[data-st]').forEach(function (c) { var id = c.getAttribute('data-st'); c.checked = self.studies.indexOf(id) >= 0;
+      c.onchange = function () { self.studies = self.studies.filter(function (x) { return x !== id; }); if (c.checked) self.studies.push(id); try { localStorage.setItem('qi_studies', JSON.stringify(self.studies)); } catch (er) {} syncN(); clearTimeout(self._stT); self._stT = setTimeout(function () { self.load(); }, 350); }; });
+    syncN();
+    document.addEventListener('click', function (e) { if (!e.target.closest || !e.target.closest('.qi-sym')) self.dd.hidden = true; if (!e.target.closest || !e.target.closest('.qi-ind')) { im.hidden = true; ib.setAttribute('aria-expanded', 'false'); } });
     this.root.querySelector('[data-fs]').onclick = function () { var q = self.root.querySelector('.qi'); if (document.fullscreenElement) document.exitFullscreen(); else if (q.requestFullscreen) q.requestFullscreen().then(function () { q.style.height = '100vh'; }); };
     document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement) self.root.querySelector('.qi').style.height = ''; setTimeout(function () { self.draw(); }, 60); });
     this.root.querySelectorAll('[data-p]').forEach(function (b) { b.onclick = function () { var p = b.getAttribute('data-p'); if (p === 'all') { self.panel = self.panel === 'ideas' && self.tab === 'all' ? null : 'ideas'; self.tab = 'all'; } else if (p === 'ideas') { self.panel = self.panel === 'ideas' && self.tab === 'sym' ? null : 'ideas'; self.tab = 'sym'; } else self.panel = self.panel === p ? null : p; self.renderPanel(); setTimeout(function () { self.draw(); }, 30); }; });
@@ -156,7 +166,7 @@
     cr.innerHTML = '<a href="https://www.tradingview.com/symbols/' + encodeURIComponent(this.sym) + '/" rel="noopener nofollow" target="_blank" style="color:#7DD3FC;text-decoration:none">' + esc(this.sym) + ' chart by TradingView</a>';
     var sc = document.createElement('script'); sc.type = 'text/javascript'; sc.async = true; sc.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
     sc.textContent = JSON.stringify({ autosize: true, symbol: this.tvSymbol(this.sym), interval: 'D', timezone: 'America/New_York', theme: 'dark', style: '1', locale: 'en',
-      allow_symbol_change: false, hide_side_toolbar: false, withdateranges: true, details: false, calendar: false, save_image: true,
+      allow_symbol_change: false, hide_side_toolbar: false, hide_volume: this.studies.indexOf('vol') < 0, studies: this.studies.filter(function (x) { return x !== 'vol'; }), withdateranges: true, details: false, calendar: false, save_image: true,
       backgroundColor: 'rgba(12, 19, 17, 1)', gridColor: 'rgba(56, 189, 248, 0.06)', support_host: 'https://www.tradingview.com' });
     wrap.appendChild(inner); wrap.appendChild(cr); wrap.appendChild(sc); box.appendChild(wrap);
     this.tvTimer && clearTimeout(this.tvTimer);
