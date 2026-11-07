@@ -69,7 +69,14 @@
       sb.auth.signUp({ email: email, password: pw, options: { data: { username: u, is_adult_confirmed: true }, emailRedirectTo: base + 'login.html?confirmed=1' } }).then(function (r) {
         btn.disabled = false; btn.textContent = 'Create account';
         if (r.error) { show($('msg'), r.error.message); return; }
-        if (r.data && r.data.session) { location.href = 'dashboard.html'; return; }
+        var isNew = !!(r.data && r.data.user && (!r.data.user.identities || r.data.user.identities.length > 0));
+        var go = function () { if (r.data && r.data.session) location.href = 'dashboard.html'; };
+        if (isNew && typeof window.gtag === 'function') {
+          var done = false, next2 = function () { if (!done) { done = true; go(); } };
+          window.gtag('event', 'conversion', { send_to: 'AW-18558472377/gMkXCMDrvrMdELmhr5FF', value: 1.0, currency: 'USD', event_callback: next2 });
+          setTimeout(next2, 1200);
+          if (r.data && r.data.session) return;
+        } else if (r.data && r.data.session) { go(); return; }
         show($('msg'), 'Almost done. We sent a confirmation link to ' + email + '. Click it, then sign in here.', 'info');
       });
     });
