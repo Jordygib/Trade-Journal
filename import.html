@@ -300,7 +300,7 @@ main section:has(.kfmark){border-color:rgba(56,189,248,.5) !important;box-shadow
 class Component extends DCLogic {
   constructor(...args) {
     super(...args);
-    this.state = { path: 'csv', broker: 'tasty', connecting: false, connected: false, file: null, map: {}, err: '', imported: false };
+    this.state = { path: 'csv', broker: ((() => { try { const b = new URLSearchParams(location.search).get('b'); return ['tasty', 'schwab', 'robinhood', 'webull', 'ibkr', 'fidelity', 'etrade', 'tradestation', 'other'].indexOf(b) >= 0 ? b : 'tasty'; } catch (e) { return 'tasty'; } })()), connecting: false, connected: false, file: null, map: {}, err: '', imported: false };
   }
   componentWillUnmount() { clearTimeout(this._t); }
   parseLine(line) {

@@ -32,6 +32,8 @@
         var pTrades = sb.from('trades').select('*').order('opened_at', { ascending: false }).limit(2000).then(function (tr) {
           var trades = (tr && tr.data) || [];
           window.TJ_TRADE_COUNT = trades.length;
+          if (!trades.length && window.QSDemo && window.QSDemo.active()) { var dm = window.QSDemo.build(); window.TJ_DEMO = true; window.TJ_TRADE_COUNT = dm.trades.length; window.TJ_FILL_COUNT = dm.fills.length; window.TJ_TRADES = window.TJImport.toView(dm.trades, dm.fills); window.TJ_LITE = window.TJImport.toLite(dm.trades, dm.fills); return; }
+          if (trades.length) { try { localStorage.removeItem('qs_demo'); } catch (e) {} }
           if (!trades.length) { window.TJ_TRADES = []; window.TJ_LITE = []; return; }
           var ids = trades.map(function (t) { return t.id; });
           return sb.from('fills').select('trade_id, executed_at, action, strike, option_type, quantity, price, expiration').in('trade_id', ids).limit(20000).then(function (fr) {
