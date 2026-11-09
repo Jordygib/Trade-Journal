@@ -74,6 +74,9 @@
     if (!window.TJ_READY) return;
     window.TJ_READY.then(function () {
       if (!window.TJ_SESSION && !window.TJ_PROFILE) return;
+      try { var su = window.TJ_SESSION && window.TJ_SESSION.user, ck = su && ('qs_conv_' + su.id);
+        if (su && su.email_confirmed_at && Date.now() - new Date(su.created_at).getTime() < 14 * 864e5 && localStorage.getItem(ck) !== '1' && typeof window.gtag === 'function') {
+          localStorage.setItem(ck, '1'); window.gtag('event', 'conversion', { send_to: 'AW-18558472377/gMkXCMDrvrMdELmhr5FF', value: 1.0, currency: 'USD' }); } } catch (e) {}
       if (window.TJ_DEMO) { demoBanner(); return; }
       if (page !== 'dashboard.html' || (window.TJ_TRADE_COUNT || 0) > 0) return;
       var closed = false; try { closed = sessionStorage.getItem('qo_closed') === '1'; } catch (e) {}
