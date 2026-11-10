@@ -1,25 +1,25 @@
 /* Quillstrike interactive equity curve. Renders into any element with class "qs-eq" and a data-eq attribute. */
 (function () {
-  var GAIN = '#4FD1B5', LOSS = '#F0607A', BLUE = '#38BDF8', GRID = '#22302B', TXT = '#8A9C95';
+  var GAIN = '#57E3B5', LOSS = '#FF7A8A', BLUE = '#38BDF8', GRID = '#1A2638', TXT = '#8396AD';
   var DAY = 864e5;
   var MS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   function money(n) { var a = Math.abs(Math.round(n)); return (n < 0 ? '−$' : n > 0 ? '+$' : '$') + a.toLocaleString('en-US'); }
   function fdate(t, withYear) { var d = new Date(t); return MS[d.getMonth()] + ' ' + d.getDate() + (withYear ? ', ' + d.getFullYear() : ''); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  var CSS = '.qse{position:relative;font-family:Barlow,system-ui,sans-serif;color:#EEF4F1;user-select:none;-webkit-user-select:none}' +
+  var CSS = '.qse{position:relative;font-family:Barlow,system-ui,sans-serif;color:#E9EEF5;user-select:none;-webkit-user-select:none}' +
     '.qse-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}' +
-    '.qse-seg{display:flex;gap:2px;padding:3px;border-radius:8px;background:#0F1714;border:1px solid #22302B}' +
-    '.qse-seg button,.qse-z button{min-height:30px;min-width:34px;padding:0 9px;border:none;border-radius:6px;background:transparent;color:#B8C6C0;font:600 12px Barlow,system-ui,sans-serif;cursor:pointer}' +
+    '.qse-seg{display:flex;gap:2px;padding:3px;border-radius:8px;background:#070B12;border:1px solid #1A2638}' +
+    '.qse-seg button,.qse-z button{min-height:30px;min-width:34px;padding:0 9px;border:none;border-radius:6px;background:transparent;color:#AFBFD1;font:600 12px Barlow,system-ui,sans-serif;cursor:pointer}' +
     '.qse-seg button[aria-pressed="true"]{background:rgba(56,189,248,.18);color:#fff}.qse-seg button:hover,.qse-z button:hover{color:#fff}' +
-    '.qse-z{display:flex;align-items:center;gap:2px;padding:3px;border-radius:8px;background:#0F1714;border:1px solid #22302B}' +
+    '.qse-z{display:flex;align-items:center;gap:2px;padding:3px;border-radius:8px;background:#070B12;border:1px solid #1A2638}' +
     '.qse-wrap{position:relative;outline:none;border-radius:6px;touch-action:none;cursor:grab}.qse-wrap.sel{cursor:crosshair}.qse-wrap.grabbing{cursor:grabbing}.qse-wrap:focus-visible{box-shadow:0 0 0 2px rgba(56,189,248,.7)}' +
     '.qse svg{display:block;width:100%;overflow:visible}' +
     '.qse-tip{position:absolute;top:8px;pointer-events:none;min-width:170px;padding:10px 12px;border-radius:8px;border:1px solid rgba(56,189,248,.5);background:rgba(10,18,15,.96);box-shadow:0 8px 28px rgba(0,0,0,.45),0 0 20px rgba(56,189,248,.18);font-size:12px;line-height:1.45;z-index:3}' +
-    '.qse-tip b{font-size:16px;font-family:"Barlow Semi Condensed",Barlow,sans-serif}.qse-tip .m{color:#A8B8B1}' +
+    '.qse-tip b{font-size:16px;font-family:"Barlow Semi Condensed",Barlow,sans-serif}.qse-tip .m{color:#A0B1C5}' +
     '.qse-sel{margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;padding:12px 14px;border-radius:10px;border:1px solid rgba(56,189,248,.55);background:linear-gradient(90deg,rgba(56,189,248,.12),rgba(56,189,248,.03));box-shadow:0 0 22px rgba(56,189,248,.15)}' +
-    '.qse-sel .k{font-size:11px;color:#A8B8B1}.qse-sel .v{font:700 20px "Barlow Semi Condensed",Barlow,sans-serif}' +
-    '.qse-sel button{min-height:32px;padding:0 12px;border-radius:8px;border:1px solid #3A4E47;background:transparent;color:#EEF4F1;font:600 12px Barlow,system-ui,sans-serif;cursor:pointer}.qse-sel button:hover{border-color:#38BDF8}' +
-    '.qse-help{margin-top:6px;font-size:11px;color:#74877F}.qse-empty{padding:40px 0;text-align:center;color:#A8B8B1}';
+    '.qse-sel .k{font-size:11px;color:#A0B1C5}.qse-sel .v{font:700 20px "Barlow Semi Condensed",Barlow,sans-serif}' +
+    '.qse-sel button{min-height:32px;padding:0 12px;border-radius:8px;border:1px solid #2C3F5C;background:transparent;color:#E9EEF5;font:600 12px Barlow,system-ui,sans-serif;cursor:pointer}.qse-sel button:hover{border-color:#38BDF8}' +
+    '.qse-help{margin-top:6px;font-size:11px;color:#6D819A}.qse-empty{padding:40px 0;text-align:center;color:#A0B1C5}';
   function injectCss() { if (document.getElementById('qse-css')) return; var s = document.createElement('style'); s.id = 'qse-css'; s.textContent = CSS; document.head.appendChild(s); }
 
   function Chart(el) {
@@ -98,7 +98,7 @@
     var h = '<defs><clipPath id="qse-clip"><rect x="' + g.L + '" y="0" width="' + (g.W - g.L - g.R) + '" height="' + g.H + '"></rect></clipPath><linearGradient id="qse-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + col + '" stop-opacity="0.28"></stop><stop offset="1" stop-color="' + col + '" stop-opacity="0"></stop></linearGradient></defs>';
     var ticks = 4, step = (g.hi - g.lo) / ticks;
     for (var i = 0; i <= ticks; i++) { var val = g.lo + step * i, yy = g.y(val); h += '<line x1="' + g.L + '" x2="' + (g.W - g.R) + '" y1="' + yy.toFixed(1) + '" y2="' + yy.toFixed(1) + '" stroke="' + GRID + '" stroke-width="1"></line><text x="' + (g.W - g.R + 8) + '" y="' + (yy + 4).toFixed(1) + '" fill="' + TXT + '" font-size="11">' + esc(money(val)) + '</text>'; }
-    var z = g.y(0); if (z > g.T && z < g.H - g.B) h += '<line x1="' + g.L + '" x2="' + (g.W - g.R) + '" y1="' + z.toFixed(1) + '" y2="' + z.toFixed(1) + '" stroke="#445A53" stroke-dasharray="4 4"></line>';
+    var z = g.y(0); if (z > g.T && z < g.H - g.B) h += '<line x1="' + g.L + '" x2="' + (g.W - g.R) + '" y1="' + z.toFixed(1) + '" y2="' + z.toFixed(1) + '" stroke="#3A4F6E" stroke-dasharray="4 4"></line>';
     var span = this.view[1] - this.view[0], nX = Math.max(2, Math.floor((g.W - g.L - g.R) / 110));
     for (var k = 0; k <= nX; k++) { var tt = this.view[0] + span * k / nX, xx = g.x(tt); h += '<text x="' + xx.toFixed(1) + '" y="' + (g.H - 6) + '" fill="' + TXT + '" font-size="11" text-anchor="' + (k === 0 ? 'start' : k === nX ? 'end' : 'middle') + '">' + esc(fdate(tt, span > 300 * DAY)) + '</text>'; }
     if (this.sel) { var sa = g.x(Math.min(this.sel[0], this.sel[1])), sb = g.x(Math.max(this.sel[0], this.sel[1])); h += '<rect x="' + sa.toFixed(1) + '" y="' + g.T + '" width="' + Math.max(1, sb - sa).toFixed(1) + '" height="' + (g.H - g.T - g.B) + '" fill="' + BLUE + '" fill-opacity="0.13" stroke="' + BLUE + '" stroke-opacity="0.6"></rect>'; }
@@ -113,7 +113,7 @@
       h += '</g>';
     }
     if (this.hover) { var hp = this.hover, hx = g.x(hp.t), hy = g.y(hp.v);
-      if (hx >= g.L && hx <= g.W - g.R) h += '<line x1="' + hx.toFixed(1) + '" x2="' + hx.toFixed(1) + '" y1="' + g.T + '" y2="' + (g.H - g.B) + '" stroke="#BAE6FD" stroke-opacity="0.55" stroke-dasharray="3 3"></line><line x1="' + g.L + '" x2="' + (g.W - g.R) + '" y1="' + hy.toFixed(1) + '" y2="' + hy.toFixed(1) + '" stroke="#BAE6FD" stroke-opacity="0.25" stroke-dasharray="3 3"></line><circle cx="' + hx.toFixed(1) + '" cy="' + hy.toFixed(1) + '" r="5" fill="#0B1210" stroke="' + BLUE + '" stroke-width="2.5"></circle><rect x="' + (g.W - g.R + 2) + '" y="' + (hy - 10).toFixed(1) + '" width="' + (g.R - 4) + '" height="20" rx="4" fill="' + BLUE + '"></rect><text x="' + (g.W - g.R + 8) + '" y="' + (hy + 4).toFixed(1) + '" fill="#05090C" font-size="11" font-weight="700">' + esc(money(hp.v)) + '</text>'; }
+      if (hx >= g.L && hx <= g.W - g.R) h += '<line x1="' + hx.toFixed(1) + '" x2="' + hx.toFixed(1) + '" y1="' + g.T + '" y2="' + (g.H - g.B) + '" stroke="#BAE6FD" stroke-opacity="0.55" stroke-dasharray="3 3"></line><line x1="' + g.L + '" x2="' + (g.W - g.R) + '" y1="' + hy.toFixed(1) + '" y2="' + hy.toFixed(1) + '" stroke="#BAE6FD" stroke-opacity="0.25" stroke-dasharray="3 3"></line><circle cx="' + hx.toFixed(1) + '" cy="' + hy.toFixed(1) + '" r="5" fill="#04060A" stroke="' + BLUE + '" stroke-width="2.5"></circle><rect x="' + (g.W - g.R + 2) + '" y="' + (hy - 10).toFixed(1) + '" width="' + (g.R - 4) + '" height="20" rx="4" fill="' + BLUE + '"></rect><text x="' + (g.W - g.R + 8) + '" y="' + (hy + 4).toFixed(1) + '" fill="#05090C" font-size="11" font-weight="700">' + esc(money(hp.v)) + '</text>'; }
     svg.innerHTML = h; this.renderTip(); this.renderSel();
   };
   Chart.prototype.nearest = function (t) {
@@ -141,7 +141,7 @@
       '<div><div class="k">Return</div><div class="v" style="color:' + c + '">' + esc(money(ret)) + '</div></div>' +
       '<div><div class="k">Trades</div><div class="v">' + inside.length + '</div></div>' +
       '<div><div class="k">Win rate</div><div class="v">' + (inside.length ? Math.round(wins / inside.length * 100) + '%' : '—') + '</div></div>' +
-      '<div><div class="k">Deepest dip</div><div class="v" style="color:' + (mdd < 0 ? LOSS : '#EEF4F1') + '">' + (mdd < 0 ? esc(money(mdd)) : '$0') + '</div></div>' +
+      '<div><div class="k">Deepest dip</div><div class="v" style="color:' + (mdd < 0 ? LOSS : '#E9EEF5') + '">' + (mdd < 0 ? esc(money(mdd)) : '$0') + '</div></div>' +
       (best ? '<div><div class="k">Best / worst trade</div><div style="font-size:13px;font-weight:700"><span style="color:' + GAIN + '">' + esc(money(best.p)) + '</span> / <span style="color:' + (worst.p < 0 ? LOSS : GAIN) + '">' + esc(money(worst.p)) + '</span></div></div>' : '') +
       '<div style="margin-left:auto;display:flex;gap:6px"><button type="button" data-a="zoom">Zoom to selection</button><button type="button" data-a="clear">Clear</button></div></div>';
     box.querySelector('[data-a="zoom"]').onclick = function () { var pad = (b - a) * 0.04; self.view = [a - pad, b + pad]; self.seg.querySelectorAll('[data-r]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); self.draw(); };

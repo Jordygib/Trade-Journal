@@ -1,0 +1,12 @@
+/* Quillstrike "Night Glow" theme layer: midnight background, soft light from above, glass panels, glowing buttons. */
+html{background:#04060A}
+body{background:radial-gradient(1200px 620px at 50% -10%,rgba(56,140,255,.24),transparent 62%),radial-gradient(800px 560px at 100% 25%,rgba(227,179,65,.07),transparent 70%),radial-gradient(900px 640px at 0% 55%,rgba(56,189,248,.07),transparent 70%),#04060A !important;background-attachment:fixed !important}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background-image:radial-gradient(rgba(170,210,255,.12) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:linear-gradient(180deg,#000,transparent 45%);mask-image:linear-gradient(180deg,#000,transparent 45%)}
+/* glass panels */
+[style*="rgba(12, 19, 31, 0.78)"],[style*="rgba(12, 19, 31, 0.84)"],[style*="rgba(10, 16, 27"]{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(143,211,255,.10),0 0 0 1px rgba(94,200,255,.06),0 24px 70px -36px rgba(56,140,255,.55) !important}
+/* brass buttons get a warm gradient and halo */
+a[style*="background: rgb(216, 178, 90)"],a[style*="background-color: rgb(216, 178, 90)"],a[style*="background: #D8B25A"],a[style*="background:#D8B25A"],a[style*="background: #d8b25a"],button[style*="background: rgb(216, 178, 90)"],button[style*="background-color: rgb(216, 178, 90)"],button[style*="background: #D8B25A"],button[style*="background:#D8B25A"],button[style*="background: #d8b25a"]{background-image:linear-gradient(180deg,#F0C766,#D8B25A) !important;box-shadow:0 0 0 1px rgba(255,214,120,.55) inset,0 0 24px rgba(227,179,65,.45),0 0 70px rgba(227,179,65,.18) !important;transition:box-shadow .2s ease}
+a[style*="background: rgb(216, 178, 90)"]:hover,a[style*="background-color: rgb(216, 178, 90)"]:hover,a[style*="background: #D8B25A"]:hover,a[style*="background:#D8B25A"]:hover,a[style*="background: #d8b25a"]:hover,button[style*="background: rgb(216, 178, 90)"]:hover,button[style*="background-color: rgb(216, 178, 90)"]:hover,button[style*="background: #D8B25A"]:hover,button[style*="background:#D8B25A"]:hover,button[style*="background: #d8b25a"]:hover{box-shadow:0 0 0 1px rgba(255,214,120,.9) inset,0 0 34px rgba(227,179,65,.7),0 0 100px rgba(227,179,65,.28) !important}
+/* numbers in green/red softly glow */
+[style*="rgb(87, 227, 181)"],[style*="#57E3B5"]{text-shadow:0 0 16px rgba(87,227,181,.35)}
+[style*="rgb(255, 122, 138)"],[style*="#FF7A8A"]{text-shadow:0 0 16px rgba(255,122,138,.30)}
