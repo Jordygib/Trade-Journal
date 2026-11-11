@@ -2,10 +2,11 @@
 (function () {
   var Q = window.QS, E = Q.esc;
   var TOOLS = [
+    ['tracker.html', '📡', 'Position tracker', 'Your open trades re-priced every second: P/L, probability of profit, Greeks, risk and alerts.', 'Trade day'],
     ['session.html', '⏱️', 'Session mode', 'Your loss cap, cool-off timer and tilt check, live while you trade.', 'Trade day'],
     ['plans.html', '📝', 'Plan vs. actual', 'Plan a trade before you place it, then see if the real trade followed it.', 'Trade day'],
     ['discipline.html', '🔥', 'Discipline', 'Your discipline score, rule streaks, calendar and badges.', 'Review'],
-    ['replay.html', '📈', 'Payoff replay', 'Each trade’s payoff at expiration, rebuilt from its legs, with where you finished.', 'Review'],
+    
     ['ask.html', '💬', 'Ask your journal', 'Ask about your trades in plain English and get answers with charts.', 'Review'],
     ['dna.html', '🧬', 'Trader DNA', 'A shareable card of your trading style. No dollar amounts.', 'Share'],
     ['wrapped.html', '🎁', 'Quillstrike Wrapped', 'Your trading year in review, as slides you can save and post.', 'Share']
