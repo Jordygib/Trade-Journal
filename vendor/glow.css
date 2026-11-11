@@ -10,3 +10,14 @@ a[style*="background: rgb(216, 178, 90)"]:hover,a[style*="background-color: rgb(
 /* numbers in green/red softly glow */
 [style*="rgb(87, 227, 181)"],[style*="#57E3B5"]{text-shadow:0 0 16px rgba(87,227,181,.35)}
 [style*="rgb(255, 122, 138)"],[style*="#FF7A8A"]{text-shadow:0 0 16px rgba(255,122,138,.30)}
+/* phone menu: replaces the sideways-scrolling tab bar on small screens */
+.qs-mnav{display:none;position:relative}
+.qs-mnav summary{list-style:none;display:flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:1px solid #21304A;border-radius:6px;background:rgba(12,19,31,.92);color:#E3EAF3;font:600 14px Barlow,system-ui,sans-serif;cursor:pointer}
+.qs-mnav summary::-webkit-details-marker{display:none}
+.qs-mnav[open] summary{border-color:#38BDF8;box-shadow:0 0 16px rgba(56,189,248,.3)}
+.qs-mnav-panel{position:absolute;top:calc(100% + 8px);left:-84px;width:min(320px,calc(100vw - 24px));box-sizing:border-box;z-index:60;max-height:70vh;overflow:auto;padding:8px;border-radius:12px;border:1px solid rgba(56,189,248,.45);background:rgba(8,13,22,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 40px rgba(56,140,255,.2)}
+.qs-mnav-panel a:hover{background:#0F1726;color:#fff !important}
+.qs-mnav-panel a[aria-current]{background:rgba(56,189,248,.16);box-shadow:inset 2px 0 0 #38BDF8}
+@media (max-width: 760px){.hdr-nav{display:none !important}.qs-mnav{display:block}}
+.qs-subtabs a:not([aria-current]):hover{color:#fff !important;background:#0F1726}
+@media (max-width: 420px){.qs-mnav-t{display:none}.qs-mnav summary{width:40px;padding:0;justify-content:center}}
