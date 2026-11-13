@@ -21,3 +21,4 @@ a[style*="background: rgb(216, 178, 90)"]:hover,a[style*="background-color: rgb(
 @media (max-width: 760px){.hdr-nav{display:none !important}.qs-mnav{display:block}}
 .qs-subtabs a:not([aria-current]):hover{color:#fff !important;background:#0F1726}
 @media (max-width: 420px){.qs-mnav-t{display:none}.qs-mnav summary{width:40px;padding:0;justify-content:center}}
+.bgfx{align-content:flex-start}
