@@ -20,3 +20,14 @@ Without this step, Ask your journal uses its built-in question reader.
 
 Only the question and a list of your tickers, strategies and tags are sent to the AI. Trades never leave the browser.
 Never put the API key in any file in the website or on GitHub.
+
+
+## 3. Broker connection (SnapTrade OAuth, read-only)
+1. SQL Editor → paste everything in `broker.sql` → Run. (Creates the private token tables.)
+2. Edge Functions → Secrets → add `SNAPTRADE_CLIENT_ID` and `SNAPTRADE_CLIENT_SECRET` (from SnapTrade → OAuth Apps). Never put these in the website files or GitHub.
+3. Edge Functions → Deploy a new function → Via editor:
+   - Name `snaptrade`, paste `functions/snaptrade/index.ts`, leave **Verify JWT ON**, Deploy.
+   - Name `snaptrade-callback`, paste `functions/snaptrade-callback/index.ts`, turn **Verify JWT OFF**, Deploy. (SnapTrade's redirect arrives with no login header; the one-time `state` value protects it.)
+4. In SnapTrade → OAuth Apps → your app, the redirect URI must be exactly
+   `https://oansdalmgvrhlkqpdhpv.supabase.co/functions/v1/snaptrade-callback`
+5. Upload the website files to GitHub, open quillstrike.com/import.html, click **Connect broker**.

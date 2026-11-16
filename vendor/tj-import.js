@@ -358,10 +358,11 @@
     var days = Math.floor(mins / 1440); if (days >= 1) return days + (days === 1 ? ' day' : ' days');
     return Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm';
   }
-  function save(sb, result, fileName) {
+  function save(sb, result, fileName, source) {
     return sb.auth.getUser().then(function (u) {
       var user = u && u.data ? u.data.user : null; if (!user) throw new Error('Please sign in again, then retry the import.');
-      return sb.from('imports').insert({ user_id: user.id, source: 'csv', broker: result.broker || 'tastytrade', file_name: fileName || null, row_count: result.orders }).select('id').single().then(function (imp) {
+      var insImp = function (src) { return sb.from('imports').insert({ user_id: user.id, source: src, broker: result.broker || 'tastytrade', file_name: fileName || null, row_count: result.orders }).select('id').single(); };
+      return insImp(source || 'csv').then(function (imp) { return (imp.error && source) ? insImp('csv') : imp; }).then(function (imp) {
         if (imp.error) throw imp.error;
         var tradeRows = result.trades.map(function (t) {
           return { user_id: user.id, source_key: t.source_key, underlying: t.underlying, strategy: t.strategy, structure: t.structure, opened_at: t.opened_at.toISOString(), closed_at: t.closed_at ? t.closed_at.toISOString() : null,
@@ -415,5 +416,5 @@
         qty: Number(t.quantity || 1), expired: t.status === 'closed' ? (fills && fills.length ? !closedBy[t.id] : null) : false, structure: t.structure || '', entry: Number(t.entry_price || 0), tags: t.tags || [], dte: dteOf(t) };
     });
   }
-  window.TJImport = { toLite: toLite, parse: parse, save: save, toView: toView, NAMES: NAMES, money: money, px: px, fmtDate: fmtDate, holdText: holdText };
+  window.TJImport = { group: group, ymd: ymd, gcd: gcd, toLite: toLite, parse: parse, save: save, toView: toView, NAMES: NAMES, money: money, px: px, fmtDate: fmtDate, holdText: holdText };
 })();

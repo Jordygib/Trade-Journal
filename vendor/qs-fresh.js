@@ -76,8 +76,12 @@
         var last = Math.max(o.opened_at ? +new Date(o.opened_at) : 0, c && c.closed_at ? +new Date(c.closed_at) : 0);
         if (!imp) imp = o.created_at ? +new Date(o.created_at) : last;
         var ack = 0; try { ack = Number(localStorage.getItem('qs_fresh_ack_' + uid)) || 0; } catch (e) {}
+        var auto = false, bs = 0; try { bs = Number(localStorage.getItem('qs_broker_sync_' + uid)) || 0; auto = localStorage.getItem('qs_broker_on_' + uid) === '1' || (bs > 0 && localStorage.getItem('qs_broker_on_' + uid) !== '0'); } catch (e) {}
+        if (auto && bs) imp = Math.max(imp, bs);
         var missed = missedSessions(imp), missedAck = missedSessions(Math.max(imp, ack));
-        return { uid: uid, imported: imp, through: new Date(imp), lastTrade: new Date(last), missed: missed.length, missedDays: missed, bannerMissed: missedAck.length };
+        var autoOk = auto && bs && (Date.now() - bs) < 2 * 86400000;
+        if (autoOk) { missed = []; missedAck = []; }
+        return { uid: uid, auto: !!autoOk, synced: bs, imported: imp, through: new Date(imp), lastTrade: new Date(last), missed: missed.length, missedDays: missed, bannerMissed: missedAck.length };
       });
     });
   }
@@ -91,6 +95,7 @@
       if (!a) { a = document.createElement('a'); a.id = 'qs-sync'; a.href = 'import.html'; a.className = 'qs-sync'; var imp = box.querySelector('a[href="import.html"]'); box.insertBefore(a, imp || box.firstChild); }
       if (!info) { a.style.display = 'none'; return; }
       if (info.none) { a.className = 'qs-sync s2'; a.title = 'Import a CSV from your broker to start your journal.'; a.innerHTML = '<span class="qs-d"></span><span class="qs-t"><span class="qs-full">No trades yet · <b>Import</b></span><span class="qs-short"><b>Import</b></span></span>'; return; }
+      if (info.auto) { a.className = 'qs-sync'; a.title = 'Your broker is connected. Trades sync automatically (last sync ' + ago(info.synced) + ').'; a.setAttribute('aria-label', a.title); a.innerHTML = '<span class="qs-d"></span><span class="qs-t"><span class="qs-full">Auto-synced · ' + ago(info.synced) + '</span><span class="qs-short">Synced</span></span>'; return; }
       var L = level(info.missed), th = fLocal(info.through);
       a.className = 'qs-sync' + (L ? ' s' + L : '');
       a.title = 'Last import ' + ago(info.imported) + '. Your journal includes trades up to ' + th + '. Quillstrike updates when you import a new CSV from your broker.' + (info.missed ? ' ' + info.missed + ' trading session' + (info.missed === 1 ? ' has' : 's have') + ' closed since then.' : '');
@@ -157,6 +162,7 @@
       box.insertBefore(n, box.firstChild);
     });
   }
+  (function () { if (document.querySelector('script[src*="qs-broker"]')) return; var b = document.createElement('script'); b.src = 'vendor/qs-broker.js'; b.defer = true; document.head.appendChild(b); })();
   var info = fetchInfo();
   window.QSFresh = info;
   info.then(function (i) { paintChip(i); paintBanner(i); paintNote(i); }, function () {});
