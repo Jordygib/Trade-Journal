@@ -99,7 +99,7 @@
     var warn = st.connected && st.status !== 'active';
     var h = '';
     if (!st.connected) {
-      h = '<div><h3>Connect your broker</h3><p>Sign in with your broker through SnapTrade and your trades sync automatically. Read-only: Quillstrike can never place trades or move money. No more CSV files.</p></div><div class="qb-row"><button class="qb-b" id="qb-go">Connect broker</button></div>';
+      h = '<div><h3>Connect your broker</h3><p>Sign in with your broker through SnapTrade and your trades sync automatically. Read-only: Quillstrike can never place trades or move money. Prefer not to connect? Upload a CSV file below instead.</p></div><div class="qb-row"><button class="qb-b" id="qb-go">Connect broker</button></div>';
     } else if (warn) {
       h = '<div><h3><span class="qb-dot"></span>Reconnect your broker</h3><p>Your broker connection needs to be approved again. Your existing trades are safe.</p></div><div class="qb-row"><button class="qb-b" id="qb-go">Reconnect</button><button class="qb-b qb-g" id="qb-off">Disconnect</button></div>';
     } else {
@@ -148,6 +148,7 @@
       }, function () {});
     });
   }
+  window.QSBrokerConnect = function () { var c = document.getElementById('qb-card'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); var g = document.getElementById('qb-go'); if (g) g.click(); };
   window.QSBroker = { sync: sync, status: function () { return call('status'); }, buildOrders: buildOrders, toResult: toResult };
   if (page === 'import.html') importCard();
   auto();
