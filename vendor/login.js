@@ -91,6 +91,7 @@
         btn.disabled = false; btn.textContent = 'Create account';
         if (r.error) { show($('msg'), r.error.message); return; }
         var isNew = !!(r.data && r.data.user && (!r.data.user.identities || r.data.user.identities.length > 0));
+        if (r.data && r.data.user && !isNew) { show($('msg'), 'That email is already in use. Switch to Sign in above, or use “Forgot password” to reset it.'); return; }
         var go = function () { if (r.data && r.data.session) location.href = 'dashboard.html'; };
         if (false && isNew && typeof window.gtag === 'function') {
           var done = false, next2 = function () { if (!done) { done = true; go(); } };
