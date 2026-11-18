@@ -31,3 +31,15 @@ Never put the API key in any file in the website or on GitHub.
 4. In SnapTrade → OAuth Apps → your app, the redirect URI must be exactly
    `https://oansdalmgvrhlkqpdhpv.supabase.co/functions/v1/snaptrade-callback`
 5. Upload the website files to GitHub, open quillstrike.com/import.html, click **Connect broker**.
+
+
+## 4. Paid plans (Stripe). Do this in Stripe TEST mode first.
+1. Create a Stripe account at stripe.com (business type: individual / sole proprietor is fine; use your EIN). Stay in **Test mode** (toggle top right).
+2. Product catalog → Add product "Quillstrike Pro". Add two recurring prices: **$14.99 / month** and **$150 / year**. Copy each price ID (starts with `price_`).
+3. Settings → Billing → **Customer portal** → turn it on (allow cancel, update card, invoice history).
+4. SQL Editor → paste `billing.sql` → Run.
+5. Edge Functions → Secrets → add: `STRIPE_SECRET_KEY` (starts `sk_test_`), `STRIPE_PRICE_MONTHLY`, `STRIPE_PRICE_YEARLY`. Optional: `STRIPE_TRIAL_DAYS` (for example 30 for a free first month).
+6. Deploy three functions (file must be named `index.ts`, **Verify JWT OFF** for all three; each checks the user or the Stripe signature itself): `stripe-checkout`, `stripe-portal`, `stripe-webhook`.
+7. Stripe → Developers → Webhooks → Add endpoint: URL `https://oansdalmgvrhlkqpdhpv.supabase.co/functions/v1/stripe-webhook`, events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`. Copy its signing secret (`whsec_`) into a Supabase secret `STRIPE_WEBHOOK_SECRET`.
+8. In `vendor/config.js` set `billing: true`, upload to GitHub, and test with Stripe's test card 4242 4242 4242 4242 (any future date, any CVC). Your plan on Settings should change to Pro within seconds.
+9. To go live: switch Stripe to Live mode, repeat steps 2, 3, 5 and 7 with live keys and prices, and replace the secrets.

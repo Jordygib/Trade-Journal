@@ -158,6 +158,7 @@ main section:has(.kfmark){border-color:rgba(56,189,248,.5) !important;box-shadow
 <script src="vendor/config.js"></script>
 <script src="vendor/tj-import.js"></script>
 <script src="vendor/auth.js"></script>
+<script src="vendor/qs-billing.js" defer></script>
 <script src="vendor/qs-fresh.js" defer></script>
 <script src="vendor/feedback.js" defer></script>
 <script src="vendor/membership.js" defer></script>
@@ -245,8 +246,8 @@ class Component extends DCLogic {
       billing: [['annual', 'Yearly'], ['monthly', 'Monthly']].map((b) => ({ label: b[1], on: this.state.billing === b[0], fg: this.state.billing === b[0] ? '#FFFFFF' : '#AFBFD1', ac: this.state.billing === b[0] ? accent : 'transparent', pick: () => this.setState({ billing: b[0] }) })),
       freePrice: '$0', freeSub: 'forever', freeCta: 'Start free',
       proPrice: annual ? money(proYear / 12) : money(pro), proSub: annual ? '/mo · ' + money(proYear) + ' billed yearly · save ' + Math.round((1 - proYear / (pro * 12)) * 100) + '%' : '/month',
-      proCta: 'Free during the beta',
-      proTerms: 'Every Pro feature is free while we’re in beta. When paid plans launch, we’ll tell you first, and nothing is ever charged without you choosing a plan.'
+      proCta: (window.TJ_CONFIG && window.TJ_CONFIG.billing) ? 'Upgrade to Pro' : 'Free during the beta',
+      proTerms: (window.TJ_CONFIG && window.TJ_CONFIG.billing) ? 'Cancel any time from Settings. Prices are in US dollars. Taxes may apply.' : 'Every Pro feature is free while we’re in beta. When paid plans launch, we’ll tell you first, and nothing is ever charged without you choosing a plan.'
     };
   }
 }
